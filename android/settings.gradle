@@ -1,0 +1,3 @@
+rootProject.name = 'Nucleus'
+
+include ':app'
