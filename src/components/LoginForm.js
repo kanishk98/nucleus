@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {StyleSheet, View, Button, Text, TouchableOpacity} from 'react-native';
+import {StyleSheet, View, Dimensions, Text, TouchableOpacity} from 'react-native';
 import UserInput from './UserInput'
 
 export default class LoginForm extends Component {
@@ -20,7 +20,7 @@ export default class LoginForm extends Component {
                     autoCapitalize={'none'}
                     returnKeyType={'done'}/>
                 <TouchableOpacity style = {styles.buttonContainer}>
-                    <Text style = {styles.buttonText}Sign in or sign up></Text>
+                    <Text style = {styles.buttonText}>Sign in or sign up</Text>
                 </TouchableOpacity>
             </View>
         );
@@ -30,6 +30,8 @@ export default class LoginForm extends Component {
     }
 }
 
+const DEVICE_WIDTH = Dimensions.get('window').width;
+
 const styles = StyleSheet.create({
    container: {
        justifyContent: 'center',
@@ -37,12 +39,17 @@ const styles = StyleSheet.create({
        alignItems: 'center',
    },
     buttonContainer: {
-       flex: 1,
-       backgroundColor: 'white',
-       paddingVertical: 15,
+       backgroundColor: 'rgba(255, 255, 255, 0.9)',
+       width: DEVICE_WIDTH - 40,
+       justifyContent: 'center',
+       height: 50,
+       borderRadius: 5,
+       paddingVertical: 20
     },
     buttonText: {
         textAlign: 'center',
-        color: 'white'
+        color: '#003366',
+        fontWeight: '700',
+        fontSize: 20
     }
 });
