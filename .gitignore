@@ -1,6 +1,9 @@
 # Webstorm folder
 .idea/
 
+# Key stores folder
+.keystores/
+
 # Computer-specific shell scripts
 *.sh
 
