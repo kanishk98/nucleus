@@ -19,14 +19,14 @@ export default class LoginForm extends Component {
                     autoCorrect={false}
                     autoCapitalize={'none'}
                     returnKeyType={'done'}/>
-                <TouchableOpacity style = {styles.buttonContainer}>
+                <TouchableOpacity style = {styles.buttonContainer} onPress = {this.onLoginButtonClick()}>
                     <Text style = {styles.buttonText}>Sign in or sign up</Text>
                 </TouchableOpacity>
             </View>
         );
     }
     onLoginButtonClick() {
-        console.log('Login button clicked');
+        // sign in to AWS user pool if user exists, sign him up otherwise
     }
 }
 
