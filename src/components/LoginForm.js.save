@@ -18,23 +18,16 @@ export default class LoginForm extends Component {
     }
 
     async configureGoogleSignIn() {
-        await GoogleSignin.hasPlayServices({
-            autoResolve: true
-        });
+        await GoogleSignin.hasPlayServices({autoResolve: true};
+	const configPlatform = {
+	  ...Platform.select({
+	    ios: 
+        };
 
         await GoogleSignin.configure({
-            webClientId: '***REMOVED***',
-            offlineAccess: false,
+            ...configPlatform,
+            webClientId: '***REMOVED***'
         });
-    }
-
-    async getCurrentUser() {
-        try {
-            const user = await GoogleSignin.currentUserAsync();
-            this.setState({user, error:null});
-        } catch (error) {
-            this.setState({error,});
-        }
     }
 
     render() {
@@ -46,24 +39,31 @@ export default class LoginForm extends Component {
                         style={styles.signInButton}
                         size={GoogleSigninButton.Size.Icon}
                         color={GoogleSigninButton.Color.Light}
-                        onPress={this.signIn}
+                        onPress={this.onLoginButtonClick}
                     />
                 </View>
             );
         } else {
-            return (
             <View style={styles.container}>
                 <Text>
                     Welcome, {user.email}
                 </Text>
             </View>
-            );
         }
     }
 
 
     onLoginButtonClick() {
-        this.signIn;
+        // checking if device has Google Play Services installed
+        // always returns true on iOS
+        GoogleSignin.hasPlayServices({autoResolve: true})
+            .then(() => {
+                // play services are available
+                this.signIn();
+            })
+            .catch(err => {
+                console.log('Play services error', err.code, err.message);
+            });
     }
 
     signIn = async() => {
@@ -77,6 +77,15 @@ export default class LoginForm extends Component {
             this.setState({error});
         }
     };
+
+    async getCurrentUser() {
+        try {
+            const user = await GoogleSignin.currentUserAsync();
+            this.setState({user, error:null});
+        } catch (error) {
+            this.setState({error});
+        }
+    }
 }
 
 const DEVICE_WIDTH = Dimensions.get('window').width;
