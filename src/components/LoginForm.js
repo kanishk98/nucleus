@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
-import {StyleSheet, View, Dimensions, Text} from 'react-native';
+import {StyleSheet, View, Dimensions, Text, Platform, ProgressBarAndroid, ProgressViewIOS} from 'react-native';
 import {GoogleSignin, GoogleSigninButton} from 'react-native-google-signin';
+import renderIf from './renderIf';
 
 export default class LoginForm extends Component {
 
@@ -8,7 +9,8 @@ export default class LoginForm extends Component {
         super(props);
         this.state = {
             user: null,
-            error: null
+            error: null,
+            progress: false
         };
     }
 
@@ -38,16 +40,21 @@ export default class LoginForm extends Component {
     }
 
     render() {
-        const {user, error} = this.state;
+        const {user} = this.state;
+        const ProgressBar = Platform.select({
+            ios: () => ProgressViewIOS,
+            android: () => ProgressBarAndroid
+        })();
         if (!user) {
             return (
                 <View style={styles.container}>
-                    <GoogleSigninButton
+                    {renderIf(!this.state.progress, <GoogleSigninButton
                         style={styles.signInButton}
                         size={GoogleSigninButton.Size.Icon}
                         color={GoogleSigninButton.Color.Light}
                         onPress={this.signIn}
-                    />
+                    />)}
+                    {renderIf(this.state.progress, <ProgressBar/>)}
                 </View>
             );
         } else {
@@ -61,15 +68,11 @@ export default class LoginForm extends Component {
         }
     }
 
-
-    onLoginButtonClick() {
-        this.signIn;
-    }
-
     signIn = async() => {
         try {
+            this.setState({progress: true});
             const user = await GoogleSignin.signIn();
-            this.setState({user, error:null});
+            this.setState({user: user, error: null, progress: false})
         } catch (error) {
             if (error.code == 'CANCELED') {
                 error.message = 'User canceled login';
@@ -78,8 +81,6 @@ export default class LoginForm extends Component {
         }
     };
 }
-
-const DEVICE_WIDTH = Dimensions.get('window').width;
 
 const styles = StyleSheet.create({
    container: {
@@ -90,5 +91,5 @@ const styles = StyleSheet.create({
     signInButton: {
         width: 312, 
         height: 60
-    }
+    },
 });
