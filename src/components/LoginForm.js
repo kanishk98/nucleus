@@ -68,15 +68,16 @@ export default class LoginForm extends Component {
             this.setState({progress: true});
             let signedInUser = await GoogleSignin.signIn();
             console.log(signedInUser.email);
-            if (user.email.includes('@snu.edu.in')) {
+            if (signedInUser.email.includes('@snu.edu.in')) {
                 console.log('Valid student');
                 this.setState({user: signedInUser, error: null, progress: false, loggedIn: true});
             } else {
-                console.log('Logging out user');
+                console.log('Signing out user');
+                this.configureGoogleSignIn();
+                this.signOut();
             }
-            console.log('Signing out');
-            this.signOut;
         } catch (error) {
+            console.log(error.message);
             if (error.code == 'CANCELED') {
                 error.message = 'User canceled login';
             }
@@ -84,14 +85,14 @@ export default class LoginForm extends Component {
         }
     };
 
-    signOut = async () => {
+    async signOut() {
         try {
             await GoogleSignin.revokeAccess();
             await GoogleSignin.signOut();
-            this.setState({ user: null });
+            this.setState({ user: null, error: null, progress: false, loggedIn: false });
         } catch (error) {
             this.setState({
-                error,
+                error: error,
             });
         }
     };
