@@ -12,16 +12,17 @@ export default class LoginForm extends Component {
             user: null,
             error: null,
             progress: false,
-            loggedIn: false
+            loggedIn: false,
         };
     }
 
     async componentDidMount() {
         await this.configureGoogleSignIn();
-        await this.getCurrentUser();
     }
 
     async configureGoogleSignIn() {
+        // TODO: SOME ANDROID PHONES MAY NOT HAVE PLAY SERVICES. DISPLAY ERROR MESSAGE THERE.
+        // always returns true on iOS
         await GoogleSignin.hasPlayServices({
             autoResolve: true
         });
@@ -32,26 +33,16 @@ export default class LoginForm extends Component {
         });
     }
 
-    async getCurrentUser() {
-        try {
-            const user = await GoogleSignin.currentUserAsync();
-            this.setState({user, error:null});
-        } catch (error) {
-            this.setState({error,});
-        }
-    }
-
     render() {
         const ProgressBar = Platform.select({
             ios: () => ProgressViewIOS,
             android: () => ProgressBarAndroid
         })();
-        if (!this.state.loggedIn) {
+        const user = this.state.user;
+        if (!user) {
             return (
             <View style={styles.container}>
-                <Text style={styles.instructions}>
-                    Sign in with your SNU account.
-                </Text>
+                <Text style={styles.instructions}>Sign in with your SNU account.</Text>
                 {renderIf(!this.state.progress, <GoogleSigninButton
                     style={styles.signInButton}
                     size={GoogleSigninButton.Size.Icon}
@@ -65,7 +56,7 @@ export default class LoginForm extends Component {
             return (
             <View style={styles.container}>
                 <Text style={styles.instructions}>
-                    Signed in as {this.state.user.email}
+                    Signed in as {user.email}
                 </Text>
             </View>
             );
@@ -75,19 +66,33 @@ export default class LoginForm extends Component {
     signIn = async() => {
         try {
             this.setState({progress: true});
-            const user = await GoogleSignin.signIn();
-            console.log(user.email);
+            let signedInUser = await GoogleSignin.signIn();
+            console.log(signedInUser.email);
             if (user.email.includes('@snu.edu.in')) {
                 console.log('Valid student');
-                this.setState({user: user, error: null, progress: false, loggedIn: true});
+                this.setState({user: signedInUser, error: null, progress: false, loggedIn: true});
             } else {
-                this.setState({user:null, error:null, progress:false, loggedIn:false});
+                console.log('Logging out user');
             }
+            console.log('Signing out');
+            this.signOut;
         } catch (error) {
             if (error.code == 'CANCELED') {
                 error.message = 'User canceled login';
             }
             this.setState({user:null, error:error, progress:false, loggedIn:false});
+        }
+    };
+
+    signOut = async () => {
+        try {
+            await GoogleSignin.revokeAccess();
+            await GoogleSignin.signOut();
+            this.setState({ user: null });
+        } catch (error) {
+            this.setState({
+                error,
+            });
         }
     };
 }
