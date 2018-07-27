@@ -3,6 +3,7 @@ import {StyleSheet, View, Dimensions, Text, Platform, ProgressBarAndroid, Progre
 import {GoogleSignin, GoogleSigninButton} from 'react-native-google-signin';
 import renderIf from './renderIf';
 import {Auth} from 'aws-amplify';
+import firebase from 'react-native-firebase';
 
 export default class LoginForm extends Component {
 
@@ -68,9 +69,29 @@ export default class LoginForm extends Component {
             this.setState({progress: true});
             let signedInUser = await GoogleSignin.signIn();
             console.log(signedInUser.email);
+            console.log(signedInUser.accessToken);
             if (signedInUser.email.includes('@snu.edu.in')) {
                 console.log('Valid student');
                 this.setState({user: signedInUser, error: null, progress: false, loggedIn: true});
+                // authenticating with Firebase
+                // TODO: ADD INTERNET CONNECTIVITY CHECK, HOOK RESULT ACCORDINGLY INTO UI
+                const firebaseCredential = firebase.auth.GoogleAuthProvider.credential(signedInUser.idToken,
+                    signedInUser.accessToken);
+                const firebaseUser = await firebase.auth().signInAndRetrieveDataWithCredential(firebaseCredential);
+                console.info(JSON.stringify(firebaseUser.user.toJSON()));
+                // syncing user details with Cognito User Pool
+                Auth.configure({
+                    identityPoolId: 'ap-south-1:7bea4d8a-8ec9-425b-833d-2ac9ed73e27b',
+                    region: 'ap-south-1'
+                });
+                Auth.federatedSignIn(
+                    'google',
+                    {
+                        token: signedInUser.accessToken
+                    },
+                    signedInUser)
+                    .then(user => console.log(user))
+                    .catch(error => console.log(error));
             } else {
                 console.log('Signing out user');
                 this.configureGoogleSignIn();
