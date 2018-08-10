@@ -12,7 +12,7 @@ export default class LoginScreen extends Component {
                         style={styles.logo}
                     />
                 </View>
-                <LoginForm/>
+                <LoginForm navigation={this.props.navigation}/>
             </KeyboardAvoidingView>
         );
     }

@@ -93,6 +93,8 @@ export default class LoginForm extends Component {
                     signedInUser)
                     .then(user => console.log(user))
                     .catch(error => console.log(error));
+                    // moving user to chat screen
+                    this.props.navigation.navigate('Connect');
             } else {
                 console.log('Signing out user');
                 this.configureGoogleSignIn();
