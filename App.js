@@ -2,6 +2,7 @@ import {createStackNavigator} from 'react-navigation';
 import LoginScreen from './src/components/LoginScreen';
 import RandomConnect from './src/components/RandomConnect';
 import React, {Component} from 'react';
+import SplashScreen from './src/components/SplashScreen'
 
 const StackNavigator = createStackNavigator(
     {
@@ -10,16 +11,22 @@ const StackNavigator = createStackNavigator(
             navigationOptions: {
                 header: null
             }
-        },
+        }, 
+        Splash: {
+            screen: SplashScreen,
+            navigationOptions: {
+                header: null
+            }
+        }, 
         Connect: {
             screen: RandomConnect, 
             navigationOptions: {
-                title: 'connect',
+                title: 'Connect',
             }
         },
     }, 
     {
-        initialRouteName: 'Login',
+        initialRouteName: 'Login'
     }
 );
 

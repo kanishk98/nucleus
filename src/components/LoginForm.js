@@ -4,6 +4,7 @@ import {GoogleSignin, GoogleSigninButton} from 'react-native-google-signin';
 import renderIf from './renderIf';
 import {Auth} from 'aws-amplify';
 import firebase from 'react-native-firebase';
+import { AsyncStorage } from '@aws-amplify/core';
 
 export default class LoginForm extends Component {
 
@@ -93,6 +94,7 @@ export default class LoginForm extends Component {
                     signedInUser)
                     .then(user => console.log(user))
                     .catch(error => console.log(error));
+                    this.setLoggedIn('LOGGED_IN', true);
                     // moving user to chat screen
                     this.props.navigation.navigate('Connect');
             } else {
@@ -118,6 +120,14 @@ export default class LoginForm extends Component {
             this.setState({
                 error: error,
             });
+        }
+    };
+
+    async setLoggedIn(key, item) {
+        try {
+            await AsyncStorage.setItem(key, JSON.stringify(item));
+        } catch(error) {
+            console.log(error.message);
         }
     };
 }

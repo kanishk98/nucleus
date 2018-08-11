@@ -17,6 +17,7 @@ export default class RandomConnect extends React.Component {
 
     renderItem({item}) {
         return (
+            // think about including timestamp and delivery information
             <View style={styles.row}>
                 <Text style={styles.sender}>Sender</Text>
                 <Text style={styles.message}>Message</Text>
