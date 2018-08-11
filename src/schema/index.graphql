@@ -1,0 +1,69 @@
+type Schema{
+    query: Query 
+    mutation: Mutation 
+    subscription: Subscription 
+}
+
+type MessageConnection {
+    message: [Message]
+    nextToken: String 
+}
+
+type Conversation {
+    # conversation's timestamp 
+    createdAt: String
+    id: ID!
+    # messages in the conversation
+    messages(after: String, first: Int): MessageConnection
+}
+
+type User {
+    firebaseId: ID!
+    # college system username
+    username: String!
+    # is the user paying for anonymity?
+    paid: Boolean
+}
+
+type Message {
+    author: User!
+    content: String! 
+    conversationId: ID! 
+    createdAt: String 
+    id: ID! 
+    isSent: Boolean
+    recipient: User 
+    sender: String 
+}
+
+type Mutation {
+    # create a conversation
+    createConversation(createdAt: String, id: ID!): Conversation
+    createMessage(content: String!, conversationId: ID!, createdAt: String): Message
+    createUser(firebaseId: ID!, username: String!): User
+    createUserConversations(conversationId: ID!, userId: ID!): UserConversation
+}
+
+type Query {
+    # scan through all results of type 'Message'. Use the 'after' and 'before' arguments with the 'nextToken'
+    # returned by the 'MessageConnection' result to fetch pages
+    allMessage(after: String, conversationId: ID!, first: Int): [Message]
+    allUser(after: String, first: Int): [User]
+    me: User
+}
+
+type Subscription {
+    # subscribes to all messages in a given conversation
+    subscribeToNewMessage(conversationId: ID!): Message
+        @aws_subscribe(mutations:["createMessage"])
+    subscribeToNewUCs(userId: ID!): UserConversation
+        @aws_subscribe(mutations: ["createUserConversations"])
+    subscribeToNewUsers: User
+        @aws_subscribe(mutations: ["createUser"])
+}
+
+type UserConversation {
+    users: [User]!
+    conversation: Conversation!
+    conversationId: ID!
+}

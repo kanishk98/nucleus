@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "amazon-cognito-identity-js": "^2.0.16",
+    "apollo-boost": "^0.1.13",
     "aws-amplify": "^1.0.2",
     "aws-amplify-react-native": "^1.0.2",
     "aws-appsync-react": "^1.1.2",
