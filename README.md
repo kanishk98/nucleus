@@ -9,7 +9,6 @@ If the user is an SNU student, then the details (Firebase UserID, name, and emai
 
 ## Chat system
 
-We use GraphQL-based AWS AppSync to keep our data real-time and our app quick. 
+We use GraphQL-based AWS AppSync to keep our data real-time and our app quick. For more details, see the README for Proton, our back-end system.
 
 ### Random chat (named)
-

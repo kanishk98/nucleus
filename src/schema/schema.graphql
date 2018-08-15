@@ -23,6 +23,8 @@ type User {
     username: String!
     # is the user paying for anonymity?
     paid: Boolean
+    online: Boolean
+    offenses: Int
 }
 
 type Message {
@@ -30,10 +32,12 @@ type Message {
     content: String! 
     conversationId: ID! 
     createdAt: String 
-    id: ID! 
+    messageId: ID! 
     isSent: Boolean
     recipient: User 
     sender: String 
+    isReceived: Boolean
+    isRead: Boolean
 }
 
 type Mutation {
