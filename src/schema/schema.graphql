@@ -107,6 +107,11 @@ input CreateNucleusDiscoverMessagesInput {
 input CreateNucleusDiscoverUsersInput {
   firebaseId: String!
   geohash: String!
+  username: String
+  offenses: Int
+  online: Boolean
+  paid: Boolean
+  profilePic: String
 }
 
 input DeleteNucleusDiscoverConversationsInput {
