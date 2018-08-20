@@ -2,10 +2,8 @@ import React, {Component} from 'react';
 import {Text, View, StyleSheet, FlatList} from 'react-native';
 import AWSAppSyncClient from 'aws-appsync';
 import {AUTH_TYPE} from 'aws-appsync/lib/link/auth-link';
-import AppSync from '../schema/AppSync';
+import AppSync from '../AppSync';
 import {Auth} from 'aws-amplify';
-import {graphql, ApolloProvider, compose} from 'react-apollo';
-import AllMessagesQuery from '../queries/AllMessagesQuery';
 
 export default class RandomConnect extends React.Component {
     constructor(props) {
@@ -35,10 +33,7 @@ export default class RandomConnect extends React.Component {
     renderItem({item}) {
         return (
             // think about including timestamp and delivery information
-            <View style={styles.row}>
-                <Text style={styles.sender}>Sender</Text>
-                <Text style={styles.message}>Message</Text>
-            </View>
+            <View />
         );
     }
 
@@ -50,17 +45,6 @@ export default class RandomConnect extends React.Component {
         );
     }    
 }
-
-const allMessages = compose(
-    graphql(AllMessagesQuery, {
-        options: {
-            fetchPolicy: 'cache-and-network'
-        }, 
-        /*props: (props) => ({
-            messages: props.data.allMessages && props.data.allMessages.message,
-        })*/
-    }),
-);
 
 const styles = StyleSheet.create({
     container: {

@@ -5,6 +5,7 @@ import React, {Component} from 'react';
 import SplashScreen from './src/components/SplashScreen'
 import ApolloClient from 'apollo-boost';
 import { ApolloProvider } from 'react-apollo';
+import PreDiscover from './src/components/PreDiscover';
 
 const StackNavigator = createStackNavigator(
     {
@@ -19,7 +20,13 @@ const StackNavigator = createStackNavigator(
             navigationOptions: {
                 header: null
             }
-        }, 
+        },
+        PreDiscover: {
+            screen: PreDiscover, 
+            navigationOptions: {
+                header: null
+            }
+        },
         Connect: {
             screen: RandomConnect, 
             navigationOptions: {
@@ -28,7 +35,7 @@ const StackNavigator = createStackNavigator(
         },
     }, 
     {
-        initialRouteName: 'Login'
+        initialRouteName: 'PreDiscover'
     }
 );
 
