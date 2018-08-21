@@ -1,34 +1,52 @@
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 
-export const CreateUser = gql`mutation CreatePost($id: ID!, $title: String!) {
-	putPost(id: $id, title: $title) {
-        id
-        title
-    }
-}`
-
-export const CreateDiscoverUser = gql`mutation CreateNucleusDiscoverUsers($input: userInput) {
-    createNucleusDiscoverUsers(input: {
+export const CreateDiscoverUser = gql`mutation CreateNucleusDiscoverUsers($input: CreateNucleusDiscoverUsersInput!) {
+    createNucleusDiscoverUsers(input: $input) {
         firebaseId
         geohash
         online
         paid
         profilePic
         username
-    })
+    }
 }`;
 
-export const CreateDiscoverUser = gql`mutation CreateNucleusDiscoverUsers(input: {
-    firebaseId: 
-}) {
-}
+export const CreateDiscoverConversation = gql`mutation CreateNucleusDiscoverConversation($input: CreateNucleusDiscoverConversationsInput!) {
+    createNucleusDiscoverConversation(input: $input) {
+        conversationId
+        messageId
+    }
+}`;
+
+export const CreateDiscoverMessage = gql`mutation CreateNucleusDiscoverMessage($input: CreateNucleusDiscoverMessagesInput!) {
+    createNucleusDiscoverMessage(input: $input) {
+        conversationId
+        messageId
+        author
+        content
+        createdAt 
+        isRead 
+        isReceived
+        recipient
+    }
 }`
 
+// TODO: No point searching for users via ID, make REST calls to Lambda function for fetching all users
 
-export const CreateDiscoverConversation = gql`mutation CreateNucleusDiscoverConversation`
+export const GetDiscoverMessages = gql`query getNucleusDiscoverMessages($input: CreateNucleusDiscoverMessagesInput!) {
+    getNucleusDiscoverMessages(input: $input) {
+        conversationId
+        messageId
+        author
+        content
+        createdAt
+        isRead 
+        isReceived
+        recipient
+    }
+}`
 
-//Declare your React Component level operations below
 export const operations = {
     CreatePost: graphql(CreatePost, {
         options: {
@@ -46,7 +64,6 @@ export const operations = {
             }
         })
     }),
-
     FetchPosts: graphql(FetchPosts, {
         options: {
             fetchPolicy: 'network-only'
@@ -58,5 +75,4 @@ export const operations = {
             }
         }
     })
-
 }  
