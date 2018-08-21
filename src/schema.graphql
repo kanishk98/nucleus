@@ -100,7 +100,7 @@ type Query {
   listNucleusDiscoverConversations(filter: TableNucleusDiscoverConversationsFilterInput, limit: Int, nextToken: String): NucleusDiscoverConversationsConnection
   listNucleusDiscoverMessages(filter: TableNucleusDiscoverMessagesFilterInput, limit: Int, nextToken: String): NucleusDiscoverMessagesConnection
   listNucleusDiscoverUsers(filter: TableNucleusDiscoverUsersFilterInput, limit: Int, nextToken: String): NucleusDiscoverUsersConnection
-  getOnlineNucleusDiscoverUsers(online: Int): String
+  getOnlineNucleusDiscoverUsers(online: Int): [NucleusDiscoverUsers]
 }
 
 type Schema {
