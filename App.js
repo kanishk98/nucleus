@@ -37,7 +37,7 @@ const StackNavigator = createStackNavigator(
         },
     }, 
     {
-        initialRouteName: 'Login'
+        initialRouteName: 'PreDiscover'
     }
 );
 

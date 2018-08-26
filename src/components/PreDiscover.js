@@ -32,33 +32,16 @@ export default class PreDiscover extends React.Component {
         let {text, connected} = this.state;
         return (
             <View styles={styles.container}>
-                <View style={styles.logoContainer}>
-                    <Image
-                        source={require('../../assets/GitHub-Mark-Light-120px-plus.png')}
-                        style={styles.logo}
-                    />
-                </View>
                 <Text style={styles.instructions}>{text}</Text>
             </View>
         );
     }
 }
-const styles = StyleSheet.create({
+const styles=StyleSheet.create({
     container: {
-        flex: 1,
-        backgroundColor: '#003366',
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-    logoContainer: {
-        marginTop: 40,
         justifyContent: 'center',
-        flexGrow: 1,
-        alignItems: 'center'
-    },
-    logo: {
-        height: 100,
-        width: 100
+        flex: 1,
+        alignItems: 'center',
     },
     instructions: {
         color: 'black',

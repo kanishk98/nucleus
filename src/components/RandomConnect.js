@@ -4,9 +4,6 @@ import AWSAppSyncClient from 'aws-appsync';
 import {AUTH_TYPE} from 'aws-appsync/lib/link/auth-link';
 import AppSync from '../AppSync';
 import {Auth} from 'aws-amplify';
-import * as admin from 'firebase-admin';
-
-const serviceAccount = require('../../access_keys/nucleus-2018-firebase-adminsdk-4t469-4392cd952b.json');
 
 export default class RandomConnect extends React.Component {
     constructor(props) {
@@ -30,11 +27,6 @@ export default class RandomConnect extends React.Component {
                 apiKey: AppSync.apiKey,
                 credentials: () => Auth.currentCredentials(),
             }
-        });
-        // initialising FCM with checks
-        admin.initializeApp({
-            credential: admin.credential.cert(serviceAccount),
-            databaseURL: 'https://nucleus-2018.firebaseio.com'
         });
     }
 
