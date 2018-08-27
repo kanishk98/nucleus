@@ -67,7 +67,7 @@ export const operations = {
     GetOnlineUsers:graphql(GetOnlineDiscoverUsers, {
         options: {
             variables: {online: 1},
-            fetchPolicy: 'cache-and-network',
+            fetchPolicy: 'network-only',
         }
     }),
     props: ({data}) => {

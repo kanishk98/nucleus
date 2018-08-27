@@ -12,30 +12,9 @@ export default class PreDiscover extends React.Component {
             text: "Tap anywhere to get started",
             connected: true
         };
-        this.handleConnectionChange = this.handleConnectionChange.bind(this);
     }
 
-    OnlineUsers = () => {
-        debugger
-        <Query query={GraphQL.GetOnlineDiscoverUsers}>
-            {({ loading, error, data }) => {
-                if (loading || !data) {
-                    console.log('Loading');
-                    return (<Text>Loading</Text>);
-                } else if (data) {
-                    console.log(data.getOnlineNucleusDiscoverUsers.firebaseId);
-                    return (data.getOnlineNucleusDiscoverUsers.firebaseId);
-                } else if (error) {
-                    console.log(error.message);
-                    return error.message.toString();
-                } else {
-                    return {text: 'Whatever'};
-                }
-            }}
-        </Query>
-    }
-
-    componentDidMount() {
+    /*componentDidMount() {
         NetInfo.isConnected.fetch().then(isConnected => {
             if (!isConnected) {
                 this.setState({"text": "Sorry, your device is offline", "connected": false});
@@ -45,15 +24,15 @@ export default class PreDiscover extends React.Component {
     }
 
     handleConnectionChange(isConnected) {
-    if (isConnected) {
-        this.setState({text: "Tap anywhere to get started", "connected": false });
-    } else {
-        this.setState({text: "Sorry, your device is offline", connected: false });
-    }
-}
+        if (isConnected) {
+            this.setState({text: "Tap anywhere to get started", "connected": false });
+        } else {
+            this.setState({text: "Sorry, your device is offline", connected: false });
+        }
+    }*/
+    
     render() {
-        let text=this.OnlineUsers();
-        console.log(text);
+        let {text} = this.state;
         return (
             <View style={styles.container}>
                 <Text style={styles.instructions}>{text}</Text>

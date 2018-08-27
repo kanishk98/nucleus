@@ -45,7 +45,7 @@ const StackNavigator = createStackNavigator(
 const client = new AWSAppSyncClient({
     url: AppSync.graphqlEndpoint,
     region: AppSync.region,
-    auth: {type: AUTH_TYPE.AWS_IAM}
+    auth: { type: AUTH_TYPE.API_KEY, apiKey: 'da2-gyr4llduvng23nvulsnsq7jzmq'}
 });
 
 export default class App extends React.Component {
