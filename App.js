@@ -8,6 +8,7 @@ import {ApolloProvider} from 'react-apollo';
 import PreDiscover from './src/components/PreDiscover';
 import {Rehydrated} from 'aws-appsync-react';
 import { AUTH_TYPE } from 'aws-appsync/lib';
+import AWSAppSyncClient from 'aws-appsync';
 
 const StackNavigator = createStackNavigator(
     {

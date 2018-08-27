@@ -1,8 +1,19 @@
 import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import { graphql, Query } from 'react-apollo';
 
 export const CreateDiscoverUser = gql`mutation CreateNucleusDiscoverUsers($input: CreateNucleusDiscoverUsersInput!) {
     createNucleusDiscoverUsers(input: $input) {
+        firebaseId
+        geohash
+        online
+        paid
+        profilePic
+        username
+    }
+}`;
+
+export const GetOnlineDiscoverUsers = gql`query GetOnlineNucleusDiscoverUsers($online: Int!) {
+    getOnlineNucleusDiscoverUsers(online: $online) {
         firebaseId
         geohash
         online
@@ -48,31 +59,21 @@ export const GetDiscoverMessages = gql`query getNucleusDiscoverMessages($input: 
 }`
 
 export const operations = {
-    CreatePost: graphql(CreatePost, {
+    CreateUser:graphql(CreateDiscoverUser, {
         options: {
-            refetchQueries: [{ query: FetchPosts }]
-        },
-        props: props => ({
-            createPost: (post) => {
-                return props.mutate({
-                    variables: post,
-
-                    optimisticResponse: {
-                        putPost: { ...post, __typename: 'Post' }
-                    }
-                })
-            }
-        })
-    }),
-    FetchPosts: graphql(FetchPosts, {
-        options: {
-            fetchPolicy: 'network-only'
-        },
-        props: ({ data }) => {
-            return {
-                loading: data.loading,
-                posts: data.allPost
-            }
+            fetchPolicy: 'cache-and-network',
         }
-    })
-}  
+    }),
+    GetOnlineUsers:graphql(GetOnlineDiscoverUsers, {
+        options: {
+            variables: {online: 1},
+            fetchPolicy: 'cache-and-network',
+        }
+    }),
+    props: ({data}) => {
+        return {
+            loading: data.loading,
+            users: data.getOnlineDiscoverUsers
+        };
+    }
+};

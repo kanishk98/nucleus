@@ -1,5 +1,8 @@
 import React from 'react';
 import {NetInfo, Text, View, StyleSheet} from 'react-native';
+import client from '../../App';
+import * as GraphQL from '../graphql';
+import { Query } from 'react-apollo';
 
 export default class PreDiscover extends React.Component {
     
@@ -10,6 +13,26 @@ export default class PreDiscover extends React.Component {
             connected: true
         };
         this.handleConnectionChange = this.handleConnectionChange.bind(this);
+    }
+
+    OnlineUsers = () => {
+        debugger
+        <Query query={GraphQL.GetOnlineDiscoverUsers}>
+            {({ loading, error, data }) => {
+                if (loading || !data) {
+                    console.log('Loading');
+                    return (<Text>Loading</Text>);
+                } else if (data) {
+                    console.log(data.getOnlineNucleusDiscoverUsers.firebaseId);
+                    return (data.getOnlineNucleusDiscoverUsers.firebaseId);
+                } else if (error) {
+                    console.log(error.message);
+                    return error.message.toString();
+                } else {
+                    return {text: 'Whatever'};
+                }
+            }}
+        </Query>
     }
 
     componentDidMount() {
@@ -23,15 +46,16 @@ export default class PreDiscover extends React.Component {
 
     handleConnectionChange(isConnected) {
     if (isConnected) {
-        this.setState({ text: "Tap anywhere to get started", connected: false });
+        this.setState({text: "Tap anywhere to get started", "connected": false });
     } else {
-        this.setState({ text: "Sorry, your device is offline", connected: false });
+        this.setState({text: "Sorry, your device is offline", connected: false });
     }
 }
     render() {
-        let {text, connected} = this.state;
+        let text=this.OnlineUsers();
+        console.log(text);
         return (
-            <View styles={styles.container}>
+            <View style={styles.container}>
                 <Text style={styles.instructions}>{text}</Text>
             </View>
         );
@@ -42,11 +66,14 @@ const styles=StyleSheet.create({
         justifyContent: 'center',
         flex: 1,
         alignItems: 'center',
+        backgroundColor: '#003366',
     },
     instructions: {
         color: 'black',
         marginBottom: 16,
         fontSize: 18,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        alignItems: 'center',
+        justifyContent: 'center'
     }
 });
