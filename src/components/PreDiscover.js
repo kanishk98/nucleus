@@ -1,8 +1,5 @@
 import React from 'react';
 import {NetInfo, Text, View, StyleSheet} from 'react-native';
-import client from '../../App';
-import * as GraphQL from '../graphql';
-import { Query } from 'react-apollo';
 
 export default class PreDiscover extends React.Component {
     
@@ -13,23 +10,6 @@ export default class PreDiscover extends React.Component {
             connected: true
         };
     }
-
-    /*componentDidMount() {
-        NetInfo.isConnected.fetch().then(isConnected => {
-            if (!isConnected) {
-                this.setState({"text": "Sorry, your device is offline", "connected": false});
-            }
-        });
-        NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectionChange);
-    }
-
-    handleConnectionChange(isConnected) {
-        if (isConnected) {
-            this.setState({text: "Tap anywhere to get started", "connected": false });
-        } else {
-            this.setState({text: "Sorry, your device is offline", connected: false });
-        }
-    }*/
     
     render() {
         let {text} = this.state;
@@ -40,6 +20,7 @@ export default class PreDiscover extends React.Component {
         );
     }
 }
+
 const styles=StyleSheet.create({
     container: {
         justifyContent: 'center',
