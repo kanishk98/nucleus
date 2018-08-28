@@ -9,8 +9,6 @@ import PreDiscover from './src/components/PreDiscover';
 import {Rehydrated} from 'aws-appsync-react';
 import { AUTH_TYPE } from 'aws-appsync/lib';
 import AWSAppSyncClient from 'aws-appsync';
-import * as GraphQL from './src/graphql';
-import { variablesInOperation } from 'apollo-utilities';
 
 const StackNavigator = createStackNavigator(
     {
@@ -52,7 +50,6 @@ export const client = new AWSAppSyncClient({
 
 export default class App extends React.Component {
     render() {
-        client.query(GraphQL.GetOnlineDiscoverUsers).then(response => console.log(response.data.getOnlineNucleusDiscoverUsers));
         return (
             <ApolloProvider client={client}>
                 <Rehydrated>

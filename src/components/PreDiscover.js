@@ -1,5 +1,6 @@
 import React from 'react';
 import {NetInfo, Text, View, StyleSheet} from 'react-native';
+import getOnlineUsers from './OnlineUserList';
 
 export default class PreDiscover extends React.Component {
     
@@ -16,6 +17,7 @@ export default class PreDiscover extends React.Component {
         return (
             <View style={styles.container}>
                 <Text style={styles.instructions}>{text}</Text>
+                <getOnlineUsers />
             </View>
         );
     }
@@ -29,7 +31,7 @@ const styles=StyleSheet.create({
         backgroundColor: '#003366',
     },
     instructions: {
-        color: 'black',
+        color: 'white',
         marginBottom: 16,
         fontSize: 18,
         fontWeight: 'bold',

@@ -1,5 +1,6 @@
 import gql from 'graphql-tag';
 import { graphql, Query } from 'react-apollo';
+import renderIf from './components/renderIf';
 
 export const CreateDiscoverUser = gql`mutation CreateNucleusDiscoverUsers($input: CreateNucleusDiscoverUsersInput!) {
     createNucleusDiscoverUsers(input: $input) {
@@ -43,8 +44,6 @@ export const CreateDiscoverMessage = gql`mutation CreateNucleusDiscoverMessage($
     }
 }`
 
-// TODO: No point searching for users via ID, make REST calls to Lambda function for fetching all users
-
 export const GetDiscoverMessages = gql`query getNucleusDiscoverMessages($input: CreateNucleusDiscoverMessagesInput!) {
     getNucleusDiscoverMessages(input: $input) {
         conversationId
@@ -70,10 +69,9 @@ export const operations = {
             fetchPolicy: 'network-only',
         }
     }),
-    props: ({data}) => {
-        return {
-            loading: data.loading,
-            users: data.getOnlineDiscoverUsers
-        };
-    }
+    props: ({data: {loading, users}}) => ({
+        return (
+            loading, users, 
+        );
+    })
 };
