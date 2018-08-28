@@ -6,7 +6,11 @@ import graphql from 'graphql-anywhere';
 class OnlineUserList extends React.Component {
     componentDidMount() {
         const {loading, users} = this.props;
-        console.log(JSON.stringify(users));
+        if (users) {
+            console.log(JSON.stringify(users));
+        } else {
+            console.log(JSON.stringify(loading));
+        }
     }
 }
 

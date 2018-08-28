@@ -31,6 +31,7 @@ export default class LoginForm extends Component {
         });
 
         await GoogleSignin.configure({
+            iosClientId: '***REMOVED***',
             webClientId: '***REMOVED***',
             offlineAccess: false,
         });

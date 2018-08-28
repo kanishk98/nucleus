@@ -1,0 +1,6 @@
+framework module Pods_NucleusTests {
+  umbrella header "Pods-NucleusTests-umbrella.h"
+
+  export *
+  module * { export * }
+}

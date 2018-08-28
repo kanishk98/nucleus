@@ -1,5 +1,6 @@
 #iOS folder
 .ios/Index/DataStore/
+.ios/build/
 
 # Webstorm folder
 .idea/
