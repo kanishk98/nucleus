@@ -1,4 +1,5 @@
 #iOS folder
+.ios/Pods/
 .ios/Index/DataStore/
 .ios/build/
 
