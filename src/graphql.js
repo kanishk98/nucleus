@@ -1,6 +1,4 @@
 import gql from 'graphql-tag';
-import { graphql, Query } from 'react-apollo';
-import renderIf from './components/renderIf';
 
 export const CreateDiscoverUser = gql`mutation CreateNucleusDiscoverUsers($input: CreateNucleusDiscoverUsersInput!) {
     createNucleusDiscoverUsers(input: $input) {
@@ -56,22 +54,3 @@ export const GetDiscoverMessages = gql`query getNucleusDiscoverMessages($input: 
         recipient
     }
 }`
-
-export const operations = {
-    CreateUser:graphql(CreateDiscoverUser, {
-        options: {
-            fetchPolicy: 'cache-and-network',
-        }
-    }),
-    GetOnlineUsers:graphql(GetOnlineDiscoverUsers, {
-        options: {
-            variables: {online: 1},
-            fetchPolicy: 'network-only',
-        }
-    }),
-    props: ({data: {loading, users}}) => ({
-        return (
-            loading, users, 
-        );
-    })
-};

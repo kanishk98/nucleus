@@ -48,6 +48,7 @@
 		979238F62135266900C4827F /* GoogleSignIn.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979238F02135266900C4827F /* GoogleSignIn.framework */; };
 		979238F72135266900C4827F /* GoogleUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979238F12135266900C4827F /* GoogleUtilities.framework */; };
 		979238F82135266900C4827F /* GoogleSymbolUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979238F22135266900C4827F /* GoogleSymbolUtilities.framework */; };
+		97CD431F21357F3B00B2168C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 97CD42F721357F3B00B2168C /* GoogleService-Info.plist */; };
 		A996EDBCEB83493DA9767CFA /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FABFA8C29C8F48C58B0514B9 /* AddressBook.framework */; };
 		ADA66A39723EBD1EE7C246C1 /* Pods_NucleusTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 395558F04E955AB89C9E97FC /* Pods_NucleusTests.framework */; };
 		ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ADBDB9271DFEBF0700ED6528 /* libRCTBlob.a */; };
@@ -386,6 +387,7 @@
 		979238F02135266900C4827F /* GoogleSignIn.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleSignIn.framework; path = "../node_modules/react-native-google-signin/ios/GoogleSdk/GoogleSignIn.framework"; sourceTree = "<group>"; };
 		979238F12135266900C4827F /* GoogleUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleUtilities.framework; path = "../node_modules/react-native-google-signin/ios/GoogleSdk/GoogleUtilities.framework"; sourceTree = "<group>"; };
 		979238F22135266900C4827F /* GoogleSymbolUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleSymbolUtilities.framework; path = "../node_modules/react-native-google-signin/ios/GoogleSdk/GoogleSymbolUtilities.framework"; sourceTree = "<group>"; };
+		97CD42F721357F3B00B2168C /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		9E23E12C34984DF9990D7B29 /* RNFirebase.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNFirebase.xcodeproj; path = "../node_modules/react-native-firebase/ios/RNFirebase.xcodeproj"; sourceTree = "<group>"; };
 		9FAA6A57F5FC60AA2AD0E409 /* Pods-Nucleus-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Nucleus-tvOSTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Nucleus-tvOSTests/Pods-Nucleus-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
 		ADBDB91F1DFEBF0600ED6528 /* RCTBlob.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTBlob.xcodeproj; path = "../node_modules/react-native/Libraries/Blob/RCTBlob.xcodeproj"; sourceTree = "<group>"; };
@@ -655,6 +657,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				97CD42F721357F3B00B2168C /* GoogleService-Info.plist */,
 				13B07FAE1A68108700A75B9A /* Nucleus */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* NucleusTests */,
@@ -1199,6 +1202,7 @@
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
+				97CD431F21357F3B00B2168C /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1498,7 +1502,7 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/../node_modules/react-native-google-signin/ios/RNGoogleSignin/**",
+					"$(SRCROOT)/../node_modules/react-native-google-signin/ios/RNGoogleSignin",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 				);
 				INFOPLIST_FILE = Nucleus/Info.plist;
@@ -1538,7 +1542,7 @@
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/../node_modules/react-native-google-signin/ios/RNGoogleSignin/**",
+					"$(SRCROOT)/../node_modules/react-native-google-signin/ios/RNGoogleSignin",
 					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 				);
 				INFOPLIST_FILE = Nucleus/Info.plist;

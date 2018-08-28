@@ -1,29 +1,25 @@
-import React from 'react';
-import GetOnlineUsers from '../graphql';
-import { compose } from 'react-apollo';
-import graphql from 'graphql-anywhere';
+import * as GraphQL from '../graphql';
+import {graphql} from 'react-apollo';
 
-class OnlineUserList extends React.Component {
-    componentDidMount() {
-        const {loading, users} = this.props;
-        if (users) {
-            console.log(JSON.stringify(users));
-        } else {
-            console.log(JSON.stringify(loading));
-        }
-    }
+// TODO: Take care of loading states and network issues
+function OnlineUserList({data: {getOnlineNucleusDiscoverUsers}}) {
+    return (
+        <ul>
+            {getOnlineNucleusDiscoverUsers.map(({firebaseId}) => (
+                <li key={firebaseId}></li>
+            ))}
+        </ul>
+    );
 }
 
 export default getOnlineUsers = {
-    GetOnlineUsers: graphql(GetOnlineUsers, {
+    GetOnlineNucleusUsers: graphql(GraphQL.GetOnlineDiscoverUsers, {
         options: {
             variables: {online: 1},
             fetchPolicy: 'network-only',
         }
     }),
-    props: ({data: {loading, users}}) => ({
-        return (
-            loading, users, 
-        );
-    })
-}(OnlineUserList);
+    props: ({data: {getOnlineNucleusDiscoverUsers}}) => ({
+        getOnlineNucleusDiscoverUsers
+    })(OnlineUserList)
+};

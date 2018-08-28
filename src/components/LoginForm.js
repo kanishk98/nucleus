@@ -5,7 +5,6 @@ import renderIf from './renderIf';
 import {Auth} from 'aws-amplify';
 import firebase from 'react-native-firebase';
 import { AsyncStorage } from '@aws-amplify/core';
-import SplashScreen from './SplashScreen';
 
 export default class LoginForm extends Component {
 

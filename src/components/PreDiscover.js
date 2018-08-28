@@ -1,6 +1,6 @@
 import React from 'react';
-import {NetInfo, Text, View, StyleSheet} from 'react-native';
-import getOnlineUsers from './OnlineUserList';
+import {Text, View, StyleSheet} from 'react-native';
+import {getOnlineUsers} from './OnlineUserList';
 
 export default class PreDiscover extends React.Component {
     
@@ -14,10 +14,10 @@ export default class PreDiscover extends React.Component {
     
     render() {
         let {text} = this.state;
+        console.log(getOnlineUsers);
         return (
             <View style={styles.container}>
                 <Text style={styles.instructions}>{text}</Text>
-                <getOnlineUsers />
             </View>
         );
     }

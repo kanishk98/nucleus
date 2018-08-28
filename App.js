@@ -7,7 +7,7 @@ import AppSync from './src/AppSync';
 import {ApolloProvider} from 'react-apollo';
 import PreDiscover from './src/components/PreDiscover';
 import {Rehydrated} from 'aws-appsync-react';
-import { AUTH_TYPE } from 'aws-appsync/lib';
+import {AUTH_TYPE} from 'aws-appsync/lib';
 import AWSAppSyncClient from 'aws-appsync';
 
 const StackNavigator = createStackNavigator(
@@ -45,7 +45,7 @@ const StackNavigator = createStackNavigator(
 export const client = new AWSAppSyncClient({
     url: AppSync.graphqlEndpoint,
     region: AppSync.region,
-    auth: { type: AUTH_TYPE.API_KEY, apiKey: 'da2-gyr4llduvng23nvulsnsq7jzmq'}
+    auth: {type: AUTH_TYPE.API_KEY, apiKey: 'da2-gyr4llduvng23nvulsnsq7jzmq'}
 });
 
 export default class App extends React.Component {
