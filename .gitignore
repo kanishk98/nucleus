@@ -1,7 +1,10 @@
-#iOS folder
-.ios/Pods/
-.ios/Index/DataStore/
-.ios/build/
+# VSCode folder
+.vscode/
+
+# iOS folder
+./ios/Pods/
+./ios/Index/DataStore/
+./ios/build/
 
 # Webstorm folder
 .idea/
