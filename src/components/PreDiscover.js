@@ -1,20 +1,21 @@
 import React from 'react';
 import {Text, View, StyleSheet} from 'react-native';
+import {UserFirebaseId} from '../graphql';
+import {graphql} from 'react-apollo';
 import * as GraphQL from '../graphql';
-import {graphql, compose} from 'react-apollo';
+import {client} from '../../App';
 
-const getOnlineUsers = graphql(GraphQL.GetOnlineDiscoverUsers, {
+
+/*const getOnlineUsers = graphql(GraphQL.GetOnlineDiscoverUsers, {
     options: {
         variables: {online: 1},
         fetchPolicy: 'network-only',
-    },
-})(UserList);
+    }, 
+    props : ({ data: { getOnlineNucleusDiscoverUsers } }) => ({
+        getOnlineNucleusDiscoverUsers, 
+      }),
+    })(UserFirebaseId);*/
 
-function UserList ({data: {getOnlineNucleusDiscoverUsers}}) {
-    return (
-        <Text>UserList</Text>
-    );
-}
 
 export default class PreDiscover extends React.Component {
     
@@ -22,15 +23,32 @@ export default class PreDiscover extends React.Component {
         super(props);
         this.state={
             text: "Tap anywhere to get started",
-            connected: true
+            connected: true,
+            user: false,
         };
+    }
+
+    componentDidMount(){
+        debugger
+        client.query({
+            query: GraphQL.GetOnlineDiscoverUsers, 
+            options: {
+                variables: {online: Number(1)},
+                fetchPolicy: 'network-only',
+            }
+        })
+        .then(res => {
+            this.setState({user: res.data.getOnlineNucleusDiscoverUsers[0]})
+        })
+        .catch(err => console.log(err));
     }
     
     render() {
-        let {text} = this.state;
+        let {text, user} = this.state;
+        // console.log(UserFirebaseId());
         return (
             <View style={styles.container}>
-                <Text style={styles.instructions}>{text}</Text>
+                <Text style={styles.instructions}>{user ? user.firebaseId : null}</Text>
             </View>
         );
     }
