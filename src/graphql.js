@@ -11,7 +11,7 @@ export const CreateDiscoverUser = gql`mutation CreateNucleusDiscoverUsers($input
     }
 }`;
 
-export const GetOnlineDiscoverUsers = gql`query GetOnlineNucleusDiscoverUsers($online: Int!) {
+export const GetOnlineDiscoverUsers = gql`query GetOnlineNucleusDiscoverUsers($online: Int) {
     getOnlineNucleusDiscoverUsers(online: $online) {
         firebaseId
         geohash

@@ -1,6 +1,20 @@
 import React from 'react';
 import {Text, View, StyleSheet} from 'react-native';
-import {getOnlineUsers} from './OnlineUserList';
+import * as GraphQL from '../graphql';
+import {graphql, compose} from 'react-apollo';
+
+const getOnlineUsers = graphql(GraphQL.GetOnlineDiscoverUsers, {
+    options: {
+        variables: {online: 1},
+        fetchPolicy: 'network-only',
+    },
+})(UserList);
+
+function UserList ({data: {getOnlineNucleusDiscoverUsers}}) {
+    return (
+        <Text>UserList</Text>
+    );
+}
 
 export default class PreDiscover extends React.Component {
     
@@ -14,7 +28,6 @@ export default class PreDiscover extends React.Component {
     
     render() {
         let {text} = this.state;
-        console.log(getOnlineUsers);
         return (
             <View style={styles.container}>
                 <Text style={styles.instructions}>{text}</Text>

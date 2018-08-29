@@ -1,25 +1,24 @@
 import * as GraphQL from '../graphql';
-import {graphql} from 'react-apollo';
+import {graphql, compose} from 'react-apollo';
 
 // TODO: Take care of loading states and network issues
 function OnlineUserList({data: {getOnlineNucleusDiscoverUsers}}) {
     return (
-        <ul>
+        <View>
             {getOnlineNucleusDiscoverUsers.map(({firebaseId}) => (
-                <li key={firebaseId}></li>
+                firebaseId
             ))}
-        </ul>
+        </View>
     );
 }
 
-export default getOnlineUsers = {
-    GetOnlineNucleusUsers: graphql(GraphQL.GetOnlineDiscoverUsers, {
+export default getOnlineUsers = compose(
+    graphql(GraphQL.GetOnlineDiscoverUsers, {
         options: {
             variables: {online: 1},
             fetchPolicy: 'network-only',
-        }
-    }),
-    props: ({data: {getOnlineNucleusDiscoverUsers}}) => ({
-        getOnlineNucleusDiscoverUsers
-    })(OnlineUserList)
-};
+        },
+    props: (props) => ({
+        data: getOnlineNucleusDiscoverUsers
+    })
+}))(OnlineUserList);
