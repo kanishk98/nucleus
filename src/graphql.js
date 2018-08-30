@@ -1,8 +1,6 @@
 import gql from 'graphql-tag';
-import {graphql} from 'react-apollo';
 import {Text} from 'react-native';
 import React from 'react';
-import firebase from 'react-native-firebase';
 
 export const CreateDiscoverUser = gql`mutation CreateNucleusDiscoverUsers($input: CreateNucleusDiscoverUsersInput!) {
     createNucleusDiscoverUsers(input: $input) {
@@ -26,8 +24,8 @@ export const GetOnlineDiscoverUsers = gql`query GetOnlineNucleusDiscoverUsers($o
     }
 }`;
 
-export const CreateDiscoverConversation = gql`mutation CreateNucleusDiscoverConversation($input: CreateNucleusDiscoverConversationsInput!) {
-    createNucleusDiscoverConversation(input: $input) {
+export const CreateDiscoverConversation = gql`mutation CreateNucleusDiscoverConversations($input: CreateNucleusDiscoverConversationsInput!) {
+    createNucleusDiscoverConversations(input: $input) {
         conversationId
         messageId
     }
@@ -58,8 +56,3 @@ export const GetDiscoverMessages = gql`query getNucleusDiscoverMessages($input: 
         recipient
     }
 }`
-
-export const UserFirebaseId =(firebaseId) => {
-    console.log(firebaseId);
-    return <Text>{firebaseId}</Text>;
-}
