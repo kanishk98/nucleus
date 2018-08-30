@@ -1,10 +1,10 @@
-﻿input CreateNucleusDiscoverConversationsInput {
+﻿input CreateNucleusDiscoverChatsInput {
 	conversationId: String!
-	messageId: [String]!
 }
 
-input CreateNucleusDiscoverChatsInput {
-  conversationId: String!
+input CreateNucleusDiscoverConversationsInput {
+	conversationId: String!
+	messageId: [String]!
 }
 
 input CreateNucleusDiscoverMessagesInput {
@@ -20,6 +20,10 @@ input CreateNucleusDiscoverUsersInput {
 	paid: Boolean
 	profilePic: String
 	username: String
+}
+
+input DeleteNucleusDiscoverChatsInput {
+	conversationId: String!
 }
 
 input DeleteNucleusDiscoverConversationsInput {
@@ -38,7 +42,6 @@ input DeleteNucleusDiscoverUsersInput {
 }
 
 type Mutation {
-  createNucleusDiscoverChats(input: CreateNucleusDiscoverChatsInput!): NucleusDiscoverChats
 	createNucleusDiscoverConversations(input: CreateNucleusDiscoverConversationsInput!): NucleusDiscoverConversations
 	createNucleusDiscoverMessages(input: CreateNucleusDiscoverMessagesInput!): NucleusDiscoverMessages
 	createNucleusDiscoverUsers(input: CreateNucleusDiscoverUsersInput!): NucleusDiscoverUsers
@@ -48,18 +51,18 @@ type Mutation {
 	updateNucleusDiscoverConversations(input: UpdateNucleusDiscoverConversationsInput!): NucleusDiscoverConversations
 	updateNucleusDiscoverMessages(input: UpdateNucleusDiscoverMessagesInput!): NucleusDiscoverMessages
 	updateNucleusDiscoverUsers(input: UpdateNucleusDiscoverUsersInput!): NucleusDiscoverUsers
+	createNucleusDiscoverChats(input: CreateNucleusDiscoverChatsInput!): NucleusDiscoverChats
+	updateNucleusDiscoverChats(input: UpdateNucleusDiscoverChatsInput!): NucleusDiscoverChats
+	deleteNucleusDiscoverChats(input: DeleteNucleusDiscoverChatsInput!): NucleusDiscoverChats
 }
 
 type NucleusDiscoverChats {
-  conversationId: String!
-  author: NucleusDiscoverUsers
-	content: String
-	createdAt: String
-	isRead: Boolean
-	isReceived: Boolean
-	isSent: Boolean
-	messageId: [String]
-	recipient: NucleusDiscoverUsers
+	conversationId: String!
+}
+
+type NucleusDiscoverChatsConnection {
+	items: [NucleusDiscoverChats]
+	nextToken: String
 }
 
 type NucleusDiscoverConversations {
@@ -77,11 +80,6 @@ type NucleusDiscoverConversations {
 type NucleusDiscoverConversationsConnection {
 	items: [NucleusDiscoverConversations]
 	nextToken: String
-}
-
-type NucleusDiscoverChatsConnection {
-  items: [NucleusDiscoverChats]
-  nextToken: String
 }
 
 type NucleusDiscoverMessages {
@@ -116,7 +114,6 @@ type NucleusDiscoverUsersConnection {
 }
 
 type Query {
-  getNucleusDiscoverChats(conversationId: String!): NucleusDiscoverChats
 	getNucleusDiscoverConversations(conversationId: String!, messageId: [String]!): NucleusDiscoverConversations
 	getNucleusDiscoverMessages(conversationId: String!, messageId: String!): NucleusDiscoverMessages
 	getNucleusDiscoverUsers(firebaseId: String!, geohash: String!): NucleusDiscoverUsers
@@ -124,6 +121,8 @@ type Query {
 	listNucleusDiscoverMessages(filter: TableNucleusDiscoverMessagesFilterInput, limit: Int, nextToken: String): NucleusDiscoverMessagesConnection
 	listNucleusDiscoverUsers(filter: TableNucleusDiscoverUsersFilterInput, limit: Int, nextToken: String): NucleusDiscoverUsersConnection
 	getOnlineNucleusDiscoverUsers(online: Int): [NucleusDiscoverUsers]
+	getNucleusDiscoverChats(conversationId: String!): NucleusDiscoverChats
+	listNucleusDiscoverChats(filter: TableNucleusDiscoverChatsFilterInput, limit: Int, nextToken: String): NucleusDiscoverChatsConnection
 }
 
 type Schema {
@@ -133,8 +132,6 @@ type Schema {
 }
 
 type Subscription {
-  onCreateNucleusDiscoverChats(conversationId: String): NucleusDiscoverChats
-    @aws_subscribe(mutations: ["createNucleusDiscoverChats"])
 	onCreateNucleusDiscoverConversations(conversationId: String, messageId: [String]): NucleusDiscoverConversations
 		@aws_subscribe(mutations: ["createNucleusDiscoverConversations"])
 	onCreateNucleusDiscoverMessages(conversationId: String, messageId: String): NucleusDiscoverMessages
@@ -152,6 +149,12 @@ type Subscription {
 	onUpdateNucleusDiscoverMessages(conversationId: String, messageId: String): NucleusDiscoverMessages
 		@aws_subscribe(mutations: ["updateNucleusDiscoverMessages"])
 	onUpdateNucleusDiscoverUsers(firebaseId: String, geohash: String): NucleusDiscoverUsers
+	onCreateNucleusDiscoverChats(conversationId: String): NucleusDiscoverChats
+		@aws_subscribe(mutations: ["createNucleusDiscoverChats"])
+	onUpdateNucleusDiscoverChats(conversationId: String): NucleusDiscoverChats
+		@aws_subscribe(mutations: ["updateNucleusDiscoverChats"])
+	onDeleteNucleusDiscoverChats(conversationId: String): NucleusDiscoverChats
+		@aws_subscribe(mutations: ["deleteNucleusDiscoverChats"])
 }
 
 input TableBooleanFilterInput {
@@ -197,7 +200,7 @@ input TableIntFilterInput {
 }
 
 input TableNucleusDiscoverChatsFilterInput {
-  conversationId: TableStringFilterInput
+	conversationId: TableStringFilterInput
 }
 
 input TableNucleusDiscoverConversationsFilterInput {
@@ -229,7 +232,7 @@ input TableStringFilterInput {
 }
 
 input UpdateNucleusDiscoverChatsInput {
-  conversationId: String!
+	conversationId: String!
 }
 
 input UpdateNucleusDiscoverConversationsInput {
