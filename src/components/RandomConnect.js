@@ -16,11 +16,14 @@ export default class RandomConnect extends React.Component {
     // internet available, mutating table with conversation data
     client
       .mutate({
-        mutation: GraphQL.CreateDiscoverConversation,
+        mutation: GraphQL.CreateDiscoverChat,
         variables: {
           input: {
-            conversationId: "convo1",
-            messageId: ["lalalala", "hahahaha"]
+            conversationId: "slim",
+            content: "Dear Slim, I wrote you but you still ain't calling",
+            isRead: true,
+            isSent: true,
+            isReceived: true,
           }
         },
         fetchPolicy: "no-cache"
