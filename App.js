@@ -17,17 +17,17 @@ const StackNavigator = createStackNavigator(
             navigationOptions: {
                 header: null
             }
-        }, 
-        Splash: {
-            screen: SplashScreen,
-            navigationOptions: {
-                header: null
-            }
         },
         PreDiscover: {
             screen: PreDiscover, 
             navigationOptions: {
                 header: null
+            }
+        },
+        Discover: {
+            screen: RandomConnect,
+            navigationOptions: {
+                title: 'Discover',
             }
         },
         Connect: {

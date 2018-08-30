@@ -6,6 +6,7 @@ import {Auth} from 'aws-amplify';
 import firebase from 'react-native-firebase';
 import { AsyncStorage } from '@aws-amplify/core';
 
+
 export default class LoginForm extends Component {
 
     constructor(props) {
@@ -97,7 +98,7 @@ export default class LoginForm extends Component {
                     .catch(error => console.log(error));
                     this.setLoggedIn('LOGGED_IN', true);
                     // moving user to chat screen
-                    this.props.navigation.navigate('SplashScreen');
+                    this.props.navigation.navigate('PreDiscover');
             } else {
                 console.log('Signing out user');
                 this.configureGoogleSignIn();

@@ -1,21 +1,7 @@
 import React from 'react';
 import {Text, View, StyleSheet} from 'react-native';
-import {UserFirebaseId} from '../graphql';
-import {graphql} from 'react-apollo';
 import * as GraphQL from '../graphql';
 import {client} from '../../App';
-
-
-/*const getOnlineUsers = graphql(GraphQL.GetOnlineDiscoverUsers, {
-    options: {
-        variables: {online: 1},
-        fetchPolicy: 'network-only',
-    }, 
-    props : ({ data: { getOnlineNucleusDiscoverUsers } }) => ({
-        getOnlineNucleusDiscoverUsers, 
-      }),
-    })(UserFirebaseId);*/
-
 
 export default class PreDiscover extends React.Component {
     
@@ -28,8 +14,7 @@ export default class PreDiscover extends React.Component {
         };
     }
 
-    componentDidMount(){
-        debugger
+    componentDidMount() {
         client.query({
             query: GraphQL.GetOnlineDiscoverUsers, 
             options: {
@@ -45,12 +30,19 @@ export default class PreDiscover extends React.Component {
     
     render() {
         let {text, user} = this.state;
-        // console.log(UserFirebaseId());
         return (
             <View style={styles.container}>
-                <Text style={styles.instructions}>{user ? user.firebaseId : null}</Text>
+                <Text style={styles.instructions}>{user? user.firebaseId: null}</Text>
             </View>
         );
+    }
+
+    componentDidUpdate() {
+        console.log(this.state.user);
+        // TODO: Make button available (greyed out until component updates) for user to initiate conversation
+        if (this.state.user) {
+            this.props.navigation.navigate('Discover', {user: this.state.user});
+        }
     }
 }
 

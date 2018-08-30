@@ -38,9 +38,10 @@ export default class RandomConnect extends React.Component {
     }
 
     render() {
+        const user = this.props.navigation.getParam('user', null);
         return (
             <View>
-                <allMessages />
+                <Text>{user.firebaseId}</Text>
             </View>
         );
     }    
