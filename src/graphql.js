@@ -24,10 +24,9 @@ export const GetOnlineDiscoverUsers = gql`query GetOnlineNucleusDiscoverUsers($o
     }
 }`;
 
-export const CreateDiscoverConversation = gql`mutation CreateNucleusDiscoverConversations($input: CreateNucleusDiscoverConversationsInput!) {
-    createNucleusDiscoverConversations(input: $input) {
+export const CreateDiscoverConversation = gql`mutation CreateNucleusDiscoverChats($input: CreateNucleusDiscoverChatsInput!) {
+    createNucleusDiscoverChats(input: $input) {
         conversationId
-        messageId
     }
 }`;
 
