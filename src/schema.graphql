@@ -58,6 +58,14 @@ type Mutation {
 
 type NucleusDiscoverChats {
 	conversationId: String!
+  author: NucleusDiscoverUsers
+	content: String
+	createdAt: String
+	isRead: Boolean
+	isReceived: Boolean
+	isSent: Boolean
+	messageId: [String]!
+	recipient: NucleusDiscoverUsers
 }
 
 type NucleusDiscoverChatsConnection {
