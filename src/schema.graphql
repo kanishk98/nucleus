@@ -1,10 +1,18 @@
 ﻿input CreateNucleusDiscoverChatsInput {
 	conversationId: String!
+  	author: CreateNucleusDiscoverUsersInput
+	content: String
+	createdAt: String
+	isRead: Boolean
+	isReceived: Boolean
+	isSent: Boolean
+	messageId: [String]
+	recipient: CreateNucleusDiscoverUsersInput
 }
 
 input CreateNucleusDiscoverConversationsInput {
 	conversationId: String!
-	messageId: [String]!
+	messageId: [String]
 }
 
 input CreateNucleusDiscoverMessagesInput {
@@ -58,13 +66,13 @@ type Mutation {
 
 type NucleusDiscoverChats {
 	conversationId: String!
-  author: NucleusDiscoverUsers
+  	author: NucleusDiscoverUsers
 	content: String
 	createdAt: String
 	isRead: Boolean
 	isReceived: Boolean
 	isSent: Boolean
-	messageId: [String]!
+	messageId: [String]
 	recipient: NucleusDiscoverUsers
 }
 
