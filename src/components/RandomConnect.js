@@ -3,8 +3,6 @@ import { Text, View, StyleSheet, FlatList } from "react-native";
 import Message from "./Message";
 import { client } from "../../App";
 import * as GraphQL from "../graphql";
-import {Subscription} from 'react-apollo';
-import { valueFromAST } from "../../node_modules/@types/graphql";
 
 export default class RandomConnect extends React.Component {
   constructor(props) {
@@ -55,10 +53,13 @@ export default class RandomConnect extends React.Component {
   render() {
     const user = this.props.navigation.getParam("user", null);
     client.subscribe({
-      variables: {
-        conversationId: "slim",
-      }
-    }).map((valueFromAST) => console.log(valueFromAST));
+      query: GraphQL.SubscribeToDiscoverMessages,
+      variables: {conversationId: "slim"},
+    }).subscribe({next(res) {
+      console.log(res);
+    }, error(err) {
+      console.log(err);
+    }})
     const messageItem = {
       item: {
         status: "Sent",
