@@ -30,6 +30,13 @@ export const CreateDiscoverChat = gql`mutation CreateNucleusDiscoverChats($input
     }
 }`;
 
+export const GetDiscoverChat = gql`query GetDiscoverChat($input: CreateNucleusDiscoverChatsInput!) {
+    getNucleusDiscoverChat(input: $input) {
+        conversationId
+        messageId
+    }
+}`;
+
 export const CreateDiscoverMessage = gql`mutation CreateNucleusDiscoverMessage($input: CreateNucleusDiscoverMessagesInput!) {
     createNucleusDiscoverMessage(input: $input) {
         conversationId

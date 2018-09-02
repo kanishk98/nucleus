@@ -3,6 +3,7 @@ import { Text, View, StyleSheet, FlatList } from "react-native";
 import Message from "./Message";
 import { client } from "../../App";
 import * as GraphQL from "../graphql";
+import UserInput from "./UserInput";
 
 export default class RandomConnect extends React.Component {
   constructor(props) {
@@ -10,6 +11,20 @@ export default class RandomConnect extends React.Component {
     this.state = {
       messages: []
     };
+  }
+
+
+  getMessages() {
+    client.query({
+      query: GraphQL.GetDiscoverChat, 
+      variables: {
+        input: {
+          conversationId: "infinite"
+        }
+      }
+    })
+    .then(res => console.log(res.data.get))
+    .catch(err => console.log(err));  
   }
 
   componentDidMount() {
