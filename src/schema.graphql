@@ -150,7 +150,7 @@ type Schema {
 type Subscription {
 	onCreateNucleusDiscoverConversations(conversationId: String, messageId: [String]): NucleusDiscoverConversations
 		@aws_subscribe(mutations: ["createNucleusDiscoverConversations"])
-	onCreateNucleusDiscoverMessages(conversationId: String, messageId: String): NucleusDiscoverMessages
+	onCreateNucleusDiscoverMessages(conversationId: String): NucleusDiscoverMessages
 		@aws_subscribe(mutations: ["createNucleusDiscoverMessages"])
 	onCreateNucleusDiscoverUsers(firebaseId: String, geohash: String): NucleusDiscoverUsers
 		@aws_subscribe(mutations: ["createNucleusDiscoverUsers"])

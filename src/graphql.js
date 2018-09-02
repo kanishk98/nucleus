@@ -1,6 +1,4 @@
 import gql from 'graphql-tag';
-import {Text} from 'react-native';
-import React from 'react';
 
 export const CreateDiscoverUser = gql`mutation CreateNucleusDiscoverUsers($input: CreateNucleusDiscoverUsersInput!) {
     createNucleusDiscoverUsers(input: $input) {
@@ -60,5 +58,11 @@ export const GetDiscoverMessages = gql`query getNucleusDiscoverMessages($input: 
         isRead 
         isReceived
         recipient
+    }
+}`
+
+export const SubscribeToDiscoverMessages = gql`subscription SubscribeToDiscoverMessages($conversationId: String!) {
+    onCreateNucleusDiscoverMessages(conversationId: $conversationId) {
+        content
     }
 }`

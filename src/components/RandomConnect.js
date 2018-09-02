@@ -3,7 +3,8 @@ import { Text, View, StyleSheet, FlatList } from "react-native";
 import Message from "./Message";
 import { client } from "../../App";
 import * as GraphQL from "../graphql";
-import UserInput from "./UserInput";
+import {Subscription} from 'react-apollo';
+import { valueFromAST } from "../../node_modules/@types/graphql";
 
 export default class RandomConnect extends React.Component {
   constructor(props) {
@@ -29,7 +30,7 @@ export default class RandomConnect extends React.Component {
 
   componentDidMount() {
     // internet available, mutating table with conversation data
-    client
+    /*client
       .mutate({
         mutation: GraphQL.CreateDiscoverChat,
         variables: {
@@ -44,7 +45,7 @@ export default class RandomConnect extends React.Component {
         fetchPolicy: "no-cache"
       })
       .then(res => console.log(res))
-      .catch(err => console.log(err));
+      .catch(err => console.log(err));*/
   }
 
   renderItem = ({ item: { status, message } }) => (
@@ -53,6 +54,11 @@ export default class RandomConnect extends React.Component {
 
   render() {
     const user = this.props.navigation.getParam("user", null);
+    client.subscribe({
+      variables: {
+        conversationId: "slim",
+      }
+    }).map((valueFromAST) => console.log(valueFromAST));
     const messageItem = {
       item: {
         status: "Sent",
