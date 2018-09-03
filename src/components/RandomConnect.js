@@ -19,6 +19,7 @@ export default class RandomConnect extends React.Component {
 
   render() {
     const user = this.props.navigation.getParam("user", null);
+    console.log(this.props);
     const messageItem = {
       item: {
         status: "Sent",

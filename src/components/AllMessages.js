@@ -13,10 +13,11 @@ export default class AllMessages extends React.Component {
     }
 
     componentWillMount() {
-        console.log(this.props.subscribeToDiscoverMessages());
+        this.props.subscribeToDiscoverMessages();
     }
 
     render() {
+        console.log(this.props);
         const {messages} = this.props;
         return (
             <View>

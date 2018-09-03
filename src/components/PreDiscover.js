@@ -2,6 +2,7 @@ import React from 'react';
 import {Text, View, StyleSheet} from 'react-native';
 import * as GraphQL from '../graphql';
 import {client} from '../../App';
+import {API, graphqlOperation} from 'aws-amplify';
 
 export default class PreDiscover extends React.Component {
     
@@ -15,13 +16,7 @@ export default class PreDiscover extends React.Component {
     }
 
     componentDidMount() {
-        client.query({
-            query: GraphQL.GetOnlineDiscoverUsers, 
-            options: {
-                variables: {online: Number(1)},
-                fetchPolicy: 'network-only',
-            }
-        })
+        API.graphql(graphqlOperation(GraphQL.GetOnlineDiscoverUsers))
         .then(res => {
             this.setState({user: res.data.getOnlineNucleusDiscoverUsers[0]})
         })
