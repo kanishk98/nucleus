@@ -1,10 +1,9 @@
-import React, { Component } from "react";
-import { Text, View, StyleSheet, FlatList } from "react-native";
+import React from "react";
+import { View, StyleSheet, FlatList } from "react-native";
 import Message from "./Message";
-import { client } from "../../App";
 import * as GraphQL from "../graphql";
-import { compose } from 'react-apollo';
-import { graphql } from "../../node_modules/react-apollo";
+import { compose, graphql } from "react-apollo";
+import AllMessages from "./AllMessages";
 
 export default class RandomConnect extends React.Component {
   constructor(props) {
@@ -12,10 +11,6 @@ export default class RandomConnect extends React.Component {
     this.state = {
       messages: []
     };
-  }
-
-  componentDidMount() {
-    this.props.subscribeToDiscoverMessages();
   }
 
   renderItem = ({ item: { status, message } }) => (
@@ -40,31 +35,28 @@ export default class RandomConnect extends React.Component {
   }
 }
 
-export const SubscriptionModule = compose(
+export const DiscoverMessages = compose(
   graphql(GraphQL.GetDiscoverMessages, {
     options: {
-      fetchPolicy: 'cache-and-network',
-    },
+      variables: {input: {
+        conversationId: "slim",
+        messageId: "shady"
+      }},
+      fetchPolicy: "cache-and-network",
+    }, 
     props: (props) => {
-      return {
-        messages: props.data.listMessages? props.data.listMessages.items: [],
-        subscribeToDiscoverMessages: () => {
-          props.data.subscribeToMore({
-            document: GraphQL.SubscribeToDiscoverMessages,
-            updateQuery: (prev, {subscriptionData:{data: {onCreateNucleusDiscoverMessages}}}) => {
-              return {
-                ...prev,
-                listMessages: {
-                  type: 'MessageConnection',
-                  items: [onCreateNucleusDiscoverMessages, ...prev.listMessages.items]
-                }
-            }}}
-          )
-        }
+      subscribeToDiscoverMessages: params => {
+        props.data.subscribeToMore({
+          document: GraphQL.SubscribeToDiscoverMessages,
+          updateQuery: (prev, {subscriptionData: {data: {conversationId, messageId}}}) => ({
+            ...prev,
+            allMessages: {messages: [messageId, ...prev.allMessages.messages]}
+          })
+        }) 
       }
     }
-  })
-)(RandomConnect);
+  })(AllMessages)
+);
 
 const styles = StyleSheet.create({
   container: {

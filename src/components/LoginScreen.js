@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {Image, StyleSheet, View, Text, KeyboardAvoidingView, TouchableOpacity} from 'react-native';
 import LoginForm from "./LoginForm";
+import Constants from "../Constants";
 
 export default class LoginScreen extends Component {
     render() {
@@ -21,7 +22,7 @@ export default class LoginScreen extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#003366',
+        backgroundColor: Constants.primaryColor,
         alignItems: 'center',
         justifyContent: 'center'
     },
