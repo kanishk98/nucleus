@@ -6,7 +6,6 @@ import { API, graphqlOperation } from "../../node_modules/aws-amplify";
 import UserInput from "./UserInput";
 import {client} from "../../App";
 
-
 export default class RandomConnect extends React.Component {
   constructor(props) {
     super(props);
@@ -37,26 +36,26 @@ export default class RandomConnect extends React.Component {
 
   
    onSendHandler = () => {
+    const sendMessageMutation = {
+      mutation: GraphQL.CreateDiscoverMessage,
+      variables: {input: {
+        conversationId: "weird", 
+        messageId: String(this.state.typedMessage),
+      }},
+      refetchQueries: [sendMessageMutation],
+      optimisticResponse: () => {
+      // construct new object here displaying relevant info 
+      let tempArray = this.state.messages;         
+      tempArray.push({"messageId": this.state.typedMessage});
+      this.setState({messages: tempArray});
+    }};
     console.log('onSendHandler ' + this.state.typedMessage);
     // make text render as myMessage after submission
     // differentiate senderMessage from receivedMessage
-    client.mutate({
-        mutation: GraphQL.CreateDiscoverMessage,
-        variables: {input: {
-          conversationId: "weird", 
-          messageId: String(this.state.typedMessage),
-        }},
-        optimisticResponse: () => {
-        // construct new object here displaying relevant info 
-        let tempArray = this.state.messages;         
-        tempArray.push({"messageId": this.state.typedMessage});
-        this.setState({messages: tempArray});
-      }
-    },
-  )
-  .then(res => {console.log(res)})
-  .catch(err => {console.log(err)});
-}
+    client.mutate(sendMessageMutation)
+    .then(res => {console.log(res)})
+    .catch(err => {console.log(err)});
+  }
 
   render() {
     const user = this.props.navigation.getParam("user", null);
