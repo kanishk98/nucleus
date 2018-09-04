@@ -16,7 +16,9 @@ export default class PreDiscover extends React.Component {
     }
 
     componentDidMount() {
-        API.graphql(graphqlOperation(GraphQL.GetOnlineDiscoverUsers))
+        API.graphql(graphqlOperation(GraphQL.GetOnlineDiscoverUsers), {
+            online: 1
+        })
         .then(res => {
             this.setState({user: res.data.getOnlineNucleusDiscoverUsers[0]})
         })

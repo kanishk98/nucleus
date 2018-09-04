@@ -1,3 +1,6 @@
+# Constants file
+.src/Constants.js
+
 # VSCode folder
 .vscode/
 

@@ -4,13 +4,22 @@ import Message from "./Message";
 import * as GraphQL from "../graphql";
 import { compose, graphql } from "react-apollo";
 import AllMessages from "./AllMessages";
+import { API, graphqlOperation } from "../../node_modules/aws-amplify";
 
 export default class RandomConnect extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      messages: []
+      messages: [],
     };
+  }
+
+  componentDidMount() {
+    this.subscription = API.graphql(
+      graphqlOperation(GraphQL.SubscribeToDiscoverMessages, {conversationId: "slim"})
+    ).subscribe({
+      next: (res) => this.setState({result: res})
+    });
   }
 
   renderItem = ({ item: { status, message } }) => (
@@ -19,7 +28,7 @@ export default class RandomConnect extends React.Component {
 
   render() {
     const user = this.props.navigation.getParam("user", null);
-    console.log(this.props);
+    console.log(this.state);
     const messageItem = {
       item: {
         status: "Sent",
@@ -33,6 +42,10 @@ export default class RandomConnect extends React.Component {
         <FlatList renderItem={this.renderItem(messageItem)} />
       </View>
     );
+  }
+
+  componentWillUnmount() {
+    this.subscription.unsubscribe();
   }
 }
 

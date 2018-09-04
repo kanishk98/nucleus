@@ -61,8 +61,8 @@ export const GetDiscoverMessages = gql`query getNucleusDiscoverMessages($input: 
     }
 }`
 
-export const SubscribeToDiscoverMessages = gql`subscription SubscribeToDiscoverMessages($conversationId: String!) {
-    onCreateNucleusDiscoverMessages(conversationId: $conversationId) {
-        content
+export const SubscribeToDiscoverMessages = `subscription SubscribeToDiscoverMessages($conversationId: String!) {
+    onCreateNucleusDiscoverMessages(conversationId: $conversationId, messageId: "shady") {
+        messageId
     }
 }`
