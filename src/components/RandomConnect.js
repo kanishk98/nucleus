@@ -3,7 +3,6 @@ import { View, StyleSheet, FlatList, Text, KeyboardAvoidingView, Dimensions, Tex
 import Message from "./Message";
 import * as GraphQL from "../graphql";
 import { API, graphqlOperation } from "../../node_modules/aws-amplify";
-import UserInput from "./UserInput";
 import {client} from "../../App";
 
 export default class RandomConnect extends React.Component {
