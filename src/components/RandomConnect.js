@@ -36,6 +36,8 @@ export default class RandomConnect extends React.Component {
     });*/
   }
 
+  //TODO: Write keyExtractor() to map actual messages component to key attribute
+
   renderItem = ({ item: {key} }) => (
     <Message id={key} />
   );
@@ -48,18 +50,20 @@ export default class RandomConnect extends React.Component {
       const messages = this.state.result.value.data.onCreateNucleusDiscoverMessages;
       console.log('message present');
       return ( 
-        <KeyboardAvoidingView>
+        <KeyboardAvoidingView 
+        style={{flexDirection: 'column'}}>
           <FlatList
             data={messages.messageId}
             renderItem={this.renderItem}
             extraData={this.state}
             ListEmptyComponent={<View />} />
-          <UserInput />
+          <UserInput
+            placeholder='Type a message'
+          />
         </KeyboardAvoidingView>
       );
     } else {
       return (
-
         <Text>No message received</Text>
       );
     }
@@ -74,5 +78,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff"
-  }
+  }, 
 });
