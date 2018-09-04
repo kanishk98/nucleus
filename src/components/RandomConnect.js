@@ -15,8 +15,11 @@ export default class RandomConnect extends React.Component {
             onCreateNucleusDiscoverMessages: {
               conversationId: "eminem",
               messageId: [
-                {key: 0, content: "slim"},
-                {key: 1, content: "shady"}, {key: 2, content: "stan"}, {key: 3, content: "marshall"}, {key: 4, content:"mathers"}],
+                {key:"slim"},
+                {key:"shady"},
+                {key:"stan"},
+                {key:"marshall"},
+                {key:"mathers"}],
             }
           }
         }
@@ -32,8 +35,8 @@ export default class RandomConnect extends React.Component {
     });*/
   }
 
-  renderItem = ({ item: {messageId, content} }) => (
-    <Message messageId={messageId} content={content} />
+  renderItem = ({ item: {key} }) => (
+    <Message id={key} />
   );
 
   render() {
@@ -41,19 +44,20 @@ export default class RandomConnect extends React.Component {
     console.log(this.state);
     const isMessagePresent = !!this.state.result;
     if (isMessagePresent) {
+      const messages = this.state.result.value.data.onCreateNucleusDiscoverMessages;
       console.log('message present');
       return ( 
         <View>
           <FlatList
+            data={messages.messageId}
             renderItem={this.renderItem}
-            data={this.state.result.value.data.onCreateNucleusDiscoverMessages.messageId}
             extraData={this.state}
-            key={this.state.result.value.data.onCreateNucleusDiscoverMessages.key}
             ListEmptyComponent={<View />} />
         </View>
       );
     } else {
       return (
+
         <Text>No message received</Text>
       );
     }
