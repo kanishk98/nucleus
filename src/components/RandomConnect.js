@@ -1,8 +1,9 @@
 import React from "react";
-import { View, StyleSheet, FlatList, Text } from "react-native";
+import { View, StyleSheet, FlatList, Text, KeyboardAvoidingView } from "react-native";
 import Message from "./Message";
 import * as GraphQL from "../graphql";
 import { API, graphqlOperation } from "../../node_modules/aws-amplify";
+import UserInput from "./UserInput";
 
 export default class RandomConnect extends React.Component {
   constructor(props) {
@@ -47,13 +48,14 @@ export default class RandomConnect extends React.Component {
       const messages = this.state.result.value.data.onCreateNucleusDiscoverMessages;
       console.log('message present');
       return ( 
-        <View>
+        <KeyboardAvoidingView>
           <FlatList
             data={messages.messageId}
             renderItem={this.renderItem}
             extraData={this.state}
             ListEmptyComponent={<View />} />
-        </View>
+          <UserInput />
+        </KeyboardAvoidingView>
       );
     } else {
       return (
