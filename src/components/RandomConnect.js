@@ -66,7 +66,7 @@ export default class RandomConnect extends React.Component {
       console.log('message present');
       return ( 
         <KeyboardAvoidingView 
-        style={{flexDirection: 'column'}}>
+        style={styles.container}>
           <FlatList
             data={messages.messageId}
             renderItem={this.renderItem}
@@ -76,7 +76,7 @@ export default class RandomConnect extends React.Component {
           <TextInput
             style={styles.input}
             placeholder='Type a message'
-            secureTextEntry={true}
+            secureTextEntry={false}
             autoCorrect={true}
             autoCapitalize={'sentences'}
             placeholderTextColor='black'
@@ -102,16 +102,16 @@ const DEVICE_WIDTH = Dimensions.get('window').width;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff"
+    backgroundColor: "#fff",
+    position: 'absolute', 
+    bottom: 0,
   }, 
   input: {
     borderRadius: 5,
     height: 40,
-    width: DEVICE_WIDTH - 40,
+    width: DEVICE_WIDTH,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     color: 'black',
     paddingHorizontal: 10,
-    position: 'relative', 
-    bottom: 0
 }
 });
