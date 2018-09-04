@@ -2,25 +2,9 @@ import React, {Component} from 'react';
 import {StyleSheet, TextInput, View, Dimensions} from 'react-native';
 import {client} from '../../App';
 import * as GraphQL from '../graphql';
+import RandomConnect from './RandomConnect';
 
 export default class UserInput extends Component {
-    onSendHandler = () => {
-        console.log(this.state);
-        // insert optimistic UI-enabled mutations
-        // make text render as myMessage after submission
-        // differentiate senderMessage from receivedMessage
-        client.mutate({
-            mutation: GraphQL.CreateDiscoverMessage,
-            variables: {input: {
-                conversationId: "slim", 
-                messageId: "a long walk",
-                content: "education relaxation",
-            }},
-            optimisticResponse: () => {
-                console.log('Logging optimistic response');
-            }
-        });
-    }
     render() {
         return (
             <View style={styles.container}>
@@ -33,7 +17,7 @@ export default class UserInput extends Component {
                     returnKeyType={this.props.returnKeyType}
                     placeholderTextColor='black'
                     onChangeText={(text)=>{this.setState({message: text})}}
-                    onSubmitEditing={this.onSendHandler}
+                    onSubmitEditing={(text)=>{RandomConnect.onSendHandler(text)}}
                 />
             </View>
         );
