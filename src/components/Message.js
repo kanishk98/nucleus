@@ -1,12 +1,12 @@
 import React from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, Text} from 'react-native';
 
 export default class Message extends React.Component {
     render() {
-        const {status, message} = this.props;
+        const {messageId, content} = this.props;
         return (
             <View style={styles.message}>
-                <Text>{message.text}</Text>
+                <Text>{messageId}</Text>
             </View>
         );
     }
