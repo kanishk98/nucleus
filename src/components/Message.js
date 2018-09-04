@@ -9,7 +9,7 @@ export default class Message extends React.Component {
         const {id} = this.props;
         return (
             <View style={styles.message}>
-                <Text>{id}</Text>
+                <Text style={styles.messageUsername}>{id}</Text>
             </View>
         );
     }
@@ -40,7 +40,6 @@ const styles = StyleSheet.create({
     messageUsername: {
         color: 'white',
         fontWeight: 'bold',
-        paddingBottom: 12,
     },
     messageTime: {
         color: '#8c8c8c',
