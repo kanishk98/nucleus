@@ -9,28 +9,28 @@ export default class RandomConnect extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      messages: [],
+      messages: [{messageId: "shady"}],
       typedMessage: '',
+      senderMessages: [],
     };
-  }
-
-  convertSubscriptionResultToStateObject(res) {
-    let messages = res.value.data.onCreateNucleusDiscoverMessages;
-    return this.state.messages.push(messages);
   }
 
   componentDidMount() {
     this.subscription = API.graphql(
-      graphqlOperation(GraphQL.SubscribeToDiscoverMessages, {conversationId: "slim"})
+      graphqlOperation(GraphQL.SubscribeToDiscoverMessages, {conversationId: "temp_conversation"})
     ).subscribe({
-      next: (res) => this.setState({messages: this.convertSubscriptionResultToStateObject(res)})
+      next: (res) => {
+        console.log('Subscription received: ' + String(res));
+        this.state.messages.push(res.value.data.onCreateNucleusDiscoverMessages);
+        this.setState({messages: this.state.messages});
+      }
     });
   }
 
   keyExtractor = (item, index) => item.messageId;
 
-  renderItem = ({ item: {key} }) => (
-    <Message id={key} />
+  renderItem = ({ item: {messageId} }) => (
+    <Message id={messageId} />
   );
 
   
@@ -38,10 +38,15 @@ export default class RandomConnect extends React.Component {
     console.log('onSendHandler ' + this.state.typedMessage);
     const newMessage = {
       conversationId: "temp_conversation",
-      messageId: "temp_message",
+      messageId: "shady",
     }
     this.messageMutation = API.graphql(graphqlOperation(GraphQL.CreateDiscoverMessage, {input: newMessage}))
-    .then(res => console.log(res))
+    .then(res => {
+      // optimistic UI, updates message regardless of network status
+      console.log(res);
+      this.state.senderMessages.push(newMessage);
+      this.setState();
+    })
     .catch(err => console.log(err));
     // make text render as myMessage after submission
     // differentiate senderMessage from receivedMessage
@@ -58,7 +63,7 @@ export default class RandomConnect extends React.Component {
         <KeyboardAvoidingView 
         style={styles.container}>
           <FlatList
-            data={messages.messageId}
+            data={messages}
             renderItem={this.renderItem}
             extraData={this.state.messages}
             keyExtractor={this.keyExtractor}
@@ -69,7 +74,7 @@ export default class RandomConnect extends React.Component {
             secureTextEntry={false}
             autoCorrect={true}
             autoCapitalize={'sentences'}
-            placeholderTextColor='black'
+            placeholderTextColor='gray'
             onChangeText={(text)=>this.setState({typedMessage: text})}
             onSubmitEditing={this.onSendHandler}
         />
