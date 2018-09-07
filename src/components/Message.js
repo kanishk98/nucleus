@@ -6,12 +6,20 @@ export default class Message extends React.Component {
         super(props);
     }
     render() {
-        const {id} = this.props;
-        return (
-            <View style={styles.message}>
-                <Text style={styles.messageUsername}>{id}</Text>
-            </View>
-        );
+        const {id, sent} = this.props;
+        if (!sent) {
+            return (
+                <View style={styles.message}>
+                    <Text style={styles.messageUsername}>{id}</Text>
+                </View>
+            );
+        } else {
+            return (
+                <View style={styles.myMessage}>
+                    <Text style={styles.messageUsername}>{id}</Text>
+                </View>
+            );
+        }
     }
 }
 
@@ -22,7 +30,7 @@ const styles = StyleSheet.create({
     }, 
     message: {
         flex: 0.8, 
-        backgroundColor: 'blue',
+        backgroundColor: 'gray',
         borderRadius: 6, 
         marginHorizontal: 16, 
         marginVertical: 2, 
@@ -35,7 +43,18 @@ const styles = StyleSheet.create({
         }, 
     }, 
     myMessage: {
-        backgroundColor: '#003366'
+        backgroundColor: '#003366',
+        borderRadius: 6, 
+        marginHorizontal: 16, 
+        marginVertical: 2, 
+        paddingHorizontal: 8, 
+        paddingVertical: 6, 
+        shadowColor: 0.5,
+        shadowRadius: 1, 
+        shadowOffset: {
+            height: 1,
+        }, 
+        flex: 0.8,
     },
     messageUsername: {
         color: 'white',

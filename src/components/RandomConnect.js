@@ -9,7 +9,7 @@ export default class RandomConnect extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      messages: [{messageId: "shady"}],
+      messages: [],
       typedMessage: '',
       senderMessages: [],
     };
@@ -21,16 +21,18 @@ export default class RandomConnect extends React.Component {
     ).subscribe({
       next: (res) => {
         console.log('Subscription received: ' + String(res));
-        this.state.messages.push(res.value.data.onCreateNucleusDiscoverMessages);
-        this.setState({messages: this.state.messages});
+        const newMessage = res.value.data.onCreateNucleusDiscoverMessages;
+        newMessage.sender = false;
+        this.state.messages.push(newMessage);
+        this.forceUpdate();
       }
     });
   }
 
   keyExtractor = (item, index) => item.messageId;
 
-  renderItem = ({ item: {messageId} }) => (
-    <Message id={messageId} />
+  renderItem = ({ item: {messageId, sender} }) => (
+    <Message id={messageId} sent={sender}/>
   );
 
   
@@ -44,8 +46,8 @@ export default class RandomConnect extends React.Component {
     .then(res => {
       // optimistic UI, updates message regardless of network status
       console.log(res);
-      this.state.senderMessages.push(newMessage);
-      this.setState();
+      this.state.messages.push({messageId: this.state.typedMessage, sender: true});
+      this.forceUpdate();
     })
     .catch(err => console.log(err));
     // make text render as myMessage after submission
@@ -58,7 +60,7 @@ export default class RandomConnect extends React.Component {
     const isMessagePresent = !!this.state.messages;
     if (isMessagePresent) {
       const messages = this.state.messages;
-      console.log('message present');
+      //TODO: Fill ListEmptyComponent with an actual component
       return ( 
         <KeyboardAvoidingView 
         style={styles.container}>
