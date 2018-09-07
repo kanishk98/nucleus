@@ -35,26 +35,17 @@ export default class RandomConnect extends React.Component {
 
   
    onSendHandler = () => {
-    const sendMessageMutation = {
-      mutation: GraphQL.CreateDiscoverMessage,
-      variables: {input: {
-        conversationId: "weird", 
-        messageId: String(this.state.typedMessage),
-      }},
-      refetchQueries: [sendMessageMutation],
-      optimisticResponse: () => {
-      // construct new object here displaying relevant info 
-      let tempArray = this.state.messages;         
-      tempArray.push({"messageId": this.state.typedMessage});
-      this.setState({messages: tempArray});
-    }};
     console.log('onSendHandler ' + this.state.typedMessage);
+    const newMessage = {
+      conversationId: "temp_conversation",
+      messageId: "temp_message",
+    }
+    this.messageMutation = API.graphql(graphqlOperation(GraphQL.CreateDiscoverMessage, {input: newMessage}))
+    .then(res => console.log(res))
+    .catch(err => console.log(err));
     // make text render as myMessage after submission
     // differentiate senderMessage from receivedMessage
-    client.mutate(sendMessageMutation)
-    .then(res => {console.log(res)})
-    .catch(err => {console.log(err)});
-  }
+  } 
 
   render() {
     const user = this.props.navigation.getParam("user", null);

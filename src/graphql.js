@@ -35,7 +35,7 @@ export const GetDiscoverChat = gql`query GetDiscoverChat($input: CreateNucleusDi
     }
 }`;
 
-export const CreateDiscoverMessage = gql`mutation CreateNucleusDiscoverMessage($input: CreateNucleusDiscoverMessagesInput!) {
+export const CreateDiscoverMessage = `mutation CreateNucleusDiscoverMessage($input: CreateNucleusDiscoverMessagesInput!) {
     createNucleusDiscoverMessages(input: $input) {
         conversationId
         messageId
