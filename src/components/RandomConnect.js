@@ -11,12 +11,8 @@ export default class RandomConnect extends React.Component {
     this.state = {
       messages: [],
       typedMessage: '',
+      randomUser: this.props.navigation.getParam("randomUser", null)
     };
-  }
-
-  initialiseScreen() {
-    const connectedUser = this.props.navigation.getParam("randomUser", null);
-    this.props.navigation.setTitle(connectedUser.username);
   }
 
   componentDidMount() {
@@ -60,6 +56,7 @@ export default class RandomConnect extends React.Component {
 
   render() {
     console.log(this.state);
+    const placeholderText = "You're talking to " + this.state.randomUser.username;
     const isMessagePresent = !!this.state.messages;
     if (isMessagePresent) {
       const messages = this.state.messages;
@@ -75,7 +72,7 @@ export default class RandomConnect extends React.Component {
             ListEmptyComponent={<View />} />
           <TextInput
             style={styles.input}
-            placeholder='Type a message'
+            placeholder={placeholderText}
             secureTextEntry={false}
             autoCorrect={true}
             autoCapitalize={'sentences'}

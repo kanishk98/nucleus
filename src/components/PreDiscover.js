@@ -37,6 +37,8 @@ export default class PreDiscover extends React.Component {
             }
             console.log(onlineUsers[randUser]);
             let connectedUser = onlineUsers[randUser];
+            // TODO: Create conversationId and a new UserConversation
+            
             this.props.navigation.navigate('Discover', {randomUser: connectedUser});
         }
     }
