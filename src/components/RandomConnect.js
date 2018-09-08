@@ -16,8 +16,9 @@ export default class RandomConnect extends React.Component {
   }
 
   componentDidMount() {
+    let chatId = this.props.navigation.getParam("conversationId", 0);
     this.subscription = API.graphql(
-      graphqlOperation(GraphQL.SubscribeToDiscoverMessages, {conversationId: "temp_conversation"})
+      graphqlOperation(GraphQL.SubscribeToDiscoverMessages, {conversationId: chatId})
     ).subscribe({
       next: (res) => {
         console.log('Subscription received: ' + String(res));
