@@ -8,10 +8,11 @@ export default class PreDiscover extends React.Component {
     
     constructor(props) {
         super(props);
+        this.props.signedInUser = this.props.navigation.getParam("signedInUser", null);
         this.state={
             text: "Tap anywhere to get started",
             connected: true,
-            user: false,
+            onlineUsers: false,
         };
     }
 
@@ -20,25 +21,25 @@ export default class PreDiscover extends React.Component {
             online: 1
         })
         .then(res => {
-            this.setState({user: res.data.getOnlineNucleusDiscoverUsers[0]})
+            this.setState({onlineUsers: res.data.getOnlineNucleusDiscoverUsers})
         })
         .catch(err => console.log(err));
     }
     
     render() {
-        let {text, user} = this.state;
+        let {text, onlineUsers} = this.state;
         return (
             <View style={styles.container}>
-                <Text style={styles.instructions}>{user? user.firebaseId: null}</Text>
+                <Text style={styles.instructions}>{onlineUsers.length} users online</Text>
             </View>
         );
     }
 
     componentDidUpdate() {
-        console.log(this.state.user);
+        console.log(this.state.onlineUsers);
         // TODO: Make button available (greyed out until component updates) for user to initiate conversation
-        if (this.state.user) {
-            this.props.navigation.navigate('Discover', {user: this.state.user});
+        if (this.state.onlineUsers) {
+            // this.props.navigation.navigate('Discover', {onlineUsers: this.state.onlineUsers});
         }
     }
 }

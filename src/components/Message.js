@@ -41,6 +41,7 @@ const styles = StyleSheet.create({
         shadowOffset: {
             height: 1,
         }, 
+        justifyContent: 'flex-end',
     }, 
     myMessage: {
         backgroundColor: '#003366',

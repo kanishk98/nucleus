@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
-import {StyleSheet, View, Dimensions, Text, Platform, ProgressBarAndroid, ProgressViewIOS} from 'react-native';
+import {StyleSheet, View, Dimensions, Text, Platform, ProgressBarAndroid, ProgressViewIOS, Alert} from 'react-native';
 import {GoogleSignin, GoogleSigninButton} from 'react-native-google-signin';
 import renderIf from './renderIf';
-import {Auth} from 'aws-amplify';
+import {Auth, API, graphqlOperation} from 'aws-amplify';
 import firebase from 'react-native-firebase';
 import { AsyncStorage } from '@aws-amplify/core';
-
+import * as GraphQL from '../graphql';
 
 export default class LoginForm extends Component {
 
@@ -26,9 +26,7 @@ export default class LoginForm extends Component {
     async configureGoogleSignIn() {
         // TODO: SOME ANDROID PHONES MAY NOT HAVE PLAY SERVICES. DISPLAY ERROR MESSAGE THERE.
         // always returns true on iOS
-        await GoogleSignin.hasPlayServices({
-            autoResolve: true
-        });
+        await GoogleSignin.hasPlayServices();
 
         await GoogleSignin.configure({
             iosClientId: '***REMOVED***',
@@ -60,7 +58,7 @@ export default class LoginForm extends Component {
             return (
             <View style={styles.container}>
                 <Text style={styles.instructions}>
-                    Signed in as {user.email}
+                    Signed in as {user.user.email}
                 </Text>
             </View>
             );
@@ -71,9 +69,9 @@ export default class LoginForm extends Component {
         try {
             this.setState({progress: true});
             let signedInUser = await GoogleSignin.signIn();
-            console.log(signedInUser.email);
-            if (signedInUser.email.includes('@snu.edu.in')) {
+            if (signedInUser.user.email.includes('@snu.edu.in')) {
                 console.log('Valid student');
+                console.log(JSON.stringify(signedInUser));
                 this.setState({user: signedInUser, error: null, progress: true, loggedIn: true});
                 // authenticating with Firebase
                 // TODO: ADD INTERNET CONNECTIVITY CHECK, HOOK RESULT ACCORDINGLY INTO UI
@@ -94,11 +92,36 @@ export default class LoginForm extends Component {
                         token: firebaseOIDCToken
                     },
                     signedInUser)
-                    .then(user => console.log(user))
-                    .catch(error => console.log(error));
-                    this.setLoggedIn('LOGGED_IN', true);
-                    // moving user to chat screen
-                    this.props.navigation.navigate('PreDiscover');
+                    .then(user => {
+                        console.log(user);
+                        this.setLoggedIn('LOGGED_IN', true);
+                        let signedInUser = {
+                            firebaseId: firebaseUser.user.uid,
+                            geohash: null, 
+                            online: true,
+                            paid: false, 
+                            profilePic: null,
+                            username: firebaseUser.user.displayName,
+                        };
+                        API.graphql(graphqlOperation(GraphQL.CreateDiscoverUser), {input: signedInUser})
+                        .then(res => {
+                            // user resolved, moving to next screen
+                            this.props.navigation.navigate('PreDiscover', {signedInUser: signedInUser});
+                        })
+                        .catch(err => {
+                            console.log(err);
+                            Alert.alert(
+                                'Network unavailable', 
+                                'We were unable to sign you in. Please try again later.'
+                            );
+                        })
+                    })
+                    .catch(error => {
+                        console.log(error);
+                        Alert.alert(
+                            'Network unavailable',
+                            'We were unable to log you in. Please try again later.');
+                    });
             } else {
                 console.log('Signing out user');
                 this.configureGoogleSignIn();

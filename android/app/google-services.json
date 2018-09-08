@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "959712818464-ru048mv89j34l65tn7jnfcfj2fe6mnmt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nucleus",
+            "certificate_hash": "bfbb9a97b7463563fa17796aea3094752d35c22a"
+          }
+        },
+        {
           "client_id": "***REMOVED***",
           "client_type": 3
         }
@@ -42,6 +50,13 @@
             {
               "client_id": "***REMOVED***",
               "client_type": 3
+            },
+            {
+              "client_id": "***REMOVED***",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.nucleus"
+              }
             }
           ]
         },

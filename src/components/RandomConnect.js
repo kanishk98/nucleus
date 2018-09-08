@@ -8,10 +8,10 @@ import {client} from "../../App";
 export default class RandomConnect extends React.Component {
   constructor(props) {
     super(props);
+    props.user = this.props.navigation.getParam("user", null);
     this.state = {
       messages: [],
       typedMessage: '',
-      senderMessages: [],
     };
   }
 
@@ -55,7 +55,6 @@ export default class RandomConnect extends React.Component {
   } 
 
   render() {
-    const user = this.props.navigation.getParam("user", null);
     console.log(this.state);
     const isMessagePresent = !!this.state.messages;
     if (isMessagePresent) {
