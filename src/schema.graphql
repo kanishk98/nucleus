@@ -1,13 +1,13 @@
 ﻿input CreateNucleusDiscoverChatsInput {
 	conversationId: String!
-  	author: CreateNucleusDiscoverUsersInput
+  	author: String
 	content: String
 	createdAt: String
 	isRead: Boolean
 	isReceived: Boolean
 	isSent: Boolean
 	messageId: [String]
-	recipient: CreateNucleusDiscoverUsersInput
+	recipient: String
 }
 
 input CreateNucleusDiscoverConversationsInput {
@@ -66,14 +66,14 @@ type Mutation {
 
 type NucleusDiscoverChats {
 	conversationId: String!
-  	author: NucleusDiscoverUsers
+  	author: String
 	content: String
 	createdAt: String
 	isRead: Boolean
 	isReceived: Boolean
 	isSent: Boolean
 	messageId: [String]
-	recipient: NucleusDiscoverUsers
+	recipient: String
 }
 
 type NucleusDiscoverChatsConnection {
@@ -165,7 +165,8 @@ type Subscription {
 	onUpdateNucleusDiscoverMessages(conversationId: String, messageId: String): NucleusDiscoverMessages
 		@aws_subscribe(mutations: ["updateNucleusDiscoverMessages"])
 	onUpdateNucleusDiscoverUsers(firebaseId: String, geohash: String): NucleusDiscoverUsers
-	onCreateNucleusDiscoverChats(conversationId: String): NucleusDiscoverChats
+		@aws_subscribe(mutations: ["updateNucleusDiscoverUsers"])
+	onCreateNucleusDiscoverChats(recipient: String!): NucleusDiscoverChats
 		@aws_subscribe(mutations: ["createNucleusDiscoverChats"])
 	onUpdateNucleusDiscoverChats(conversationId: String): NucleusDiscoverChats
 		@aws_subscribe(mutations: ["updateNucleusDiscoverChats"])

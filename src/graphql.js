@@ -60,7 +60,7 @@ export const GetDiscoverMessages = gql`query getNucleusDiscoverMessages($input: 
 }`
 
 export const SubscribeToDiscoverMessages = `subscription SubscribeToDiscoverMessages($conversationId: String!) {
-    onCreateNucleusDiscoverMessages(conversationId: $conversationId, messageId: "shady") {
+    onCreateNucleusDiscoverMessages(conversationId: $conversationId) {
         messageId
     }
 }`
