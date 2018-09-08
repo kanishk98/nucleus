@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, View, StyleSheet} from 'react-native';
+import {Text, View, StyleSheet, Button} from 'react-native';
 import * as GraphQL from '../graphql';
 import {client} from '../../App';
 import {API, graphqlOperation} from 'aws-amplify';
@@ -12,8 +12,19 @@ export default class PreDiscover extends React.Component {
         this.state={
             text: "Tap anywhere to get started",
             connected: true,
-            onlineUsers: false,
+            onlineUsers: [],
         };
+    }
+
+    startDiscover = () => {
+        let {onlineUsers} = this.state;
+        console.log(this.state);
+        // TODO: Make button available (greyed out until component updates) for user to initiate conversation
+        if (onlineUsers && onlineUsers.length > 1) {
+            // this.props.navigation.navigate('Discover', {onlineUsers: this.state.onlineUsers});
+            randUser = Math.floor(Math.random() * onlineUsers.length);
+            console.log(onlineUsers[randUser]);
+        }
     }
 
     componentDidMount() {
@@ -21,7 +32,9 @@ export default class PreDiscover extends React.Component {
             online: 1
         })
         .then(res => {
-            this.setState({onlineUsers: res.data.getOnlineNucleusDiscoverUsers})
+            let temp = res.data.getOnlineNucleusDiscoverUsers.filter(item => item!==this.props.signedInUser);
+            console.log(temp);
+            this.setState({onlineUsers: temp});
         })
         .catch(err => console.log(err));
     }
@@ -31,16 +44,9 @@ export default class PreDiscover extends React.Component {
         return (
             <View style={styles.container}>
                 <Text style={styles.instructions}>{onlineUsers.length} users online</Text>
+                <Button style={styles.connectButton} onPress={this.startDiscover} title={"Get started"}/>
             </View>
         );
-    }
-
-    componentDidUpdate() {
-        console.log(this.state.onlineUsers);
-        // TODO: Make button available (greyed out until component updates) for user to initiate conversation
-        if (this.state.onlineUsers) {
-            // this.props.navigation.navigate('Discover', {onlineUsers: this.state.onlineUsers});
-        }
     }
 }
 
@@ -58,5 +64,12 @@ const styles=StyleSheet.create({
         fontWeight: 'bold',
         alignItems: 'center',
         justifyContent: 'center'
+    },
+    connectButton: {
+        backgroundColor: 'white',
+        fontSize: 18,
+        alignItems: 'center', 
+        justifyContent: 'center',
+        marginTop: 10,
     }
 });
