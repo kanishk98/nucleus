@@ -93,20 +93,21 @@ export default class LoginForm extends Component {
                     },
                     signedInUser)
                     .then(user => {
-                        console.log(user);
+                        console.log(firebaseUser.user.displayName);
                         this.setLoggedIn('LOGGED_IN', true);
-                        let signedInUser = {
+                        let newUser = {
                             firebaseId: firebaseUser.user.uid,
-                            geohash: null, 
-                            online: true,
+                            geohash: "null", 
+                            offenses: 0,
+                            online: 1,
                             paid: false, 
-                            profilePic: null,
+                            profilePic: this.state.user.user.photo,
                             username: firebaseUser.user.displayName,
                         };
-                        API.graphql(graphqlOperation(GraphQL.CreateDiscoverUser), {input: signedInUser})
+                        API.graphql(graphqlOperation(GraphQL.CreateDiscoverUser, {input: newUser}))
                         .then(res => {
                             // user resolved, moving to next screen
-                            this.props.navigation.navigate('PreDiscover', {signedInUser: signedInUser});
+                            this.props.navigation.navigate('PreDiscover', {signedInUser: newUser});
                         })
                         .catch(err => {
                             console.log(err);
@@ -114,7 +115,7 @@ export default class LoginForm extends Component {
                                 'Network unavailable', 
                                 'We were unable to sign you in. Please try again later.'
                             );
-                        })
+                        });
                     })
                     .catch(error => {
                         console.log(error);
