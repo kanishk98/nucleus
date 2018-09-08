@@ -3,7 +3,6 @@ import { View, StyleSheet, FlatList, Text, KeyboardAvoidingView, Dimensions, Tex
 import Message from "./Message";
 import * as GraphQL from "../graphql";
 import { API, graphqlOperation } from "../../node_modules/aws-amplify";
-import {client} from "../../App";
 
 export default class RandomConnect extends React.Component {
   constructor(props) {
@@ -13,6 +12,11 @@ export default class RandomConnect extends React.Component {
       messages: [],
       typedMessage: '',
     };
+  }
+
+  initialiseScreen() {
+    const connectedUser = this.props.navigation.getParam("randomUser", null);
+    this.props.navigation.setTitle(connectedUser.username);
   }
 
   componentDidMount() {

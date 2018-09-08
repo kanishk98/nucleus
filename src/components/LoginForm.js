@@ -112,8 +112,8 @@ export default class LoginForm extends Component {
                         .catch(err => {
                             console.log(err);
                             Alert.alert(
-                                'Network unavailable', 
-                                'We were unable to sign you in. Please try again later.'
+                                'Student data over?', 
+                                'We were unable to log you in because of a slow network connection.'
                             );
                         });
                     })

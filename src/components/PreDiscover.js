@@ -8,7 +8,6 @@ export default class PreDiscover extends React.Component {
     
     constructor(props) {
         super(props);
-        this.props.signedInUser = this.props.navigation.getParam("signedInUser", null);
         this.state={
             text: "Tap anywhere to get started",
             connected: true,
@@ -18,12 +17,27 @@ export default class PreDiscover extends React.Component {
 
     startDiscover = () => {
         let {onlineUsers} = this.state;
+        let user = this.props.navigation.getParam("signedInUser", null);
         console.log(this.state);
         // TODO: Make button available (greyed out until component updates) for user to initiate conversation
         if (onlineUsers && onlineUsers.length > 1) {
             // this.props.navigation.navigate('Discover', {onlineUsers: this.state.onlineUsers});
             randUser = Math.floor(Math.random() * onlineUsers.length);
+            if(onlineUsers[randUser].firebaseId === user.firebaseId) {
+                randUser = randUser + 1;
+                try {
+                        if (onlineUsers[randUser] == null) {
+                        console.log("Undefined user, switching back");
+                        randUser = randUser - 2;
+                    }
+                } catch (error) {
+                    console.log(error);
+                    randUser = randUser - 2;
+                }
+            }
             console.log(onlineUsers[randUser]);
+            let connectedUser = onlineUsers[randUser];
+            this.props.navigation.navigate('Discover', {randomUser: connectedUser});
         }
     }
 
@@ -32,12 +46,11 @@ export default class PreDiscover extends React.Component {
             online: 1
         })
         .then(res => {
-            let temp = res.data.getOnlineNucleusDiscoverUsers.filter(item => item!==this.props.signedInUser);
-            console.log(temp);
+            let temp = res.data.getOnlineNucleusDiscoverUsers;
             this.setState({onlineUsers: temp});
         })
         .catch(err => console.log(err));
-    }
+    }   
     
     render() {
         let {text, onlineUsers} = this.state;
