@@ -1,5 +1,5 @@
-import functions from 'firebase-functions';
-import admin from 'firebase-admin';
+functions = require('firebase-functions');
+admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
 exports.sendDiscoverTextNotification = functions.https.onRequest((req, res) => {
     const content = req.query.content;
