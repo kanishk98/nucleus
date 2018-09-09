@@ -166,7 +166,7 @@ type Subscription {
 		@aws_subscribe(mutations: ["updateNucleusDiscoverMessages"])
 	onUpdateNucleusDiscoverUsers(firebaseId: String, geohash: String): NucleusDiscoverUsers
 		@aws_subscribe(mutations: ["updateNucleusDiscoverUsers"])
-	onCreateNucleusDiscoverChats(recipient: String!): NucleusDiscoverChats
+	onCreateNucleusDiscoverChats(recipient: String): NucleusDiscoverChats
 		@aws_subscribe(mutations: ["createNucleusDiscoverChats"])
 	onUpdateNucleusDiscoverChats(conversationId: String): NucleusDiscoverChats
 		@aws_subscribe(mutations: ["updateNucleusDiscoverChats"])
