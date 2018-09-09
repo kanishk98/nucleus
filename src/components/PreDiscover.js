@@ -43,6 +43,15 @@ export default class PreDiscover extends React.Component {
         }
     }
 
+    cancelRequest = (chat) => {
+        console.log('Sending mutation to delete conversation');
+        API.graphql(graphqlOperation(GraphQL.DeleteDiscoverChat), {input: chat})
+        .then(res => {
+            console.log(res);
+        })
+        .catch(err => console.log(err));
+    }
+
     componentDidMount() {
         // querying online users
         API.graphql(graphqlOperation(GraphQL.GetOnlineDiscoverUsers), {
@@ -61,6 +70,8 @@ export default class PreDiscover extends React.Component {
             next: (res) => {
                 console.log('Subscription for chat received: ' + String(res));
                 const newChat = res.value.data.onCreateNucleusDiscoverChats;
+                // notifies sender of request of conversation ignore after 5 seconds of subscription receipt
+                setTimeout(this.cancelRequest(newChat), 5000);
                 this.setState({requestId: newChat.conversationId});
             }
         });

@@ -28,6 +28,13 @@ export const CreateDiscoverChat = gql`mutation CreateNucleusDiscoverChats($input
     }
 }`;
 
+
+export const DeleteDiscoverChat = `mutation DeleteDiscoverChats($input: CreateNucleusDiscoverChatsInput!) {
+    deleteNucleusDiscoverChats(input: $input) {
+        conversationId
+    }
+}`;
+
 export const GetDiscoverChat = gql`query GetDiscoverChat($input: CreateNucleusDiscoverChatsInput!) {
     getNucleusDiscoverChat(input: $input) {
         conversationId
