@@ -42,7 +42,6 @@ export default class RandomConnect extends React.Component {
     let chatId = this.props.navigation.getParam("conversationId", 0);
     const newMessage = {
       conversationId: chatId,
-      messageId: "shady",
     }
     this.messageMutation = API.graphql(graphqlOperation(GraphQL.CreateDiscoverMessage, {input: newMessage}))
     .then(res => {

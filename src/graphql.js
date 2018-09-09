@@ -22,7 +22,7 @@ export const GetOnlineDiscoverUsers = `query GetOnlineNucleusDiscoverUsers($onli
     }
 }`;
 
-export const CreateDiscoverChat = gql`mutation CreateNucleusDiscoverChats($input: CreateNucleusDiscoverChatsInput!) {
+export const CreateDiscoverChat = `mutation CreateNucleusDiscoverChats($input: CreateNucleusDiscoverChatsInput!) {
     createNucleusDiscoverChats(input: $input) {
         conversationId
     }
@@ -45,11 +45,8 @@ export const GetDiscoverChat = gql`query GetDiscoverChat($input: CreateNucleusDi
 export const CreateDiscoverMessage = `mutation CreateNucleusDiscoverMessage($input: CreateNucleusDiscoverMessagesInput!) {
     createNucleusDiscoverMessages(input: $input) {
         conversationId
-        messageId
-        content
-        createdAt 
-        isRead 
-        isReceived
+        author
+        recipient
     }
 }`
 

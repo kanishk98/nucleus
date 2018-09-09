@@ -24,9 +24,9 @@ export default class LoginForm extends Component {
             try {
               const value = await AsyncStorage.getItem('LOGGED_IN');
               const user = await AsyncStorage.getItem('USER');
-              if (value !== null && value !== false) {
+              if (value !== null && value !== 'false') {
                 console.log(value);
-                this.props.navigation.navigate('PreDiscover', {signedInUser: user});
+                this.props.navigation.navigate('PreDiscover', {signedInUser: JSON.parse(user)});
               }
              } catch (error) {
                // Error retrieving data
@@ -109,7 +109,7 @@ export default class LoginForm extends Component {
                     signedInUser)
                     .then(user => {
                         console.log(firebaseUser.user.displayName);
-                        this.setLoggedIn('LOGGED_IN', true);
+                        this.setLoggedIn('LOGGED_IN', 'true');
                         let newUser = {
                             firebaseId: firebaseUser.user.uid,
                             geohash: "null", 
@@ -119,7 +119,7 @@ export default class LoginForm extends Component {
                             profilePic: this.state.user.user.photo,
                             username: firebaseUser.user.displayName,
                         };
-                        this.setLoggedIn('USER', newUser);
+                        this.setLoggedIn('USER', JSON.stringify(newUser));
                         API.graphql(graphqlOperation(GraphQL.CreateDiscoverUser, {input: newUser}))
                         .then(res => {
                             // user resolved, moving to next screen
