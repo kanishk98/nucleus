@@ -54,7 +54,7 @@ export default class PreDiscover extends React.Component {
         .catch(err => console.log(err));
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         // checking for notification permissions
         const enabled = await firebase.messaging().hasPermission();
         if(!enabled) {
@@ -62,10 +62,14 @@ export default class PreDiscover extends React.Component {
                 await firebase.messaging().requestPermission();
                 // User has authorised
                 this.setState({notificationsAllowed: true});
-                this.fcmToken = firebase.messaging().getToken() => {
+                this.fcmToken = firebase.messaging().getToken()
+                .then(res => {
                     // storing token as user attribute
-                    
-                }
+                })
+                .catch(err => {
+                    console.log(err);
+                    // handle error appropriately
+                })
             } catch (error) {
                 // User has rejected permissions
             }
