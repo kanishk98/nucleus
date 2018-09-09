@@ -2,6 +2,7 @@ import React from 'react';
 import {Text, View, StyleSheet, Button} from 'react-native';
 import * as GraphQL from '../graphql';
 import {API, graphqlOperation} from 'aws-amplify';
+import firebase from 'react-native-firebase';
 
 export default class PreDiscover extends React.Component {
     
@@ -12,6 +13,7 @@ export default class PreDiscover extends React.Component {
             connected: true,
             onlineUsers: [],
             requestId: null,
+            notificationsAllowed: false,
         };
     }
 
@@ -52,7 +54,26 @@ export default class PreDiscover extends React.Component {
         .catch(err => console.log(err));
     }
 
-    componentDidMount() {
+    async componentDidMount() {
+        // checking for notification permissions
+        const enabled = await firebase.messaging().hasPermission();
+        if(!enabled) {
+            try {
+                await firebase.messaging().requestPermission();
+                // User has authorised
+                this.setState({notificationsAllowed: true});
+                this.fcmToken = firebase.messaging().getToken()
+                .then(res => {
+                    // storing token as user attribute
+                })
+                .catch(err => {
+                    console.log(err);
+                    // handle error appropriately
+                })
+            } catch (error) {
+                // User has rejected permissions
+            }
+        }
         // querying online users
         API.graphql(graphqlOperation(GraphQL.GetOnlineDiscoverUsers), {
             online: 1
@@ -85,6 +106,18 @@ export default class PreDiscover extends React.Component {
                 this.setState({requestId: null});
             }
         });
+        if (this.state.notificationsAllowed) {
+            this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen) => {
+                console.log(notificationOpen);
+            })
+            firebase.notifications().getInitialNotification()
+            .then((notificationOpen) => {
+                if (notificationOpen) {
+                    // app was opened from killed state by notification
+                    console.log(notificationOpen);
+                }
+            })
+        }
     }   
     
     render() {
@@ -106,6 +139,10 @@ export default class PreDiscover extends React.Component {
                 </View>
             );
         }
+    }
+
+    componentWillUnmount() {
+        this.notificationOpenedListener();
     }
 }
 
