@@ -8,7 +8,6 @@ import co.apptailor.googlesignin.RNGoogleSigninPackage;
 import io.invertase.firebase.auth.RNFirebaseAuthPackage;
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
 import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
-import io.invertase.firebase.fabric.crashlytics.RNFirebaseCrashlyticsPackage;
 
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -34,8 +33,7 @@ public class MainApplication extends Application implements ReactApplication {
 	        new RNFirebaseAuthPackage(),
             new RNGoogleSigninPackage(),
             new RNFirebaseMessagingPackage(),
-            new RNFirebaseNotificationsPackage(),
-            new RNFirebaseCrashlyticsPackage()
+            new RNFirebaseNotificationsPackage()
       );
     }
 
