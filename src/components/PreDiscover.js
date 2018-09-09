@@ -18,6 +18,7 @@ export default class PreDiscover extends React.Component {
     }
 
     startDiscover = () => {
+        this.setState({text: 'Finding randomly chosen user...'})
         let {onlineUsers} = this.state;
         let user = this.props.navigation.getParam("signedInUser", null);
         console.log(this.state);
@@ -40,8 +41,32 @@ export default class PreDiscover extends React.Component {
             let connectedUser = onlineUsers[randUser];
             // TODO: Create conversationId and a new UserConversation
             let chatId = user.firebaseId + connectedUser.firebaseId + String(Math.floor(new Date().getTime()/1000));
+            let newChat = {
+                conversationId: chatId, 
+                author: user.firebaseId,
+                recipient: connectedUser.firebaseId,
+            };
+            console.log(newChat);
             console.log('Initiating chat: ' + chatId);
-            this.props.navigation.navigate('Discover', {randomUser: connectedUser, conversationId: chatId});
+            API.graphql(graphqlOperation(GraphQL.CreateDiscoverChat, {input: newChat}))
+            .then(res => {
+                console.log(res);
+                // waiting for acceptance from another user for 5 seconds
+                setTimeout(this.startDiscover, 5000);
+                this.setState({text: 'Connected to user. Waiting for acceptance...'});
+                API.graphql(graphqlOperation(GraphQL.SubscribeToDiscoverChats, {recipient: connectedUser.firebaseId}))
+                .then(res => {
+                    console.log(res);
+                    // request for chatting accepted by user
+                    this.props.navigation.navigate('Discover', {randomUser: connectedUser, conversationId: chatId});  
+                })
+                .catch(err => {
+                    this.setState({text: 'Sorry, we messed up. Please try again'});
+                    console.log('Sender-side subscription error ' + String(err));
+                    Alert.alert('Oops', 'Your chat was lost somewhere in the Nucleus. Try connecting again.');
+                })
+            })
+            .catch(err => console.log(err));
         }
     }
 
@@ -125,6 +150,7 @@ export default class PreDiscover extends React.Component {
         if (requestId !== null) {
             return (
                 <View style={styles.container}>
+                    <Text style={styles.title}>{text}</Text>
                     <Text style={styles.instructions}>{onlineUsers.length} users online</Text>
                     <Button style={styles.connectButton} onPress={this.startDiscover} title={"Get started"}/>
                     <Text style={styles.instructions}>Someone got connected to you!</Text>
@@ -134,6 +160,7 @@ export default class PreDiscover extends React.Component {
         } else {
             return (
                 <View style={styles.container}>
+                    <Text style={styles.title}>{text}</Text>
                     <Text style={styles.instructions}>{onlineUsers.length} users online</Text>
                     <Button style={styles.connectButton} onPress={this.startDiscover} title={"Get started"}/>
                 </View>
@@ -154,6 +181,14 @@ const styles=StyleSheet.create({
         backgroundColor: '#003366',
     },
     instructions: {
+        color: 'white',
+        marginBottom: 16,
+        fontSize: 12,
+        fontWeight: 'bold',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    title: {
         color: 'white',
         marginBottom: 16,
         fontSize: 18,
