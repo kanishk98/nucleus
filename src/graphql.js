@@ -64,3 +64,17 @@ export const SubscribeToDiscoverMessages = `subscription SubscribeToDiscoverMess
         messageId
     }
 }`
+
+export const SubscribeToDiscoverChats = `subscription SubscribeToDiscoverChats($recipient: String) {
+    onCreateNucleusDiscoverChats(recipient: $recipient) {
+        conversationId
+        author
+    }
+}`
+
+export const SubscribeToChatDeletion = `subscription SubscribeToChatDeletion($conversationId: String) {
+    onDeleteNucleusDiscoverChats(conversationId: $conversationId) {
+        conversationId
+        author
+    }
+}`

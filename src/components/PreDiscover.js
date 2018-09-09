@@ -1,7 +1,6 @@
 import React from 'react';
 import {Text, View, StyleSheet, Button} from 'react-native';
 import * as GraphQL from '../graphql';
-import {client} from '../../App';
 import {API, graphqlOperation} from 'aws-amplify';
 
 export default class PreDiscover extends React.Component {
@@ -12,6 +11,7 @@ export default class PreDiscover extends React.Component {
             text: "Tap anywhere to get started",
             connected: true,
             onlineUsers: [],
+            requestId: null,
         };
     }
 
@@ -21,7 +21,6 @@ export default class PreDiscover extends React.Component {
         console.log(this.state);
         // TODO: Make button available (greyed out until component updates) for user to initiate conversation
         if (onlineUsers && onlineUsers.length > 1) {
-            // this.props.navigation.navigate('Discover', {onlineUsers: this.state.onlineUsers});
             randUser = Math.floor(Math.random() * onlineUsers.length);
             if(onlineUsers[randUser].firebaseId === user.firebaseId) {
                 randUser = randUser + 1;
@@ -45,6 +44,7 @@ export default class PreDiscover extends React.Component {
     }
 
     componentDidMount() {
+        // querying online users
         API.graphql(graphqlOperation(GraphQL.GetOnlineDiscoverUsers), {
             online: 1
         })
@@ -53,16 +53,48 @@ export default class PreDiscover extends React.Component {
             this.setState({onlineUsers: temp});
         })
         .catch(err => console.log(err));
+        let user = this.props.navigation.getParam("signedInUser", null);
+        // subscribing to requested conversations
+        this.chatSubscription = API.graphql(
+            graphqlOperation(GraphQL.SubscribeToDiscoverChats, {recipient: user.firebaseId})
+        ).subscribe({
+            next: (res) => {
+                console.log('Subscription for chat received: ' + String(res));
+                const newChat = res.value.data.onCreateNucleusDiscoverChats;
+                this.setState({requestId: newChat.conversationId});
+            }
+        });
+        // subscribing to deleted conversations for removing accept button
+        this.chatDeleteSubscription = API.graphql(
+            graphqlOperation(GraphQL.SubscribeToChatDeletion, {conversationId: this.state.requestId})
+        ).subscribe({
+            next: (res) => {
+                console.log('Chat deleted: ' + String(res));
+                const deletedChat = res.value.data.onDeleteNucleusDiscoverChats;
+                this.setState({requestId: null});
+            }
+        });
     }   
     
     render() {
-        let {text, onlineUsers} = this.state;
-        return (
-            <View style={styles.container}>
-                <Text style={styles.instructions}>{onlineUsers.length} users online</Text>
-                <Button style={styles.connectButton} onPress={this.startDiscover} title={"Get started"}/>
-            </View>
-        );
+        let {text, onlineUsers, requestId} = this.state;
+        if (requestId !== null) {
+            return (
+                <View style={styles.container}>
+                    <Text style={styles.instructions}>{onlineUsers.length} users online</Text>
+                    <Button style={styles.connectButton} onPress={this.startDiscover} title={"Get started"}/>
+                    <Text style={styles.instructions}>Someone got connected to you!</Text>
+                    <Button style={styles.connectButton} onPress={this.startDiscover} title={"Accept request"}/>
+                </View>
+            );
+        } else {
+            return (
+                <View style={styles.container}>
+                    <Text style={styles.instructions}>{onlineUsers.length} users online</Text>
+                    <Button style={styles.connectButton} onPress={this.startDiscover} title={"Get started"}/>
+                </View>
+            );
+        }
     }
 }
 
