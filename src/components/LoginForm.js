@@ -19,6 +19,21 @@ export default class LoginForm extends Component {
         };
     }
 
+    componentWillMount() {
+        _retrieveData = async () => {
+            try {
+              const value = await AsyncStorage.getItem('LOGGED_IN');
+              const user = await AsyncStorage.getItem('USER');
+              if (value !== null && value !== false) {
+                console.log(value);
+                this.props.navigation.navigate('PreDiscover', {signedInUser: user});
+              }
+             } catch (error) {
+               // Error retrieving data
+             }
+          }
+    }
+
     async componentDidMount() {
         await this.configureGoogleSignIn();
     }
@@ -104,6 +119,7 @@ export default class LoginForm extends Component {
                             profilePic: this.state.user.user.photo,
                             username: firebaseUser.user.displayName,
                         };
+                        this.setLoggedIn('USER', newUser);
                         API.graphql(graphqlOperation(GraphQL.CreateDiscoverUser, {input: newUser}))
                         .then(res => {
                             // user resolved, moving to next screen
@@ -151,7 +167,7 @@ export default class LoginForm extends Component {
 
     async setLoggedIn(key, item) {
         try {
-            await AsyncStorage.setItem(key, JSON.stringify(item));
+            await AsyncStorage.setItem(key, item);
         } catch(error) {
             console.log(error.message);
         }
