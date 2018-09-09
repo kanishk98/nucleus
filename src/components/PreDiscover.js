@@ -62,6 +62,10 @@ export default class PreDiscover extends React.Component {
                 await firebase.messaging().requestPermission();
                 // User has authorised
                 this.setState({notificationsAllowed: true});
+                this.fcmToken = firebase.messaging().getToken() => {
+                    // storing token as user attribute
+                    
+                }
             } catch (error) {
                 // User has rejected permissions
             }
