@@ -53,7 +53,7 @@ export default class PreDiscover extends React.Component {
                 console.log(res);
                 // waiting for acceptance from another user for 5 seconds
                 setTimeout(this.startDiscover, 5000);
-                this.setState({text: 'Connected to user. Waiting for acceptance...'});
+                this.setState({text: 'Waiting for request confirmation...'});
                 API.graphql(graphqlOperation(GraphQL.SubscribeToDiscoverChats, {recipient: connectedUser.firebaseId}))
                 .then(res => {
                     console.log(res);
@@ -68,6 +68,19 @@ export default class PreDiscover extends React.Component {
             })
             .catch(err => console.log(err));
         }
+    }
+
+    acceptDiscover = () => {
+        // creating redundant mutation for activation of subscription on other side
+        API.graphql(graphqlOperation(GraphQL.CreateDiscoverChat, {input: this.state.requestChat}))
+        .then(res => {
+            console.log(res);
+            // chatting resolved, moving on to another screen
+            this.props.navigation.navigate('Discover', {randomUser: connectedUser, conversationId: chatId});
+        })
+        .catch(err => {
+            console.log(err);
+        });
     }
 
     cancelRequest = (chat) => {
@@ -118,7 +131,7 @@ export default class PreDiscover extends React.Component {
                 const newChat = res.value.data.onCreateNucleusDiscoverChats;
                 // notifies sender of request of conversation ignore after 5 seconds of subscription receipt
                 setTimeout(this.cancelRequest(newChat), 5000);
-                this.setState({requestId: newChat.conversationId});
+                this.setState({requestId: newChat.conversationId, requestChat: newChat});
             }
         });
         // subscribing to deleted conversations for removing accept button
@@ -128,7 +141,7 @@ export default class PreDiscover extends React.Component {
             next: (res) => {
                 console.log('Chat deleted: ' + String(res));
                 const deletedChat = res.value.data.onDeleteNucleusDiscoverChats;
-                this.setState({requestId: null});
+                this.setState({requestId: null, requestChat: null});
             }
         });
         if (this.state.notificationsAllowed) {
@@ -154,7 +167,7 @@ export default class PreDiscover extends React.Component {
                     <Text style={styles.instructions}>{onlineUsers.length} users online</Text>
                     <Button style={styles.connectButton} onPress={this.startDiscover} title={"Get started"}/>
                     <Text style={styles.instructions}>Someone got connected to you!</Text>
-                    <Button style={styles.connectButton} onPress={this.startDiscover} title={"Accept request"}/>
+                    <Button style={styles.connectButton} onPress={this.acceptDiscover} title={"Accept request"}/>
                 </View>
             );
         } else {
