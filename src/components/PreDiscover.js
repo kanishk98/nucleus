@@ -53,7 +53,7 @@ export default class PreDiscover extends React.Component {
                 console.log(res);
                 // waiting for acceptance from another user for 5 seconds
                 setTimeout(this.startDiscover, 5000);
-                this.setState({text: 'Waiting for request confirmation...'});
+                this.setState({text: connectedUser.username});
                 API.graphql(graphqlOperation(GraphQL.SubscribeToDiscoverChats, {recipient: connectedUser.firebaseId}))
                 .then(res => {
                     console.log(res);
@@ -103,9 +103,10 @@ export default class PreDiscover extends React.Component {
                 this.fcmToken = firebase.messaging().getToken()
                 .then(res => {
                     // storing token as user attribute
+                    console.log('FCM token: ' + res);
                 })
                 .catch(err => {
-                    console.log(err);
+                    console.log('FCM error: ' + err);
                     // handle error appropriately
                 })
             } catch (error) {

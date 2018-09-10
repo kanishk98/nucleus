@@ -6,18 +6,15 @@ exports.sendDiscoverTextNotification = functions.https.onRequest((req, res) => {
     const content = req.query.content;
     const recipient = req.query.recipient;
     const author = req.query.author;
-    const token = req.query.token;
-    const payload = {
-        notification: {
+    const registrationToken = req.query.token;
+    const message = {
+        "notification": {
             title: "New message from " + {author},
             body: {content},
         },
-        android: {
-            priority: 'normal', 
-        },
-        token: {token},
+        "token": registrationToken
     };
-    admin.messaging().send(message, dryRun)
+    admin.messaging().send(message)
     .then((response) => {
         // response is a message ID
         console.log(response);
