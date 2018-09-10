@@ -85,7 +85,7 @@ export default class PreDiscover extends React.Component {
 
     cancelRequest = (chat) => {
         console.log('Sending mutation to delete conversation');
-        API.graphql(graphqlOperation(GraphQL.DeleteDiscoverChat), {input: chat})
+        API.graphql(graphqlOperation(GraphQL.DeleteDiscoverChat, {input: chat}))
         .then(res => {
             console.log(res);
         })
