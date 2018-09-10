@@ -131,7 +131,7 @@ export default class PreDiscover extends React.Component {
                 console.log('Subscription for chat received: ' + String(res));
                 const newChat = res.value.data.onCreateNucleusDiscoverChats;
                 // notifies sender of request of conversation ignore after 5 seconds of subscription receipt
-                setTimeout(this.cancelRequest(newChat), 5000);
+                setTimeout( (newChat) => this.cancelRequest, 5000);
                 this.setState({requestId: newChat.conversationId, requestChat: newChat});
             }
         });
