@@ -25,6 +25,8 @@ export const GetOnlineDiscoverUsers = `query GetOnlineNucleusDiscoverUsers($onli
 export const CreateDiscoverChat = `mutation CreateNucleusDiscoverChats($input: CreateNucleusDiscoverChatsInput!) {
     createNucleusDiscoverChats(input: $input) {
         conversationId
+        author
+        recipient
     }
 }`;
 

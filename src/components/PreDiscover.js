@@ -72,11 +72,13 @@ export default class PreDiscover extends React.Component {
 
     acceptDiscover = () => {
         // creating redundant mutation for activation of subscription on other side
+        delete this.state.requestChat.__typename;
         API.graphql(graphqlOperation(GraphQL.CreateDiscoverChat, {input: this.state.requestChat}))
         .then(res => {
             console.log(res);
             // chatting resolved, moving on to another screen
-            this.props.navigation.navigate('Discover', {randomUser: connectedUser, conversationId: chatId});
+            let {author, conversationId} = this.state.requestChat;
+            this.props.navigation.navigate('Discover', {randomUser: author, conversationId: conversationId});
         })
         .catch(err => {
             console.log(err);
