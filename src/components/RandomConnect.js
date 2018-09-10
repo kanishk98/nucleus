@@ -4,6 +4,8 @@ import Message from "./Message";
 import * as GraphQL from "../graphql";
 import { API, graphqlOperation } from "../../node_modules/aws-amplify";
 
+// TODO: Major problem: Schema allows String, not user types. Last checked, subscriptions only worked with String.
+
 export default class RandomConnect extends React.Component {
   constructor(props) {
     super(props);
