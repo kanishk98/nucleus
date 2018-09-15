@@ -1,14 +1,13 @@
 # nucleus
 One app to provide all solutions required by college students.  
 
-## Authentication flow
+## Discover 
 
-The app requires users to sign in through their SNU IDs. To enable this and avoid the hassles of setting up a full-blown, secure authentication system, we integrate a Google Sign-in button into the app. The API connected to this button returns a JSON response, from which we take the email and check for the snu.edu.in domain. If it's not present, we refuse to move on to the chat screen and present a relevant prompt to the user. 
+### named option
 
-If the user is an SNU student, then the details (Firebase UserID, name, and email address) are synced with AWS Cognito using the Auth React Native library. This returns a JWT token specific to the user, and is used to authenticate him/her in other AWS use cases throughout the app. 
+Users sending a request to connect see that they're being matched (and possibly rejected). The receiver of the request sees who is sending them the request and they have the chance to decline. The connection automatically switches to another recipient after the latter ignoring the sender of the request for more than 5 seconds. 
 
-## Chat system
+### anonymous option
 
-We use GraphQL-based AWS AppSync to keep our data real-time and our app quick. For more details, see the README for Proton, our back-end system.
+Users send a request to connect, and if there are other people available using the platform, they are automatically logged in to chat with the person sending the request. 
 
-### Random chat (named)
