@@ -3,6 +3,7 @@ import {Text, View, StyleSheet, Button} from 'react-native';
 import * as GraphQL from '../graphql';
 import {API, graphqlOperation} from 'aws-amplify';
 import firebase from 'react-native-firebase';
+import { Platform } from '../../node_modules/@aws-amplify/core';
 
 export default class PreDiscover extends React.Component {
     
@@ -94,14 +95,19 @@ export default class PreDiscover extends React.Component {
 
     async componentDidMount() {
         // checking for notification permissions
-        const enabled = await firebase.messaging().hasPermission();
-        if(!enabled) {
+        let enabled = false;
+        if (Platform.OS == 'ios')
+            enabled = await firebase.messaging().hasPermission();
+        if(!enabled || Platform.OS == 'android') {
             try {
-                await firebase.messaging().requestPermission();
+                console.log('Awaiting Firebase request for permission');
+                if (Platform.OS == 'ios')
+                    await firebase.messaging().requestPermission();
                 // User has authorised
                 this.setState({notificationsAllowed: true});
                 this.fcmToken = firebase.messaging().getToken()
                 .then(res => {
+                    console.log('User message ' + res);
                     // storing token as user attribute
                 })
                 .catch(err => {
