@@ -1,5 +1,5 @@
 # Constants file
-.src/Constants.js
+./src/Constants.js
 
 # VSCode folder
 .vscode/
