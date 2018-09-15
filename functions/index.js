@@ -1,18 +1,24 @@
-functions = require('firebase-functions');
-admin = require('firebase-admin');
+let functions = require('firebase-functions');
+let admin = require('firebase-admin');
+let qs = require('querystring');
+
 admin.initializeApp(functions.config().firebase);
 exports.sendDiscoverTextNotification = functions.https.onRequest((req, res) => {
-    const content = req.query.content;
-    const recipient = req.query.recipient;
-    const author = req.query.author;
-    const fcmToken = req.query.token;
+    console.log('Method ' + req.method);
+    console.log('Body ' + req.originalUrl);
+    console.log(req.body);
+    const content = req.body.content;
+    const author = req.body.author;
+    const fcmToken = req.body.token;
     const payload = {
-        notification: {
+        data: {
+            data_type: "direct_message",
             title: "New message from " + author,
-            body: content,
+            message: content,
         },
+        token: fcmToken
     };
-    admin.messaging().sendToDevice(payload, fcmToken)
+    admin.messaging().send(payload)
     .then((response) => {
         console.log('notification delivered');
         // response is a message ID
