@@ -6,6 +6,7 @@ import {Auth, API, graphqlOperation} from 'aws-amplify';
 import firebase from 'react-native-firebase';
 import { AsyncStorage } from '@aws-amplify/core';
 import * as GraphQL from '../graphql';
+import Constants from '../Constants';
 
 export default class LoginForm extends Component {
 
@@ -44,8 +45,8 @@ export default class LoginForm extends Component {
         await GoogleSignin.hasPlayServices();
 
         await GoogleSignin.configure({
-            iosClientId: '***REMOVED***',
-            webClientId: '***REMOVED***',
+            iosClientId: Constants.iosClientId,
+            webClientId: Constants.webClientId,
             offlineAccess: false,
         });
     }

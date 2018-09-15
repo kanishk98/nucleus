@@ -28,6 +28,3 @@ exports.sendDiscoverTextNotification = functions.https.onRequest((req, res) => {
         console.log('Error: ' + error);
     })
 })
-
-// working request that returned a Google Sign-in page on Postman
-// https://us-central1-nucleus-2018.cloudfunctions.net/sendDiscoverTextNotification&recipient="Sarthak"&author="Kanishk"&content="Content"
