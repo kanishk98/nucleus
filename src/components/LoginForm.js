@@ -84,7 +84,7 @@ export default class LoginForm extends Component {
         try {
             this.setState({progress: true});
             let signedInUser = await GoogleSignin.signIn();
-            if (signedInUser.user.email.includes('@snu.edu.in')) {
+            if (signedInUser.user.email !== null) {
                 console.log('Valid student');
                 console.log(JSON.stringify(signedInUser));
                 this.setState({user: signedInUser, error: null, progress: true, loggedIn: true});

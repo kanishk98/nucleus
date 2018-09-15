@@ -54,7 +54,7 @@ export default class PreDiscover extends React.Component {
                 console.log(res);
                 // waiting for acceptance from another user for 5 seconds
                 setTimeout(this.startDiscover, 5000);
-                this.setState({text: 'Waiting for request confirmation...'});
+                this.setState({text: connectedUser.username});
                 API.graphql(graphqlOperation(GraphQL.SubscribeToDiscoverChats, {recipient: connectedUser.firebaseId}))
                 .then(res => {
                     console.log(res);
@@ -73,11 +73,13 @@ export default class PreDiscover extends React.Component {
 
     acceptDiscover = () => {
         // creating redundant mutation for activation of subscription on other side
+        delete this.state.requestChat.__typename;
         API.graphql(graphqlOperation(GraphQL.CreateDiscoverChat, {input: this.state.requestChat}))
         .then(res => {
             console.log(res);
             // chatting resolved, moving on to another screen
-            this.props.navigation.navigate('Discover', {randomUser: connectedUser, conversationId: chatId});
+            let {author, conversationId} = this.state.requestChat;
+            this.props.navigation.navigate('Discover', {randomUser: author, conversationId: conversationId});
         })
         .catch(err => {
             console.log(err);
@@ -86,7 +88,7 @@ export default class PreDiscover extends React.Component {
 
     cancelRequest = (chat) => {
         console.log('Sending mutation to delete conversation');
-        API.graphql(graphqlOperation(GraphQL.DeleteDiscoverChat), {input: chat})
+        API.graphql(graphqlOperation(GraphQL.DeleteDiscoverChat, {input: chat}))
         .then(res => {
             console.log(res);
         })
@@ -109,9 +111,10 @@ export default class PreDiscover extends React.Component {
                 .then(res => {
                     console.log('User message ' + res);
                     // storing token as user attribute
+                    console.log('FCM token: ' + res);
                 })
                 .catch(err => {
-                    console.log(err);
+                    console.log('FCM error: ' + err);
                     // handle error appropriately
                 })
             } catch (error) {
@@ -136,7 +139,7 @@ export default class PreDiscover extends React.Component {
                 console.log('Subscription for chat received: ' + String(res));
                 const newChat = res.value.data.onCreateNucleusDiscoverChats;
                 // notifies sender of request of conversation ignore after 5 seconds of subscription receipt
-                setTimeout(this.cancelRequest(newChat), 5000);
+                setTimeout( (newChat) => this.cancelRequest, 5000);
                 this.setState({requestId: newChat.conversationId, requestChat: newChat});
             }
         });
