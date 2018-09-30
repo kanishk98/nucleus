@@ -48,7 +48,7 @@ const StackNavigator = createStackNavigator(
         SpecificTextScreen: {
             screen: SpecificTextScreen, 
             navigationOptions: {
-                header: null,
+                title: 'Connected',
             }
         } 
     },

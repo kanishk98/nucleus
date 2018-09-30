@@ -67,13 +67,12 @@ export default class SpecificTextScreen extends React.Component {
 
 
     componentWillMount() {
-        console.log('Props ' + JSON.stringify(this.props));
         this.fetchMoreMessages();
     }
 
     componentDidMount() {
         this.setState({passedChat: this.props.navigation.getParam('chat', null)});
-        API.graphql(graphqlOperation(GraphQL.SubscribeToConnectMessages), {conversationId: this.props.navigation.getParam('chat', null)})
+        API.graphql(graphqlOperation(GraphQL.SubscribeToConnectMessages, {conversationId: this.props.navigation.getParam('chat', null)}))
         .subscribe({
             next: (res) => {
               console.log('Subscription received: ' + String(res));
