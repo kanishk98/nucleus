@@ -2,9 +2,10 @@ import React from 'react';
 import { Message } from './Message';
 import * as GraphQL from '../graphql';
 import { noFilter } from './SpecificChatList';
-import { FlatList, Keyboard, TouchableWithoutFeedback, Dimensions, StyleSheet, TextInput, ScrollView } from 'react-native';
+import { FlatList, KeyboardAvoidingView, Dimensions, StyleSheet, TextInput, ScrollView } from 'react-native';
 import { API, graphqlOperation } from 'aws-amplify';
 import { connectClient } from '../../App';
+import KeyboardSpacer from 'react-native-keyboard-spacer';
 
 export default class SpecificTextScreen extends React.Component {
 
@@ -87,7 +88,7 @@ export default class SpecificTextScreen extends React.Component {
         // TODO: Avoid re-rendering at every character entry
         console.log(this.state);
         return (
-                <ScrollView contentContainerStyle={styles.container} scrollEnabled={false}>
+                <ScrollView scrollEnabled={false}>
                     <FlatList
                         data={this.state.conversations}
                         renderItem={this.renderItem}
@@ -103,6 +104,7 @@ export default class SpecificTextScreen extends React.Component {
                         onChangeText={(text)=>this.setState({typedMessage: text})}
                         onSubmitEditing={this.onSendHandler}
                     />
+                    <KeyboardSpacer />
                 </ScrollView>
         );
     }
@@ -114,8 +116,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    position: 'absolute', 
-    bottom: 0,
   }, 
   input: {
     borderRadius: 5,
