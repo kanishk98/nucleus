@@ -60,14 +60,14 @@ const StackNavigator = createStackNavigator(
 export const connectClient = new AWSAppSyncClient({
     url: AppSync.graphqlEndpoint,
     region: AppSync.region,
-    auth: {type: AUTH_TYPE.API_KEY, apiKey: Constants.connectApi}
+    auth: {type: AUTH_TYPE.API_KEY, apiKey: Constants.discoverApiKey}
 });
 
 export const apiConfig = {
     'aws_appsync_graphqlEndpoint': AppSync.graphqlEndpoint,
     'aws_appsync_region': AppSync.region,
     'aws_appsync_authenticationType': AUTH_TYPE.API_KEY,
-    'aws_appsync_apiKey': Constants.api
+    'aws_appsync_apiKey': Constants.discoverApiKey
 }
 
 Amplify.configure(apiConfig);

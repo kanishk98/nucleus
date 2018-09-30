@@ -99,7 +99,9 @@ export const SubscribeToChatDeletion = `subscription SubscribeToChatDeletion($co
 
 export const GetConnectMessages = gql`query GetPagedConnectMessages($filter: TableNucleusConnectMessagesFilterInput, $limit: Int, $nextToken: String) {
     listNucleusConnectMessages(filter: $filter, limit: $limit, nextToken: $nextToken) {
-        items
+        items {
+            conversationId
+        }
         nextToken
     }
 }`

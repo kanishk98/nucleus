@@ -1,16 +1,21 @@
 import React from 'react';
 import { Message } from './Message';
-import { connectClient } from '../../App';
 import * as GraphQL from '../graphql';
 import { noFilter } from './SpecificChatList';
 import { FlatList } from 'react-native';
+import { API, graphqlOperation } from 'aws-amplify';
+import { connectClient } from '../../App';
 
 export default class SpecificTextScreen extends React.Component {
+
+    static noFilter = {
+        conversationId: {ne: 'null'}
+    }
     
     constructor(props) {
         super(props);
         this.state = {
-            conversations: [],
+            messages: [],
         }
     }
 
@@ -20,19 +25,25 @@ export default class SpecificTextScreen extends React.Component {
     
     fetchMoreMessages = () => {
         connectClient.query({
-            query: GraphQL.GetConnectMessages,
+            query: GraphQL.GetConnectMessages, 
             options: {
-                variables: {filter: noFilter},
+                variables: {filter: SpecificTextScreen.noFilter},
                 fetchPolicy: 'cache-and-network',
             }
         })
         .then(res => {
             console.log(res);
-            this.setState({conversations: this.state.conversations});
+            this.setState({messages: res.data.listNucleusConnectMessages.items});
+            if (res.data.listNucleusConnectMessages.nextToken != null) {
+                // start background operation to fetch more data
+                // TODO: is this really needed or should we just fetch when 
+                // user scrolls upwards?
+
+            }
         })
         .catch(err => {
             console.log(err);
-        });
+        })
     }
 
     renderItem = ({item}) => (

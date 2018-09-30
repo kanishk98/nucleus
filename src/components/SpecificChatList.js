@@ -90,7 +90,8 @@ export default class SpecificChatList extends Component {
                 user2: item,
             }
             let chats = this.state.conversations;
-            chats.push(chat);
+            console.log(chats);
+            // chats.push(chat);
             await AsyncStorage.setItem('CHATS', JSON.stringify(chats))
             .then(res => {
                 console.log(res);
