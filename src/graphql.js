@@ -64,6 +64,16 @@ export const CreateDiscoverMessage = `mutation CreateNucleusDiscoverMessage($inp
     }
 }`
 
+export const CreateConnectMessage = `mutation CreateNucleusConnectMessage($input: CreateNucleusConnectMessagesInput!) {
+    createNucleusConnectMessages(input: $input) {
+        conversationId
+        messageId
+        author
+        recipient
+        timestamp
+    }
+}`
+
 export const GetDiscoverMessages = gql`query getNucleusDiscoverMessages($input: CreateNucleusDiscoverMessagesInput!) {
     getNucleusDiscoverMessages(input: $input) {
         conversationId
@@ -94,6 +104,16 @@ export const SubscribeToChatDeletion = `subscription SubscribeToChatDeletion($co
     onDeleteNucleusDiscoverChats(conversationId: $conversationId) {
         conversationId
         author
+    }
+}`
+
+export const SubscribeToConnectMessages = `subscription SubscribeToConnectMessages($conversationId: String!) {
+    onCreateNucleusConnectMessages(conversationId: $conversationId) {
+        conversationId
+        messageId
+        content
+        author
+        recipient
     }
 }`
 

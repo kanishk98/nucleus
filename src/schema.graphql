@@ -30,6 +30,10 @@ type NucleusConnectConversationsConnection {
 
 type NucleusConnectMessages {
   conversationId: String!
+  content: String
+  author: NucleusDiscoverUsers
+  recipient: NucleusDiscoverUsers
+  timestamp: String
 }
 
 type NucleusConnectMessagesConnection {
@@ -169,6 +173,10 @@ input CreateNucleusConnectConversationsInput {
 
 input CreateNucleusConnectMessagesInput {
   conversationId: String!
+  content: String
+  author: CreateNucleusDiscoverUsersInput
+  recipient: CreateNucleusDiscoverUsersInput
+  timestamp: String
 }
 
 input CreateNucleusDiscoverChatsInput {

@@ -2,7 +2,7 @@ import React from 'react';
 import { Message } from './Message';
 import * as GraphQL from '../graphql';
 import { noFilter } from './SpecificChatList';
-import { FlatList, KeyboardAvoidingView, Dimensions, StyleSheet, TextInput } from 'react-native';
+import { FlatList, KeyboardAvoidingView, Dimensions, StyleSheet, TextInput, ScrollView } from 'react-native';
 import { API, graphqlOperation } from 'aws-amplify';
 import { connectClient } from '../../App';
 
@@ -17,10 +17,6 @@ export default class SpecificTextScreen extends React.Component {
         this.state = {
             messages: [],
         }
-    }
-
-    componentWillMount() {
-         this.fetchMoreMessages();
     }
     
     fetchMoreMessages = () => {
@@ -43,16 +39,49 @@ export default class SpecificTextScreen extends React.Component {
         })
         .catch(err => {
             console.log(err);
+        });
+    }
+
+    onSendHandler = () => {
+        const newMessage = {
+            conversationId: this.props.navigation.state.chat.conversationId,
+            author: this.props.navigation.state.chat.user1,
+            recipient: this.props.navigation.state.chat.user2,
+            timestamp: String(Math.floor(new Date().getTime()/1000)),
+            messageId: this.props.navigation.state.chat.user1.firebaseId + this.props.navigation.state.chat.user2.firebaseId + String(Math.floor(new Date().getTime()/1000)),
+        }
+        API.graphql(graphqlOperation(GraphQL.CreateConnectMessage), {input: newMessage})
+        .then(res => {
+            console.log(res);
         })
+        .catch(err => {
+            console.log(err);
+        });
     }
 
     renderItem = ({item}) => (
         <Message id={item.messageId} sent={item.sender} />
     )
 
+
+    componentWillMount() {
+        console.log('Props ' + JSON.stringify(this.props));
+        this.fetchMoreMessages();
+    }
+
+    componentDidMount() {
+        API.graphql(graphqlOperation(GraphQL.SubscribeToConnectMessages), {conversationId: this.props.navigation.getParam('chat', null)})
+        .subscribe({
+            next: (res) => {
+              console.log('Subscription received: ' + String(res));
+              const newMessage = res.value.data.onCreateNucleusConnectMessages;
+              this.state.messages.push(newMessage);
+              this.forceUpdate();
+            }
+        }); 
+    }
+
     render() {
-        const otherPerson = this.props.navigation.getParam('chat');
-        console.log(otherPerson);
         // TODO: Avoid re-rendering at every character entry
         return (
             <KeyboardAvoidingView style={styles.container}>

@@ -23,7 +23,6 @@ class Conversation extends Component {
                 onPress={this.openChat}
                 roundAvatar
                 title={this.props.item.name}
-                subtitle={this.props.item.key}
             />
         )
     }
@@ -90,7 +89,6 @@ export default class SpecificChatList extends Component {
                 user2: item,
             }
             let chats = this.state.conversations;
-            console.log(chats);
             // chats.push(chat);
             await AsyncStorage.setItem('CHATS', JSON.stringify(chats))
             .then(res => {
@@ -140,7 +138,6 @@ export default class SpecificChatList extends Component {
             onPress={this.newChat.bind(this, item)}
             roundAvatar
             title={item.username}
-            subtitle={renderIf(item.online == 1, <Text>online</Text>)}
         />
     );
 
