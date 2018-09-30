@@ -60,12 +60,11 @@ export default class RandomConnect extends React.Component {
   render() {
     console.log(this.state);
     let placeholderText = null;
-    /*if(this.state.randomUser) {
+    if(this.state.randomUser) {
       placeholderText = "You're talking to " + this.state.randomUser.username;
     } else {
       placeholderText = "You're talking to " + this.props.navigation.getParam("randomUser", null).username;
-    }*/
-    placeholderText = 'whatever';
+    }
     const isMessagePresent = !!this.state.messages;
     if (isMessagePresent) {
       const messages = this.state.messages;
