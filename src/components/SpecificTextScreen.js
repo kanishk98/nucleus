@@ -2,7 +2,7 @@ import React from 'react';
 import { Message } from './Message';
 import * as GraphQL from '../graphql';
 import { noFilter } from './SpecificChatList';
-import { FlatList, KeyboardAvoidingView, Dimensions, StyleSheet, TextInput, ScrollView } from 'react-native';
+import { FlatList, Keyboard, TouchableWithoutFeedback, Dimensions, StyleSheet, TextInput, ScrollView } from 'react-native';
 import { API, graphqlOperation } from 'aws-amplify';
 import { connectClient } from '../../App';
 
@@ -87,23 +87,23 @@ export default class SpecificTextScreen extends React.Component {
         // TODO: Avoid re-rendering at every character entry
         console.log(this.state);
         return (
-            <KeyboardAvoidingView style={styles.container}>
-                <FlatList
-                    data={this.state.conversations}
-                    renderItem={this.renderItem}
-                    onMomentumScrollBegin={this.fetchMoreMessages}
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder='Type a message'
-                    secureTextEntry={false}
-                    autoCorrect={true}
-                    autoCapitalize={'sentences'}
-                    placeholderTextColor='gray'
-                    onChangeText={(text)=>this.setState({typedMessage: text})}
-                    onSubmitEditing={this.onSendHandler}
-                />
-            </KeyboardAvoidingView>
+                <ScrollView contentContainerStyle={styles.container} scrollEnabled={false}>
+                    <FlatList
+                        data={this.state.conversations}
+                        renderItem={this.renderItem}
+                        onMomentumScrollBegin={this.fetchMoreMessages}
+                    />
+                    <TextInput
+                        style={styles.input}
+                        placeholder='Type a message'
+                        secureTextEntry={false}
+                        autoCorrect={true}
+                        autoCapitalize={'sentences'}
+                        placeholderTextColor='gray'
+                        onChangeText={(text)=>this.setState({typedMessage: text})}
+                        onSubmitEditing={this.onSendHandler}
+                    />
+                </ScrollView>
         );
     }
 } 
