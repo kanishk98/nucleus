@@ -5,10 +5,10 @@ src/Constants.js
 .vscode/
 
 # iOS folder
-./ios/Pods/
-./ios/Index/DataStore/
-./ios/build/
-./ios/Index/
+≈ios/Pods/
+ios/Index/DataStore/
+ios/build/
+ios/Index/
 
 # Webstorm folder
 .idea/
