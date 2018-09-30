@@ -27,7 +27,7 @@ export default class LoginForm extends Component {
               const user = await AsyncStorage.getItem('USER');
               if (value !== null && value !== 'false') {
                 console.log(value);
-                this.props.navigation.navigate('PreDiscover', {signedInUser: JSON.parse(user)});
+                this.props.navigation.navigate('Chat', {user: JSON.parse(user)});
               }
              } catch (error) {
                // Error retrieving data
@@ -123,8 +123,8 @@ export default class LoginForm extends Component {
                         this.setLoggedIn('USER', JSON.stringify(newUser));
                         API.graphql(graphqlOperation(GraphQL.CreateDiscoverUser, {input: newUser}))
                         .then(res => {
-                            // user resolved, moving to next screen
-                            this.props.navigation.navigate('PreDiscover', {signedInUser: newUser});
+                            console.log('user resolved, moving to next screen');
+                            this.props.navigation.navigate('Chat', {user: newUser});
                         })
                         .catch(err => {
                             console.log(err);

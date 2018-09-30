@@ -1,15 +1,17 @@
-import {createStackNavigator} from 'react-navigation';
+import {createStackNavigator, createBottomTabNavigator} from 'react-navigation';
 import LoginScreen from './src/components/LoginScreen';
-import RandomConnect from './src/components/RandomConnect';
 import React from 'react';
 import AppSync from './src/AppSync';
 import {ApolloProvider} from 'react-apollo';
 import PreDiscover from './src/components/PreDiscover';
-import {Rehydrated} from 'aws-appsync-react';
+import {Rehydrated} from 'aws-appsync-react/lib';
 import {AUTH_TYPE} from 'aws-appsync/lib';
-import AWSAppSyncClient from 'aws-appsync';
+import AWSAppSyncClient from 'aws-appsync/lib';
 import Constants from './src/Constants';
 import Amplify from 'aws-amplify';
+import Icon from 'react-native-vector-icons/FontAwesome5';
+import SpecificChatList from './src/components/SpecificChatList';
+import SpecificTextScreen from './src/components/SpecificTextScreen';
 
 const StackNavigator = createStackNavigator(
     {
@@ -19,34 +21,46 @@ const StackNavigator = createStackNavigator(
                 header: null
             }
         },
-        PreDiscover: {
-            screen: PreDiscover, 
+        Chat: {
+            screen: createBottomTabNavigator({
+                Connect: {
+                    screen: SpecificChatList, 
+                    navigationOptions: {
+                        tabBarIcon: <Icon name={"rocketchat"} size={30} showIcon={true} />
+                    }
+                },
+                Discover: {
+                    screen: PreDiscover,
+                    navigationOptions: {
+                        tabBarIcon: <Icon name={"rocketchat"} size={30} showIcon={true} />
+                    }
+                }
+            }, {
+            tabBarOptions: {
+                swipeEnabled: true,
+                showIcon: true,
+                activeTintColor: 'tomato',
+                inactiveTintColor: 'gray',
+            },  
+        }), navigationOptions: {
+            header: null,
+        }},
+        SpecificTextScreen: {
+            screen: SpecificTextScreen, 
             navigationOptions: {
-                header: null
+                header: null,
             }
-        },
-        Discover: {
-            screen: RandomConnect,
-            navigationOptions: {
-                title: 'Discover',
-            }
-        },
-        Connect: {
-            screen: RandomConnect, 
-            navigationOptions: {
-                title: 'Connect',
-            }
-        },
-    }, 
+        } 
+    },
     {
         initialRouteName: 'Login'
     }
 );
 
-export const client = new AWSAppSyncClient({
+export const connectClient = new AWSAppSyncClient({
     url: AppSync.graphqlEndpoint,
     region: AppSync.region,
-    auth: {type: AUTH_TYPE.API_KEY, apiKey: 'da2-gyr4llduvng23nvulsnsq7jzmq'}
+    auth: {type: AUTH_TYPE.API_KEY, apiKey: Constants.connectApi}
 });
 
 export const apiConfig = {
@@ -61,7 +75,7 @@ Amplify.configure(apiConfig);
 export default class App extends React.Component {
     render() {
         return (
-            <ApolloProvider client={client}>
+            <ApolloProvider client={connectClient}>
                 <Rehydrated>
                     <StackNavigator />
                 </Rehydrated>

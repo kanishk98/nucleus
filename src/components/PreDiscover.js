@@ -3,7 +3,7 @@ import {Text, View, StyleSheet, Button} from 'react-native';
 import * as GraphQL from '../graphql';
 import {API, graphqlOperation} from 'aws-amplify';
 import firebase from 'react-native-firebase';
-import { Platform } from '../../node_modules/@aws-amplify/core';
+import { Platform } from '@aws-amplify/core';
 
 export default class PreDiscover extends React.Component {
     

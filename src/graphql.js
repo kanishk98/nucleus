@@ -22,6 +22,18 @@ export const GetOnlineDiscoverUsers = `query GetOnlineNucleusDiscoverUsers($onli
     }
 }`;
 
+export const GetAllDiscoverUsers = `query GetAllDiscoverUsers($filter: TableNucleusDiscoverUsersFilterInput, $limit: Int, $nextToken: String) {
+    listNucleusDiscoverUsers(filter: $filter, limit: $limit, nextToken: $nextToken) {
+        items {
+            firebaseId
+            geohash
+            online
+            username
+        }
+        nextToken
+    }
+}`
+
 export const CreateDiscoverChat = `mutation CreateNucleusDiscoverChats($input: CreateNucleusDiscoverChatsInput!) {
     createNucleusDiscoverChats(input: $input) {
         conversationId
@@ -82,5 +94,12 @@ export const SubscribeToChatDeletion = `subscription SubscribeToChatDeletion($co
     onDeleteNucleusDiscoverChats(conversationId: $conversationId) {
         conversationId
         author
+    }
+}`
+
+export const GetConnectMessages = gql`query GetPagedConnectMessages($filter: TableNucleusConnectMessagesFilterInput, $limit: Int, $nextToken: String) {
+    listNucleusConnectMessages(filter: $filter, limit: $limit, nextToken: $nextToken) {
+        items
+        nextToken
     }
 }`
