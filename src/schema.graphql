@@ -34,6 +34,7 @@ type NucleusConnectMessages {
   author: NucleusDiscoverUsers
   recipient: NucleusDiscoverUsers
   timestamp: String
+  messageId: String
 }
 
 type NucleusConnectMessagesConnection {
@@ -177,6 +178,7 @@ input CreateNucleusConnectMessagesInput {
   author: CreateNucleusDiscoverUsersInput
   recipient: CreateNucleusDiscoverUsersInput
   timestamp: String
+  messageId: String
 }
 
 input CreateNucleusDiscoverChatsInput {

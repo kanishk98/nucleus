@@ -78,8 +78,9 @@ export default class SpecificChatList extends Component {
     }
 
     // item here is a user
-    async newChat (item) {
+    newChat (item) {
         console.log(item);
+        console.log(this.state);
         if (!!item) {
             let chatId = this.user.firebaseId + " " + item.firebaseId;
             // add chat to local storage
@@ -88,13 +89,6 @@ export default class SpecificChatList extends Component {
                 user1: this.user,
                 user2: item,
             }
-            let chats = this.state.conversations;
-            // chats.push(chat);
-            await AsyncStorage.setItem('CHATS', JSON.stringify(chats))
-            .then(res => {
-                console.log(res);
-            })
-            .catch(err => console.log(err));
             this.props.navigation.navigate('SpecificTextScreen', {chat: chat, newChat: true});
         }
     }
@@ -126,7 +120,7 @@ export default class SpecificChatList extends Component {
         if (conversations != null) {
             this.setState({conversations: conversations});
         }
-        this.user = this.props.navigation.getParam('user');
+        this.user = this.props.navigation.getParam('user', null);
     }
 
     renderItem = ({item}) => (
@@ -153,7 +147,6 @@ export default class SpecificChatList extends Component {
                 </List>
             );
         } else {
-            console.log(this.user);
             // making initial call for users
             // future calls delegated to background task
             if (!this.state.people || this.state.people.length == 0) {

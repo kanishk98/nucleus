@@ -68,9 +68,14 @@ export const CreateConnectMessage = `mutation CreateNucleusConnectMessage($input
     createNucleusConnectMessages(input: $input) {
         conversationId
         messageId
-        author
-        recipient
+        author {
+            online
+        }
+        recipient {
+            online
+        }
         timestamp
+        content
     }
 }`
 

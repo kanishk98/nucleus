@@ -44,13 +44,15 @@ export default class SpecificTextScreen extends React.Component {
 
     onSendHandler = () => {
         const newMessage = {
-            conversationId: this.props.navigation.state.chat.conversationId,
-            author: this.props.navigation.state.chat.user1,
-            recipient: this.props.navigation.state.chat.user2,
+            conversationId: this.state.passedChat.conversationId,
+            author: this.state.passedChat.user1,
+            content: this.state.typedMessage,
+            recipient: this.state.passedChat.user2,
             timestamp: String(Math.floor(new Date().getTime()/1000)),
-            messageId: this.props.navigation.state.chat.user1.firebaseId + this.props.navigation.state.chat.user2.firebaseId + String(Math.floor(new Date().getTime()/1000)),
+            messageId: this.state.passedChat.user1.firebaseId + this.state.passedChat.user2.firebaseId + String(Math.floor(new Date().getTime()/1000)),
         }
-        API.graphql(graphqlOperation(GraphQL.CreateConnectMessage), {input: newMessage})
+        console.log(newMessage);
+        API.graphql(graphqlOperation(GraphQL.CreateConnectMessage, {input: newMessage}))
         .then(res => {
             console.log(res);
         })
@@ -70,6 +72,7 @@ export default class SpecificTextScreen extends React.Component {
     }
 
     componentDidMount() {
+        this.setState({passedChat: this.props.navigation.getParam('chat', null)});
         API.graphql(graphqlOperation(GraphQL.SubscribeToConnectMessages), {conversationId: this.props.navigation.getParam('chat', null)})
         .subscribe({
             next: (res) => {
@@ -83,6 +86,7 @@ export default class SpecificTextScreen extends React.Component {
 
     render() {
         // TODO: Avoid re-rendering at every character entry
+        console.log(this.state);
         return (
             <KeyboardAvoidingView style={styles.container}>
                 <FlatList
