@@ -45,7 +45,7 @@ export default class SpecificTextScreen extends React.Component {
         });
     }
 
-    onSendHandler = ({messages = []}) => {
+    onSendHandler = (message) => {
         /*const newMessage = {
             conversationId: this.state.passedChat.conversationId,
             author: this.state.passedChat.user1,
@@ -62,31 +62,35 @@ export default class SpecificTextScreen extends React.Component {
         .catch(err => {
             console.log(err);
         });*/
-        console.log(messages);
-        console.log(previousState);
-        this.setState((previousState) => {
+        this.setState(previousState => {
+            console.log(previousState);
             return {
-                messages: GiftedChat.append(previousState.messages, messages, true),
+                messages: GiftedChat.append(previousState.messages, message)
             };
         });
-        this.answerDemo(messages);
     }
 
     renderItem = ({item}) => (
         <Message id={item.messageId} sent={item.sender} />
     )
 
-    answerDemo(messages) {
-        if (messages.length > 0) {
-          if ((messages[0].image || messages[0].location) || !this._isAlright) {
-            this.setState((previousState) => {
-              return {
-                typingText: 'React Native is typing'
-              };
-            });
-          }
-        }
-    }
+    componentWillMount() {
+        this.setState({
+          messages: [
+            {
+              _id: 1,
+              text: 'Hello developer',
+              createdAt: new Date(),
+              user: {
+                _id: 2,
+                name: 'React Native',
+                avatar: 'https://placeimg.com/140/140/any',
+              },
+            },
+          ],
+        })
+      }
+    
 
 
     /*componentWillMount() {
