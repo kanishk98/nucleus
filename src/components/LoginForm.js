@@ -21,18 +21,28 @@ export default class LoginForm extends Component {
     }
 
     componentWillMount() {
-        _retrieveData = async () => {
-            try {
-              const value = await AsyncStorage.getItem('LOGGED_IN');
-              const user = await AsyncStorage.getItem('USER');
-              if (value !== null && value !== 'false') {
-                console.log(value);
-                this.props.navigation.navigate('Chat', {user: JSON.parse(user)});
-              }
-             } catch (error) {
-               // Error retrieving data
-             }
-          }
+        try {
+            AsyncStorage.getItem(Constants.LoggedIn)
+            .then(res => {
+                console.log(res);
+                if (res !== null) {
+                    AsyncStorage.getItem(Constants.UserObject)
+                    .then(savedUser => {
+                        console.log(savedUser);
+                        this.props.navigation.navigate('Chat', {user: JSON.parse(savedUser)});
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    });
+                }
+            })
+            .catch(err => {
+                console.log(err);
+            });
+            } catch (error) {
+            console.log(error);
+            // error retrieving data, user automatically re-presented with login screen
+        }
     }
 
     async componentDidMount() {
@@ -94,7 +104,6 @@ export default class LoginForm extends Component {
                 const firebaseCredential = firebase.auth.GoogleAuthProvider.credential(signedInUser.idToken,
                     signedInUser.accessToken);
                 const firebaseUser = await firebase.auth().signInAndRetrieveDataWithCredential(firebaseCredential);
-                this.setState({progress: false});
                 const firebaseOIDCToken = await firebaseUser.user.getIdToken(true);
                 console.log(firebaseOIDCToken);
                 // syncing user details with Cognito User Pool
@@ -120,10 +129,23 @@ export default class LoginForm extends Component {
                             profilePic: this.state.user.user.photo,
                             username: firebaseUser.user.displayName,
                         };
-                        this.setLoggedIn('USER', JSON.stringify(newUser));
                         API.graphql(graphqlOperation(GraphQL.CreateDiscoverUser, {input: newUser}))
                         .then(res => {
-                            console.log('user resolved, moving to next screen');
+                            AsyncStorage.setItem(Constants.LoggedIn, 'T')
+                            .then(res => {
+                                console.log('User saved as logged in');
+                                this.setState({progress: false});
+                                AsyncStorage.setItem(Constants.UserObject, JSON.stringify(newUser))
+                                .then(res => {
+                                    console.log('newUser saved');
+                                })
+                                .catch(err => {
+                                    console.log(err);
+                                })
+                            })
+                            .catch(err => {
+                                console.log(err);
+                            });
                             this.props.navigation.navigate('Chat', {user: newUser});
                         })
                         .catch(err => {
