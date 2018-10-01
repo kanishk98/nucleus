@@ -124,7 +124,7 @@ export default class LoginForm extends Component {
                         API.graphql(graphqlOperation(GraphQL.CreateDiscoverUser, {input: newUser}))
                         .then(res => {
                             console.log('user resolved, moving to next screen');
-                            this.props.navigation.navigate('Chat', {user: newUser});
+                            this.props.navigation.navigate('SpecificTextScreen', {user: newUser});
                         })
                         .catch(err => {
                             console.log(err);

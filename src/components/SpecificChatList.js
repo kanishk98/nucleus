@@ -79,8 +79,6 @@ export default class SpecificChatList extends Component {
 
     // item here is a user
     newChat (item) {
-        console.log(item);
-        console.log(this.state);
         if (!!item) {
             let chatId = this.user.firebaseId + " " + item.firebaseId;
             // add chat to local storage

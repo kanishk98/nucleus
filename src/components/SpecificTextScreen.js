@@ -6,6 +6,7 @@ import { FlatList, KeyboardAvoidingView, Dimensions, StyleSheet, TextInput, Scro
 import { API, graphqlOperation } from 'aws-amplify';
 import { connectClient } from '../../App';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
+import { GiftedChat } from 'react-native-gifted-chat';
 
 export default class SpecificTextScreen extends React.Component {
 
@@ -18,6 +19,7 @@ export default class SpecificTextScreen extends React.Component {
         this.state = {
             messages: [],
         }
+        this.onSendHandler = this.onSendHandler.bind(this);
     }
     
     fetchMoreMessages = () => {
@@ -43,8 +45,8 @@ export default class SpecificTextScreen extends React.Component {
         });
     }
 
-    onSendHandler = () => {
-        const newMessage = {
+    onSendHandler = ({messages = []}) => {
+        /*const newMessage = {
             conversationId: this.state.passedChat.conversationId,
             author: this.state.passedChat.user1,
             content: this.state.typedMessage,
@@ -59,19 +61,39 @@ export default class SpecificTextScreen extends React.Component {
         })
         .catch(err => {
             console.log(err);
+        });*/
+        console.log(messages);
+        console.log(previousState);
+        this.setState((previousState) => {
+            return {
+                messages: GiftedChat.append(previousState.messages, messages, true),
+            };
         });
+        this.answerDemo(messages);
     }
 
     renderItem = ({item}) => (
         <Message id={item.messageId} sent={item.sender} />
     )
 
-
-    componentWillMount() {
-        this.fetchMoreMessages();
+    answerDemo(messages) {
+        if (messages.length > 0) {
+          if ((messages[0].image || messages[0].location) || !this._isAlright) {
+            this.setState((previousState) => {
+              return {
+                typingText: 'React Native is typing'
+              };
+            });
+          }
+        }
     }
 
-    componentDidMount() {
+
+    /*componentWillMount() {
+        this.fetchMoreMessages();
+    }*/
+
+    /*componentDidMount() {
         this.setState({passedChat: this.props.navigation.getParam('chat', null)});
         API.graphql(graphqlOperation(GraphQL.SubscribeToConnectMessages, {conversationId: this.props.navigation.getParam('chat', null)}))
         .subscribe({
@@ -82,30 +104,17 @@ export default class SpecificTextScreen extends React.Component {
               this.forceUpdate();
             }
         }); 
-    }
+    }*/
 
     render() {
         // TODO: Avoid re-rendering at every character entry
         console.log(this.state);
         return (
-                <ScrollView scrollEnabled={false}>
-                    <FlatList
-                        data={this.state.conversations}
-                        renderItem={this.renderItem}
-                        onMomentumScrollBegin={this.fetchMoreMessages}
-                    />
-                    <TextInput
-                        style={styles.input}
-                        placeholder='Type a message'
-                        secureTextEntry={false}
-                        autoCorrect={true}
-                        autoCapitalize={'sentences'}
-                        placeholderTextColor='gray'
-                        onChangeText={(text)=>this.setState({typedMessage: text})}
-                        onSubmitEditing={this.onSendHandler}
-                    />
-                    <KeyboardSpacer />
-                </ScrollView>
+            <GiftedChat
+                messages={this.state.messages}
+                onSend={this.onSendHandler}
+                user={{_id: 1}}
+            />
         );
     }
 } 
