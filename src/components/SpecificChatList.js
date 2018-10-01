@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { Text, TouchableHighlight, FlatList, StyleSheet, View } from 'react-native';
-import { List, ListItem, Button } from 'react-native-elements';
+import { FlatList, StyleSheet } from 'react-native';
+import { List, ListItem } from 'react-native-elements';
 import { AsyncStorage } from '../../node_modules/@aws-amplify/core';
 import { API, graphqlOperation } from '../../node_modules/aws-amplify';
 import * as GraphQL from '../graphql';
-import  renderIf from './renderIf';
+import Constants from '../Constants';
 
 class Conversation extends Component {
     // item here is a conversationItem
@@ -34,8 +34,8 @@ export default class SpecificChatList extends Component {
         super(props);
         this.state = {
             conversations: [],
-            showingPeople: true,
             people: [],
+            showingPeople: true,
         };
         user = null;
     }
@@ -52,8 +52,6 @@ export default class SpecificChatList extends Component {
     fetchUsers = () => {
         API.graphql(graphqlOperation(GraphQL.GetAllDiscoverUsers, {filter: SpecificChatList.noFilter}))
         .then(res => {
-            console.log('People: ');
-            console.log(res);
             if (res.data.listNucleusDiscoverUsers.nextToken != null) {
                 this.setState({people: res.data.listNucleusDiscoverUsers.items});
                 // start background operation to fetch more data
@@ -80,13 +78,25 @@ export default class SpecificChatList extends Component {
     // item here is a user
     newChat (item) {
         if (!!item) {
-            let chatId = this.user.firebaseId + " " + item.firebaseId;
+            // TODO: Serialising this to have one user before the other means 2 table rows for same conversation
+            // TODO: Fix above issue by alternating id characters between the two on set condition
+            // TODO: Define static function for the same
+            let chatId = this.user.firebaseId + "->" + item.firebaseId + "@" + String(Math.floor(new Date().getTime()/1000));;
             // add chat to local storage
+            let {conversations} = this.state;
             const chat = {
                 conversationId: chatId, 
                 user1: this.user,
                 user2: item,
             }
+            conversations.push(chat);
+            AsyncStorage.setItem(Constants.SpecificChatConversations, JSON.stringify(conversations))
+            .then(res => {
+                console.log('Saved successfully: ' + JSON.stringify(res));
+            })
+            .catch(err => {
+                console.log(err);
+            });
             this.props.navigation.navigate('SpecificTextScreen', {chat: chat, newChat: true});
         }
     }
@@ -99,26 +109,28 @@ export default class SpecificChatList extends Component {
         }
     }
 
-    retrieveChats = async() => {
-        let res = null;
-        try {
-            const previousChats = await AsyncStorage.getItem('CHATS');
-            res = previousChats;
-        } catch(error) {
+    retrieveChats = () => {
+        AsyncStorage.getItem(Constants.SpecificChatConversations)
+        .then(res => {
+            console.log(res);
+            if (res !== null) {
+                // conversations exist
+                console.log('Conversations exist');
+                this.setState({conversations: JSON.parse(res)});
+            }
+        })
+        .catch(err => {
             console.log(err);
-        }
-        return res;
+        })
     }
 
     peopleKeyExtractor = (item, index) => item.firebaseId;
     
-    async componentDidMount() {
-        // fetch previously made conversations here
-        const conversations = await AsyncStorage.getItem('CHATS');
-        if (conversations != null) {
-            this.setState({conversations: conversations});
-        }
+    componentDidMount() {
         this.user = this.props.navigation.getParam('user', null);
+        console.log(this.user);
+        // fetch previously made conversations here
+        this.retrieveChats();
     }
 
     renderItem = ({item}) => (

@@ -53,7 +53,7 @@ const StackNavigator = createStackNavigator(
         } 
     },
     {
-        initialRouteName: 'SpecificTextScreen'
+        initialRouteName: 'Login'
     }
 );
 
