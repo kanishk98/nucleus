@@ -32,7 +32,7 @@ export default class SpecificChatList extends Component {
         super(props);
         this.state = {
             conversations: [],
-            showingPeople: true,
+            showingPeople: false,
             people: [],
         };
         user = null;
@@ -52,6 +52,7 @@ export default class SpecificChatList extends Component {
                 this.itemCount = data.ItemCount;
             }
         });
+        this.search = React.createRef();
     }
 
     static noFilter = {
@@ -130,11 +131,6 @@ export default class SpecificChatList extends Component {
         console.log(this.user);
         // fetch previously made conversations here
         this.retrieveChats();
-        AWS.config.update({
-            accessKeyId: Constants.accessKey,
-            secretAccessKey: Constants.secretAccessKey,
-            region:'ap-south-1'
-        });
     }
 
     renderItem = ({item}) => (
@@ -174,10 +170,10 @@ export default class SpecificChatList extends Component {
                 <View>
                     <ScrollView scrollEnabled={false}>
                         <SearchBar
-                            ref={search => this.search = search}
+                            ref={search=>{this.search = search}}
                             lightTheme
                             onChangeText={text=>this.searchConversations(text)}  
-                            onSubmitEditing={this.search.cancel()}
+                            onSubmitEditing={this.search.cancel}
                         />
                         </ScrollView>
                         <List style={styles.container}>
