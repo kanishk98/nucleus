@@ -43,7 +43,7 @@ const StackNavigator = createStackNavigator(
                 inactiveTintColor: 'gray',
             },  
         }), navigationOptions: {
-            header: null,
+            title: 'Canopy',
         }},
         SpecificTextScreen: {
             screen: SpecificTextScreen, 

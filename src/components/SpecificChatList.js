@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { FlatList, StyleSheet } from 'react-native';
-import { List, ListItem } from 'react-native-elements';
-import { AsyncStorage } from '../../node_modules/@aws-amplify/core';
+import { View, ScrollView, FlatList, StyleSheet, AsyncStorage } from 'react-native';
+import { List, ListItem, SearchBar } from 'react-native-elements';
 import { API, graphqlOperation } from '../../node_modules/aws-amplify';
 import * as GraphQL from '../graphql';
 import Constants from '../Constants';
+import AWS from 'aws-sdk';
 
 class Conversation extends Component {
     // item here is a conversationItem
@@ -34,8 +34,8 @@ export default class SpecificChatList extends Component {
         super(props);
         this.state = {
             conversations: [],
+            showingPeople: false,
             people: [],
-            showingPeople: true,
         };
         user = null;
     }
@@ -130,7 +130,28 @@ export default class SpecificChatList extends Component {
         this.user = this.props.navigation.getParam('user', null);
         console.log(this.user);
         // fetch previously made conversations here
-        this.retrieveChats();
+        // this.retrieveChats();
+        // this.fetchUsers();
+        AWS.config.update({
+            accessKeyId: Constants.accessKey,
+            secretAccessKey: Constants.secretAccessKey,
+            region:'ap-south-1'
+        });
+        const dynamoDB = new AWS.DynamoDB();
+        const table = {TableName: "Nucleus.DiscoverUsers"};
+        dynamoDB.describeTable(table, function(err, data) {
+            if (err) {
+                console.log(err, err.stack);
+            } else {
+                console.log(data);
+                const itemCount = data.ItemCount;
+                /*
+                    if (itemCount > no_of_users_stored) {
+                        fetch latest items from Dynamo
+                    }
+                */
+            }
+        })
     }
 
     renderItem = ({item}) => (
@@ -145,18 +166,33 @@ export default class SpecificChatList extends Component {
         />
     );
 
+    searchConversations({text}) {
+        // text contains user names
+        console.log('Search bar text: ' + JSON.stringify(text));
+    }
+
 
     render() {
-        if (!this.state.showingPeople) {
+        if (!this.state.showingPeople && this.state.conversations.length > 0) {
             return(
-                <List style={styles.container}>
-                    <FlatList
-                        data={this.state.conversations}
-                        renderItem={this.renderItem}
-                    />
-                </List>
+                <View>
+                    <ScrollView scrollEnabled={false}>
+                        <SearchBar
+                            ref={search => this.search = search}
+                            lightTheme
+                            onChangeText={text=>this.searchConversations(text)}  
+                            onSubmitEditing={this.search.cancel()}
+                        />
+                        </ScrollView>
+                        <List style={styles.container}>
+                            <FlatList
+                                data={this.state.conversations}
+                                renderItem={this.renderItem}
+                            />
+                        </List>
+                </View>
             );
-        } else {
+        }  else {
             // making initial call for users
             // future calls delegated to background task
             if (!this.state.people || this.state.people.length == 0) {
