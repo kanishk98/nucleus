@@ -5,6 +5,7 @@ import Constants from '../Constants';
 import AWS from 'aws-sdk';
 import * as JsSearch from 'js-search';
 import { renderSearch } from './renderIf';
+import { API, graphqlOperation } from 'aws-amplify';
 
 export default class SpecificChatList extends Component {
 
@@ -107,6 +108,8 @@ export default class SpecificChatList extends Component {
                 .catch(err => {
                     console.log(err);
                 });
+                // new chat, performing mutation
+                
             } else {
                 const idSearch = new JsSearch.Search('conversationId');
                 idSearch.addIndex(['user2', 'firebaseId']);

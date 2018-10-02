@@ -13,6 +13,24 @@ export default class SpecificTextScreen extends React.Component {
     static noFilter = {
         conversationId: {ne: 'null'}
     }
+
+    static convertUser(passedUser) {
+        let user = {};
+        user._id = passedUser.firebaseId;
+        user.avatar = passedUser.profilePicture;
+        user.name = passedUser.username;
+        return user;
+    }
+
+    static convertMessage(message) {
+        let m = {};
+        m._id = message.messageId;
+        m.text = message.content;
+        m.createdAt = message.timestamp;
+        m.user = SpecificTextScreen.convertUser(message.sender);
+        m.image = message.image;
+        return m;
+    }
     
     constructor(props) {
         super(props);
@@ -20,6 +38,7 @@ export default class SpecificTextScreen extends React.Component {
             messages: [],
         }
         this.onSendHandler = this.onSendHandler.bind(this);
+        this.recipient = SpecificTextScreen.convertUser(this.props.navigation.getParam('chat').user2);
     }
     
     fetchMoreMessages = () => {
@@ -32,7 +51,12 @@ export default class SpecificTextScreen extends React.Component {
         })
         .then(res => {
             console.log(res);
-            this.setState({messages: res.data.listNucleusConnectMessages.items});
+            let m = res.data.listNucleusConnectMessages.items;
+            let messages = [];
+            for (let message in m) {
+                messages.push(SpecificTextScreen.convertMessage(message));
+            }
+            this.setState({messages: messages});
             if (res.data.listNucleusConnectMessages.nextToken != null) {
                 // start background operation to fetch more data
                 // TODO: is this really needed or should we just fetch when 
@@ -74,29 +98,6 @@ export default class SpecificTextScreen extends React.Component {
         <Message id={item.messageId} sent={item.sender} />
     )
 
-    componentWillMount() {
-        this.setState({
-          messages: [
-            {
-              _id: 1,
-              text: 'Hello developer',
-              createdAt: new Date(),
-              user: {
-                _id: 2,
-                name: 'React Native',
-                avatar: 'https://placeimg.com/140/140/any',
-              },
-            },
-          ],
-        })
-      }
-    
-
-
-    /*componentWillMount() {
-        this.fetchMoreMessages();
-    }*/
-
     /*componentDidMount() {
         this.setState({passedChat: this.props.navigation.getParam('chat', null)});
         API.graphql(graphqlOperation(GraphQL.SubscribeToConnectMessages, {conversationId: this.props.navigation.getParam('chat', null)}))
@@ -111,13 +112,12 @@ export default class SpecificTextScreen extends React.Component {
     }*/
 
     render() {
-        // TODO: Avoid re-rendering at every character entry
         console.log(this.state);
         return (
             <GiftedChat
                 messages={this.state.messages}
                 onSend={this.onSendHandler}
-                user={{_id: 1}}
+                user={SpecificTextScreen.convertUser(this.props.navigation.getParam('chat').user1)}
             />
         );
     }
