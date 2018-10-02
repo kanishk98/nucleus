@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { View, ScrollView, FlatList, StyleSheet, AsyncStorage } from 'react-native';
 import { List, ListItem, SearchBar } from 'react-native-elements';
-import { API, graphqlOperation } from '../../node_modules/aws-amplify';
-import * as GraphQL from '../graphql';
 import Constants from '../Constants';
 import AWS from 'aws-sdk';
 
@@ -38,6 +36,22 @@ export default class SpecificChatList extends Component {
             people: [],
         };
         user = null;
+        itemCount = 0;
+        AWS.config.update({
+            accessKeyId: Constants.accessKey,
+            secretAccessKey: Constants.secretAccessKey,
+            region:'ap-south-1'
+        });
+        const dynamoDB = new AWS.DynamoDB();
+        const table = {TableName: "Nucleus.DiscoverUsers"};
+        dynamoDB.describeTable(table, function(err, data) {
+            if (err) {
+                console.log(err, err.stack);
+            } else {
+                console.log(data);
+                this.itemCount = data.ItemCount;
+            }
+        });
     }
 
     static noFilter = {
@@ -116,24 +130,10 @@ export default class SpecificChatList extends Component {
         console.log(this.user);
         // fetch previously made conversations here
         this.retrieveChats();
-        this.getStoredUsers();
         AWS.config.update({
             accessKeyId: Constants.accessKey,
             secretAccessKey: Constants.secretAccessKey,
             region:'ap-south-1'
-        });
-        const dynamoDB = new AWS.DynamoDB();
-        const table = {TableName: "Nucleus.DiscoverUsers"};
-        dynamoDB.describeTable(table, function(err, data) {
-            if (err) {
-                console.log(err, err.stack);
-            } else {
-                console.log(data);
-                const itemCount = data.ItemCount;
-                if (itemCount > this.state.people.length) {
-                    // fetching latest registered users from Dynamo
-                }
-            }
         });
     }
 
@@ -154,10 +154,14 @@ export default class SpecificChatList extends Component {
         console.log('Search bar text: ' + JSON.stringify(text));
     }
 
-    getStoredUsers = () => {
+    getStoredUsers () {
         AsyncStorage.getItem(Constants.UserList)
         .then(res => {
-            this.setState({people: JSON.parse(res)});
+            console.log(res);
+            if (res !== null || res !== undefined) {
+                // if res is not null or undefined
+                this.setState({people: JSON.parse(res)});
+            }
         })
         .catch(err => {
             console.log(err);
@@ -187,9 +191,12 @@ export default class SpecificChatList extends Component {
         }  else {
             // making initial call for users
             // future calls delegated to background task
-            if (this.state.people == null || this.state.people.length == 0) {
+            console.log('Inside render() else block');
+            if (this.state.people == null || this.state.people.length == 0 || this.state == undefined) {
+                console.log('Getting more users from render function');
                 this.getStoredUsers();
             }
+            console.log(this.state);
             return (
                 <List style={styles.container}>
                     <FlatList
