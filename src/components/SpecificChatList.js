@@ -4,6 +4,7 @@ import { List, ListItem, SearchBar } from 'react-native-elements';
 import Constants from '../Constants';
 import AWS from 'aws-sdk';
 import * as JsSearch from 'js-search';
+import { renderSearch } from './renderIf';
 
 class Conversation extends Component {
     // item here is a conversationItem
@@ -202,6 +203,7 @@ export default class SpecificChatList extends Component {
         chatSearch.addIndex('username');
         chatSearch.addDocuments(this.state.people);
         let searchResults = chatSearch.search(text);
+        console.log(searchResults);
         this.setState({searchResults: searchResults})
     }
 
@@ -220,7 +222,7 @@ export default class SpecificChatList extends Component {
     }
 
     submitSearch = () => {
-        this.search.cancel();
+        this.search.cancel;
         this.setState({searchResults: []});
     }
 
@@ -237,11 +239,18 @@ export default class SpecificChatList extends Component {
                         />
                         </ScrollView>
                         <List style={styles.container}>
+                        {renderSearch(
+                            (this.state.searchResults.length > 0),
+                            <FlatList
+                                data={this.state.searchResults}
+                                keyExtractor={(data)=>this.peopleKeyExtractor(data)}
+                                renderItem={this.renderUser}
+                            />,
                             <FlatList
                                 data={this.state.conversations}
                                 keyExtractor={(data)=>this.chatKeyExtractor(data)}
                                 renderItem={this.renderConversation}
-                            />
+                            />)}
                         </List>
                 </View>
             );
@@ -256,11 +265,19 @@ export default class SpecificChatList extends Component {
             console.log(this.state);
             return (
                 <List style={styles.container}>
+                {renderSearch(
+                    this.state.searchResults > 0,
+                    <FlatList
+                        data={this.state.searchResults}
+                        keyExtractor={(data)=>this.peopleKeyExtractor(data)}
+                        renderItem={this.renderUser}
+                    />,
                     <FlatList
                         data={this.state.people}
                         renderItem={this.renderUser}
                         keyExtractor={this.peopleKeyExtractor}
                     />
+                    )}
                 </List>
             );
         }
