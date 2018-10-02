@@ -81,6 +81,7 @@ export default class SpecificChatList extends Component {
     newChat (item) {
         if (!!item) {
             let chat = null;
+            let newChat = true;
             let {conversations, talkingTo} = this.state;
             if (!talkingTo.includes(item.firebaseId)) {
                 talkingTo.push(item.firebaseId);
@@ -112,8 +113,9 @@ export default class SpecificChatList extends Component {
                 idSearch.addDocuments(conversations);
                 chat = idSearch.search(item.firebaseId)[0];
                 console.log(chat);
+                newChat = false;
             }
-            this.props.navigation.navigate('SpecificTextScreen', {chat: chat, newChat: true});
+            this.props.navigation.navigate('SpecificTextScreen', {chat: chat, newChat: newChat});
         }
     }
 
