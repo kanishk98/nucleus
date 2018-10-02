@@ -3,6 +3,7 @@ import { View, ScrollView, FlatList, StyleSheet, AsyncStorage } from 'react-nati
 import { List, ListItem, SearchBar } from 'react-native-elements';
 import Constants from '../Constants';
 import AWS from 'aws-sdk';
+import * as JsSearch from 'js-search';
 
 class Conversation extends Component {
     // item here is a conversationItem
@@ -32,6 +33,7 @@ export default class SpecificChatList extends Component {
         super(props);
         this.state = {
             conversations: [],
+            talkingTo: [],
             showingPeople: false,
             people: [],
         };
@@ -98,25 +100,38 @@ export default class SpecificChatList extends Component {
     // item here is a user
     newChat (item) {
         if (!!item) {
-            // TODO: Serialising this to have one user before the other means 2 table rows for same conversation
-            // TODO: Fix above issue by alternating id characters between the two on set condition
-            // TODO: Define static function for the same
-            let chatId = SpecificChatList.generateConversationId(this.user.firebaseId, item.firebaseId);
-            // add chat to local storage
-            let {conversations} = this.state;
-            const chat = {
-                conversationId: chatId, 
-                user1: this.user,
-                user2: item,
+            let chat = null;
+            let {conversations, talkingTo} = this.state;
+            if (!talkingTo.includes(item.firebaseId)) {
+                talkingTo.push(item.firebaseId);
+                AsyncStorage.setItem(Constants.TalkingTo, JSON.stringify(talkingTo))
+                .then(res => {
+                    console.log('Saved userID in talkingTo');
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+                let chatId = SpecificChatList.generateConversationId(this.user.firebaseId, item.firebaseId);
+                // add chat to local storage
+                chat = {
+                    conversationId: chatId, 
+                    user1: this.user,
+                    user2: item,
+                }
+                conversations.push(chat);
+                AsyncStorage.setItem(Constants.SpecificChatConversations, JSON.stringify(conversations))
+                .then(res => {
+                    console.log('Saved successfully: ' + JSON.stringify(res));
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+            } else {
+                const idSearch = new JsSearch.Search(['user2', 'firebaseId']);
+                idSearch.addDocuments(conversations);
+                chat = idSearch.search(item.firebaseId)[0];
+                console.log(chat);
             }
-            conversations.push(chat);
-            AsyncStorage.setItem(Constants.SpecificChatConversations, JSON.stringify(conversations))
-            .then(res => {
-                console.log('Saved successfully: ' + JSON.stringify(res));
-            })
-            .catch(err => {
-                console.log(err);
-            });
             this.props.navigation.navigate('SpecificTextScreen', {chat: chat, newChat: true});
         }
     }
@@ -130,6 +145,18 @@ export default class SpecificChatList extends Component {
     }
 
     retrieveChats = () => {
+        // getting talkingTo
+        AsyncStorage.getItem(Constants.TalkingTo)
+        .then(res => {
+            console.log(res);
+            if (res !== null) {
+                // been talking to people
+                this.setState({talkingTo: JSON.parse(res)});
+            }
+        })
+        .catch(err => {
+            console.log(err);
+        });
         AsyncStorage.getItem(Constants.SpecificChatConversations)
         .then(res => {
             console.log(res);
@@ -141,7 +168,7 @@ export default class SpecificChatList extends Component {
         })
         .catch(err => {
             console.log(err);
-        })
+        });
     }
 
     chatKeyExtractor = (item, index) => item.user2.firebaseId;
@@ -176,14 +203,14 @@ export default class SpecificChatList extends Component {
         AsyncStorage.getItem(Constants.UserList)
         .then(res => {
             console.log(res);
-            if (res !== null || res !== undefined) {
+            if (res != null || res != undefined) {
                 // if res is not null or undefined
                 this.setState({people: JSON.parse(res)});
             }
         })
         .catch(err => {
             console.log(err);
-        })
+        });
     }
 
     render() {

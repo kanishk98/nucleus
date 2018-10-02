@@ -25,15 +25,15 @@ export default class LoginForm extends Component {
         geohash: {ne: 'random_user_geohash'},
     }
 
-    fetchUsers = () => {
+    fetchUsers () {
         API.graphql(graphqlOperation(GraphQL.GetAllDiscoverUsers, {filter: LoginForm.noFilter}))
         .then(res => {
             AsyncStorage.setItem(Constants.UserList, JSON.stringify(res.data.listNucleusDiscoverUsers.items))
-                .then(res => {
-                    console.log(res);
+                .then(asyncStorageResult => {
+                    console.log(asyncStorageResult);
                 })
-                .catch(err => {
-                    console.log(err);
+                .catch(asyncStorageError => {
+                    console.log(asyncStorageError);
             });
             if (res.data.listNucleusDiscoverUsers.nextToken != null) {
                 // start background operation to fetch more data
