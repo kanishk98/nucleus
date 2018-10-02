@@ -6,28 +6,6 @@ import AWS from 'aws-sdk';
 import * as JsSearch from 'js-search';
 import { renderSearch } from './renderIf';
 
-class Conversation extends Component {
-    // item here is a conversationItem
-    openChat = () => {
-        let chat = {
-            conversationId: this.props.item.conversationId,
-            user1: this.props.user, 
-            user2: this.props.item,
-        }
-        this.props.navigation.navigate('SpecificTextScreen', {chat: chat, newChat: false});
-    }
-    render() {
-        console.log(this.props);
-        return (
-            <ListItem 
-                onPress={this.openChat}
-                roundAvatar
-                title={this.props.item.user2.username}
-            />
-        )
-    }
-}
-
 export default class SpecificChatList extends Component {
 
     constructor(props) {
