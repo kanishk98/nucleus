@@ -32,7 +32,7 @@ export default class SpecificChatList extends Component {
         super(props);
         this.state = {
             conversations: [],
-            showingPeople: true,
+            showingPeople: false,
             people: [],
         };
         user = null;

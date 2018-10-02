@@ -44,7 +44,8 @@ const StackNavigator = createStackNavigator(
             },  
         }), navigationOptions: {
             title: 'Canopy',
-            headerLeft: null
+            headerLeft: null,
+            gesturesEnabled: false,
         }},
         SpecificTextScreen: {
             screen: SpecificTextScreen, 
