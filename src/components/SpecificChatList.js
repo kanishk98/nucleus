@@ -34,7 +34,7 @@ export default class SpecificChatList extends Component {
         super(props);
         this.state = {
             conversations: [],
-            showingPeople: false,
+            showingPeople: true,
             people: [],
         };
         user = null;
@@ -47,21 +47,6 @@ export default class SpecificChatList extends Component {
 
     showPeople = () => {
         this.setState({showingPeople: true});
-    }
-
-    fetchUsers = () => {
-        API.graphql(graphqlOperation(GraphQL.GetAllDiscoverUsers, {filter: SpecificChatList.noFilter}))
-        .then(res => {
-            if (res.data.listNucleusDiscoverUsers.nextToken != null) {
-                this.setState({people: res.data.listNucleusDiscoverUsers.items});
-                // start background operation to fetch more data
-            } else {
-                this.setState({people: res.data.listNucleusDiscoverUsers.items});
-            }
-        })
-        .catch(err => {
-            console.log(err);
-        })
     }
 
     addChat = async(conversation) => {
@@ -130,8 +115,8 @@ export default class SpecificChatList extends Component {
         this.user = this.props.navigation.getParam('user', null);
         console.log(this.user);
         // fetch previously made conversations here
-        // this.retrieveChats();
-        // this.fetchUsers();
+        this.retrieveChats();
+        this.getStoredUsers();
         AWS.config.update({
             accessKeyId: Constants.accessKey,
             secretAccessKey: Constants.secretAccessKey,
@@ -145,13 +130,11 @@ export default class SpecificChatList extends Component {
             } else {
                 console.log(data);
                 const itemCount = data.ItemCount;
-                /*
-                    if (itemCount > no_of_users_stored) {
-                        fetch latest items from Dynamo
-                    }
-                */
+                if (itemCount > this.state.people.length) {
+                    // fetching latest registered users from Dynamo
+                }
             }
-        })
+        });
     }
 
     renderItem = ({item}) => (
@@ -171,6 +154,15 @@ export default class SpecificChatList extends Component {
         console.log('Search bar text: ' + JSON.stringify(text));
     }
 
+    getStoredUsers = () => {
+        AsyncStorage.getItem(Constants.UserList)
+        .then(res => {
+            this.setState({people: JSON.parse(res)});
+        })
+        .catch(err => {
+            console.log(err);
+        })
+    }
 
     render() {
         if (!this.state.showingPeople && this.state.conversations.length > 0) {
@@ -195,8 +187,8 @@ export default class SpecificChatList extends Component {
         }  else {
             // making initial call for users
             // future calls delegated to background task
-            if (!this.state.people || this.state.people.length == 0) {
-                this.fetchUsers();
+            if (this.state.people == null || this.state.people.length == 0) {
+                this.getStoredUsers();
             }
             return (
                 <List style={styles.container}>

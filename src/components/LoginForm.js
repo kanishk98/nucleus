@@ -20,6 +20,30 @@ export default class LoginForm extends Component {
         };
     }
 
+    static noFilter = {
+        firebaseId: {ne: 'random_user_placeholder'},
+        geohash: {ne: 'random_user_geohash'},
+    }
+
+    fetchUsers = () => {
+        API.graphql(graphqlOperation(GraphQL.GetAllDiscoverUsers, {filter: LoginForm.noFilter}))
+        .then(res => {
+            AsyncStorage.setItem(Constants.UserList, JSON.stringify(res.data.listNucleusDiscoverUsers.items))
+                .then(res => {
+                    console.log(res);
+                })
+                .catch(err => {
+                    console.log(err);
+            });
+            if (res.data.listNucleusDiscoverUsers.nextToken != null) {
+                // start background operation to fetch more data
+            }
+        })
+        .catch(err => {
+            console.log(err);
+        });
+    }
+
     componentWillMount() {
         try {
             AsyncStorage.getItem(Constants.LoggedIn)
@@ -131,29 +155,18 @@ export default class LoginForm extends Component {
                         };
                         API.graphql(graphqlOperation(GraphQL.CreateDiscoverUser, {input: newUser}))
                         .then(res => {
-                            AsyncStorage.setItem(Constants.LoggedIn, 'T')
-                            .then(res => {
-                                console.log('User saved as logged in');
-                                this.setState({progress: false});
-                                AsyncStorage.setItem(Constants.UserObject, JSON.stringify(newUser))
-                                .then(res => {
-                                    console.log('newUser saved');
-                                })
-                                .catch(err => {
-                                    console.log(err);
-                                })
-                            })
-                            .catch(err => {
-                                console.log(err);
-                            });
-                            this.props.navigation.navigate('Chat', {user: newUser});
+                            this.resolveUser(newUser);
                         })
                         .catch(err => {
                             console.log(err);
-                            Alert.alert(
-                                'Student data over?', 
-                                'We were unable to log you in because of a slow network connection.'
-                            );
+                            if (JSON.stringify(err).indexOf('Dynamo') == -1) {
+                                this.resolveUser(newUser);
+                            } else {
+                                Alert.alert(
+                                    'Student data over?', 
+                                    'We were unable to log you in. This mostly happens because of a slow network connection.'
+                                );
+                            }
                         });
                     })
                     .catch(error => {
@@ -175,6 +188,26 @@ export default class LoginForm extends Component {
             this.setState({user:null, error:error, progress:false, loggedIn:false});
         }
     };
+
+    resolveUser = (newUser) => {
+        AsyncStorage.setItem(Constants.LoggedIn, 'T')
+        .then(res => {
+            console.log('User saved as logged in');
+            this.setState({progress: false});
+            AsyncStorage.setItem(Constants.UserObject, JSON.stringify(newUser))
+            .then(res => {
+                console.log('newUser saved');
+            })
+            .catch(err => {
+                console.log(err);
+            })
+        })
+        .catch(err => {
+            console.log(err);
+        });
+        this.fetchUsers();
+        this.props.navigation.navigate('Chat', {user: newUser});
+    }
 
     async signOut() {
         try {
