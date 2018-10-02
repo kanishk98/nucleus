@@ -36,6 +36,7 @@ export default class SpecificChatList extends Component {
             talkingTo: [],
             showingPeople: false,
             people: [],
+            searchResults: [],
         };
         user = null;
         itemCount = 0;
@@ -127,7 +128,8 @@ export default class SpecificChatList extends Component {
                     console.log(err);
                 });
             } else {
-                const idSearch = new JsSearch.Search(['user2', 'firebaseId']);
+                const idSearch = new JsSearch.Search('conversationId');
+                idSearch.addIndex(['user2', 'firebaseId']);
                 idSearch.addDocuments(conversations);
                 chat = idSearch.search(item.firebaseId)[0];
                 console.log(chat);
@@ -194,9 +196,13 @@ export default class SpecificChatList extends Component {
         />
     );
 
-    searchConversations({text}) {
+    searchConversations = ({text}) => {
         // text contains user names
-        console.log('Search bar text: ' + JSON.stringify(text));
+        const chatSearch = new JsSearch.Search('firebaseId');
+        chatSearch.addIndex('username');
+        chatSearch.addDocuments(this.state.people);
+        let searchResults = chatSearch.search(text);
+        this.setState({searchResults: searchResults})
     }
 
     getStoredUsers () {
@@ -213,6 +219,11 @@ export default class SpecificChatList extends Component {
         });
     }
 
+    submitSearch = () => {
+        this.search.cancel();
+        this.setState({searchResults: []});
+    }
+
     render() {
         if (!this.state.showingPeople && this.state.conversations.length > 0) {
             return(
@@ -221,8 +232,8 @@ export default class SpecificChatList extends Component {
                         <SearchBar
                             ref={search=>{this.search = search}}
                             lightTheme
-                            onChangeText={text=>this.searchConversations(text)}  
-                            onSubmitEditing={this.search.cancel}
+                            onChangeText={(text)=>this.searchConversations({text})}  
+                            onSubmitEditing={this.submitSearch}
                         />
                         </ScrollView>
                         <List style={styles.container}>
