@@ -39,11 +39,13 @@ const StackNavigator = createStackNavigator(
             tabBarOptions: {
                 swipeEnabled: true,
                 showIcon: true,
-                activeTintColor: 'tomato',
+                activeTintColor: Constants.primaryColor,
                 inactiveTintColor: 'gray',
             },  
         }), navigationOptions: {
-            header: null,
+            title: 'Canopy',
+            headerLeft: null,
+            gesturesEnabled: false,
         }},
         SpecificTextScreen: {
             screen: SpecificTextScreen, 

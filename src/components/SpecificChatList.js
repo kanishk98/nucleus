@@ -1,32 +1,11 @@
 import React, { Component } from 'react';
-import { Text, TouchableHighlight, FlatList, StyleSheet, View } from 'react-native';
-import { List, ListItem, Button } from 'react-native-elements';
-import { AsyncStorage } from '../../node_modules/@aws-amplify/core';
-import { API, graphqlOperation } from '../../node_modules/aws-amplify';
-import * as GraphQL from '../graphql';
-import  renderIf from './renderIf';
-
-class Conversation extends Component {
-    // item here is a conversationItem
-    openChat = () => {
-        let chat = {
-            conversationId: this.props.item.conversationId,
-            user1: this.props.user, 
-            user2: this.props.item,
-        }
-        this.props.navigation.navigate('SpecificTextScreen', {chat: chat, newChat: false});
-    }
-    render() {
-        console.log(this.props);
-        return (
-            <ListItem 
-                onPress={this.openChat}
-                roundAvatar
-                title={this.props.item.name}
-            />
-        )
-    }
-}
+import { View, ScrollView, FlatList, StyleSheet, AsyncStorage } from 'react-native';
+import { List, ListItem, SearchBar } from 'react-native-elements';
+import Constants from '../Constants';
+import AWS from 'aws-sdk';
+import * as JsSearch from 'js-search';
+import { renderSearch } from './renderIf';
+import { API, graphqlOperation } from 'aws-amplify';
 
 export default class SpecificChatList extends Component {
 
@@ -34,10 +13,29 @@ export default class SpecificChatList extends Component {
         super(props);
         this.state = {
             conversations: [],
-            showingPeople: true,
+            talkingTo: [],
+            showingPeople: false,
             people: [],
+            searchResults: [],
         };
         user = null;
+        itemCount = 0;
+        AWS.config.update({
+            accessKeyId: Constants.accessKey,
+            secretAccessKey: Constants.secretAccessKey,
+            region:'ap-south-1'
+        });
+        const dynamoDB = new AWS.DynamoDB();
+        const table = {TableName: "Nucleus.DiscoverUsers"};
+        dynamoDB.describeTable(table, function(err, data) {
+            if (err) {
+                console.log(err, err.stack);
+            } else {
+                console.log(data);
+                this.itemCount = data.ItemCount;
+            }
+        });
+        this.search = React.createRef();
     }
 
     static noFilter = {
@@ -47,23 +45,6 @@ export default class SpecificChatList extends Component {
 
     showPeople = () => {
         this.setState({showingPeople: true});
-    }
-
-    fetchUsers = () => {
-        API.graphql(graphqlOperation(GraphQL.GetAllDiscoverUsers, {filter: SpecificChatList.noFilter}))
-        .then(res => {
-            console.log('People: ');
-            console.log(res);
-            if (res.data.listNucleusDiscoverUsers.nextToken != null) {
-                this.setState({people: res.data.listNucleusDiscoverUsers.items});
-                // start background operation to fetch more data
-            } else {
-                this.setState({people: res.data.listNucleusDiscoverUsers.items});
-            }
-        })
-        .catch(err => {
-            console.log(err);
-        })
     }
 
     addChat = async(conversation) => {
@@ -77,20 +58,78 @@ export default class SpecificChatList extends Component {
         }
     }
 
+    static generateConversationId(s1, s2) {
+        let s = '';
+        const l1 = s1.length;
+        const l2 = s2.length;
+        let l = l1<l2?l1:l2;
+        for (let i = 0; i < l; ++i) {
+            let ch1 = s1.charAt(i);
+            let ch2 = s2.charAt(i);
+            s = s + (ch1<ch2?ch1:ch2);
+            s = s + (ch1<ch2?ch2:ch1); 
+        }
+        if (l < l1) {
+            s = s + s1.substring(l + 1);
+        } else if (l < l2) {
+            s = s + s2.substring(l + 1);
+        }
+        console.log('ConversationID: ' + s);
+        return s;
+    }
+
     // item here is a user
     newChat (item) {
-        console.log(item);
-        console.log(this.state);
         if (!!item) {
-            let chatId = this.user.firebaseId + " " + item.firebaseId;
-            // add chat to local storage
-            const chat = {
-                conversationId: chatId, 
-                user1: this.user,
-                user2: item,
+            let chat = null;
+            let newChat = true;
+            let {conversations, talkingTo} = this.state;
+            if (!talkingTo.includes(item.firebaseId)) {
+                talkingTo.push(item.firebaseId);
+                AsyncStorage.setItem(Constants.TalkingTo, JSON.stringify(talkingTo))
+                .then(res => {
+                    console.log('Saved userID in talkingTo');
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+                let chatId = SpecificChatList.generateConversationId(this.user.firebaseId, item.firebaseId);
+                // add chat to local storage
+                chat = {
+                    conversationId: chatId, 
+                    user1: this.user,
+                    user2: item,
+                }
+                conversations.push(chat);
+                AsyncStorage.setItem(Constants.SpecificChatConversations, JSON.stringify(conversations))
+                .then(res => {
+                    console.log('Saved successfully: ' + JSON.stringify(res));
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+                // new chat, performing mutation
+                
+            } else {
+                const idSearch = new JsSearch.Search('conversationId');
+                idSearch.addIndex(['user2', 'firebaseId']);
+                idSearch.addDocuments(conversations);
+                chat = idSearch.search(item.firebaseId)[0];
+                console.log(chat);
+                newChat = false;
             }
-            this.props.navigation.navigate('SpecificTextScreen', {chat: chat, newChat: true});
+            this.props.navigation.navigate('SpecificTextScreen', {chat: chat, newChat: newChat});
         }
+    }
+
+    // item here is a conversation
+    openChat = (item) => {
+        let chat = {
+            conversationId: item.conversationId,
+            user1: this.user, 
+            user2: item,
+        }
+        this.props.navigation.navigate('SpecificTextScreen', {chat: chat, newChat: false});
     }
 
     deleteAllChats = async() => {
@@ -101,30 +140,50 @@ export default class SpecificChatList extends Component {
         }
     }
 
-    retrieveChats = async() => {
-        let res = null;
-        try {
-            const previousChats = await AsyncStorage.getItem('CHATS');
-            res = previousChats;
-        } catch(error) {
+    retrieveChats = () => {
+        // getting talkingTo
+        AsyncStorage.getItem(Constants.TalkingTo)
+        .then(res => {
+            console.log(res);
+            if (res !== null) {
+                // been talking to people
+                this.setState({talkingTo: JSON.parse(res)});
+            }
+        })
+        .catch(err => {
             console.log(err);
-        }
-        return res;
+        });
+        AsyncStorage.getItem(Constants.SpecificChatConversations)
+        .then(res => {
+            console.log(res);
+            if (res !== null) {
+                // conversations exist
+                console.log('Conversations exist');
+                this.setState({conversations: JSON.parse(res)});
+            }
+        })
+        .catch(err => {
+            console.log(err);
+        });
     }
+
+    chatKeyExtractor = (item, index) => item.user2.firebaseId;
 
     peopleKeyExtractor = (item, index) => item.firebaseId;
     
-    async componentDidMount() {
-        // fetch previously made conversations here
-        const conversations = await AsyncStorage.getItem('CHATS');
-        if (conversations != null) {
-            this.setState({conversations: conversations});
-        }
+    componentDidMount() {
         this.user = this.props.navigation.getParam('user', null);
+        console.log(this.user);
+        // fetch previously made conversations here
+        this.retrieveChats();
     }
 
-    renderItem = ({item}) => (
-        <Conversation item={item} user={this.user}/>
+    renderConversation = ({item}) => (
+        <ListItem 
+            onPress={this.openChat.bind(this, item)}
+            roundAvatar
+            title={item.user2.username}
+        />
     );
 
     renderUser = ({item}) => (
@@ -135,30 +194,87 @@ export default class SpecificChatList extends Component {
         />
     );
 
+    searchConversations = ({text}) => {
+        // text contains user names
+        const chatSearch = new JsSearch.Search('firebaseId');
+        chatSearch.addIndex('username');
+        chatSearch.addDocuments(this.state.people);
+        let searchResults = chatSearch.search(text);
+        console.log(searchResults);
+        this.setState({searchResults: searchResults})
+    }
+
+    getStoredUsers () {
+        AsyncStorage.getItem(Constants.UserList)
+        .then(res => {
+            console.log(res);
+            if (res != null || res != undefined) {
+                // if res is not null or undefined
+                this.setState({people: JSON.parse(res)});
+            }
+        })
+        .catch(err => {
+            console.log(err);
+        });
+    }
+
+    submitSearch = () => {
+        this.search.cancel;
+        this.setState({searchResults: []});
+    }
 
     render() {
-        if (!this.state.showingPeople) {
+        if (!this.state.showingPeople && this.state.conversations.length > 0) {
             return(
-                <List style={styles.container}>
-                    <FlatList
-                        data={this.state.conversations}
-                        renderItem={this.renderItem}
-                    />
-                </List>
+                <View>
+                    <ScrollView scrollEnabled={false}>
+                        <SearchBar
+                            ref={search=>{this.search = search}}
+                            lightTheme
+                            onChangeText={(text)=>this.searchConversations({text})}  
+                            onSubmitEditing={this.submitSearch}
+                        />
+                        </ScrollView>
+                        <List style={styles.container}>
+                        {renderSearch(
+                            (this.state.searchResults.length > 0),
+                            <FlatList
+                                data={this.state.searchResults}
+                                keyExtractor={(data)=>this.peopleKeyExtractor(data)}
+                                renderItem={this.renderUser}
+                            />,
+                            <FlatList
+                                data={this.state.conversations}
+                                keyExtractor={(data)=>this.chatKeyExtractor(data)}
+                                renderItem={this.renderConversation}
+                            />)}
+                        </List>
+                </View>
             );
-        } else {
+        }  else {
             // making initial call for users
             // future calls delegated to background task
-            if (!this.state.people || this.state.people.length == 0) {
-                this.fetchUsers();
+            console.log('Inside render() else block');
+            if (this.state.people == null || this.state.people.length == 0 || this.state == undefined) {
+                console.log('Getting more users from render function');
+                this.getStoredUsers();
             }
+            console.log(this.state);
             return (
                 <List style={styles.container}>
+                {renderSearch(
+                    this.state.searchResults > 0,
+                    <FlatList
+                        data={this.state.searchResults}
+                        keyExtractor={(data)=>this.peopleKeyExtractor(data)}
+                        renderItem={this.renderUser}
+                    />,
                     <FlatList
                         data={this.state.people}
                         renderItem={this.renderUser}
                         keyExtractor={this.peopleKeyExtractor}
                     />
+                    )}
                 </List>
             );
         }

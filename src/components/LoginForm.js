@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {StyleSheet, View, Dimensions, Text, Platform, ProgressBarAndroid, ProgressViewIOS, Alert} from 'react-native';
 import {GoogleSignin, GoogleSigninButton} from 'react-native-google-signin';
-import renderIf from './renderIf';
+import { renderProgress } from './renderIf';
 import {Auth, API, graphqlOperation} from 'aws-amplify';
 import firebase from 'react-native-firebase';
 import { AsyncStorage } from '@aws-amplify/core';
@@ -20,19 +20,53 @@ export default class LoginForm extends Component {
         };
     }
 
+    static noFilter = {
+        firebaseId: {ne: 'random_user_placeholder'},
+        geohash: {ne: 'random_user_geohash'},
+    }
+
+    fetchUsers () {
+        API.graphql(graphqlOperation(GraphQL.GetAllDiscoverUsers, {filter: LoginForm.noFilter}))
+        .then(res => {
+            AsyncStorage.setItem(Constants.UserList, JSON.stringify(res.data.listNucleusDiscoverUsers.items))
+                .then(asyncStorageResult => {
+                    console.log(asyncStorageResult);
+                })
+                .catch(asyncStorageError => {
+                    console.log(asyncStorageError);
+            });
+            if (res.data.listNucleusDiscoverUsers.nextToken != null) {
+                // start background operation to fetch more data
+            }
+        })
+        .catch(err => {
+            console.log(err);
+        });
+    }
+
     componentWillMount() {
-        _retrieveData = async () => {
-            try {
-              const value = await AsyncStorage.getItem('LOGGED_IN');
-              const user = await AsyncStorage.getItem('USER');
-              if (value !== null && value !== 'false') {
-                console.log(value);
-                this.props.navigation.navigate('Chat', {user: JSON.parse(user)});
-              }
-             } catch (error) {
-               // Error retrieving data
-             }
-          }
+        try {
+            AsyncStorage.getItem(Constants.LoggedIn)
+            .then(res => {
+                console.log(res);
+                if (res !== null) {
+                    AsyncStorage.getItem(Constants.UserObject)
+                    .then(savedUser => {
+                        console.log(savedUser);
+                        this.props.navigation.navigate('Chat', {user: JSON.parse(savedUser)});
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    });
+                }
+            })
+            .catch(err => {
+                console.log(err);
+            });
+            } catch (error) {
+            console.log(error);
+            // error retrieving data, user automatically re-presented with login screen
+        }
     }
 
     async componentDidMount() {
@@ -61,13 +95,12 @@ export default class LoginForm extends Component {
             return (
             <View style={styles.container}>
                 <Text style={styles.instructions}>Sign in with your SNU account.</Text>
-                {renderIf(!this.state.progress, <GoogleSigninButton
+                {renderProgress(!this.state.progress, <GoogleSigninButton
                     style={styles.signInButton}
                     size={GoogleSigninButton.Size.Icon}
                     color={GoogleSigninButton.Color.Light}
                     onPress={this.signIn}
-                />)}
-                {renderIf(this.state.progress, <ProgressBar/>)}
+                />, <ProgressBar />)}
             </View>
             );
         } else {
@@ -94,7 +127,6 @@ export default class LoginForm extends Component {
                 const firebaseCredential = firebase.auth.GoogleAuthProvider.credential(signedInUser.idToken,
                     signedInUser.accessToken);
                 const firebaseUser = await firebase.auth().signInAndRetrieveDataWithCredential(firebaseCredential);
-                this.setState({progress: false});
                 const firebaseOIDCToken = await firebaseUser.user.getIdToken(true);
                 console.log(firebaseOIDCToken);
                 // syncing user details with Cognito User Pool
@@ -120,18 +152,20 @@ export default class LoginForm extends Component {
                             profilePic: this.state.user.user.photo,
                             username: firebaseUser.user.displayName,
                         };
-                        this.setLoggedIn('USER', JSON.stringify(newUser));
                         API.graphql(graphqlOperation(GraphQL.CreateDiscoverUser, {input: newUser}))
                         .then(res => {
-                            console.log('user resolved, moving to next screen');
-                            this.props.navigation.navigate('Chat', {user: newUser});
+                            this.resolveUser(newUser);
                         })
                         .catch(err => {
                             console.log(err);
-                            Alert.alert(
-                                'Student data over?', 
-                                'We were unable to log you in because of a slow network connection.'
-                            );
+                            if (JSON.stringify(err).indexOf('Dynamo') == -1) {
+                                this.resolveUser(newUser);
+                            } else {
+                                Alert.alert(
+                                    'Student data over?', 
+                                    'We were unable to log you in. This mostly happens because of a slow network connection.'
+                                );
+                            }
                         });
                     })
                     .catch(error => {
@@ -153,6 +187,26 @@ export default class LoginForm extends Component {
             this.setState({user:null, error:error, progress:false, loggedIn:false});
         }
     };
+
+    resolveUser = (newUser) => {
+        AsyncStorage.setItem(Constants.LoggedIn, 'T')
+        .then(res => {
+            console.log('User saved as logged in');
+            this.setState({progress: false});
+            AsyncStorage.setItem(Constants.UserObject, JSON.stringify(newUser))
+            .then(res => {
+                console.log('newUser saved');
+            })
+            .catch(err => {
+                console.log(err);
+            })
+        })
+        .catch(err => {
+            console.log(err);
+        });
+        this.fetchUsers();
+        this.props.navigation.navigate('Chat', {user: newUser});
+    }
 
     async signOut() {
         try {

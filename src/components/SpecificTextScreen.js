@@ -6,11 +6,30 @@ import { FlatList, KeyboardAvoidingView, Dimensions, StyleSheet, TextInput, Scro
 import { API, graphqlOperation } from 'aws-amplify';
 import { connectClient } from '../../App';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
+import { GiftedChat } from 'react-native-gifted-chat';
 
 export default class SpecificTextScreen extends React.Component {
 
     static noFilter = {
         conversationId: {ne: 'null'}
+    }
+
+    static convertUser(passedUser) {
+        let user = {};
+        user._id = passedUser.firebaseId;
+        user.avatar = passedUser.profilePicture;
+        user.name = passedUser.username;
+        return user;
+    }
+
+    static convertMessage(message) {
+        let m = {};
+        m._id = message.messageId;
+        m.text = message.content;
+        m.createdAt = message.timestamp;
+        m.user = SpecificTextScreen.convertUser(message.sender);
+        m.image = message.image;
+        return m;
     }
     
     constructor(props) {
@@ -18,6 +37,8 @@ export default class SpecificTextScreen extends React.Component {
         this.state = {
             messages: [],
         }
+        this.onSendHandler = this.onSendHandler.bind(this);
+        this.recipient = SpecificTextScreen.convertUser(this.props.navigation.getParam('chat').user2);
     }
     
     fetchMoreMessages = () => {
@@ -30,7 +51,12 @@ export default class SpecificTextScreen extends React.Component {
         })
         .then(res => {
             console.log(res);
-            this.setState({messages: res.data.listNucleusConnectMessages.items});
+            let m = res.data.listNucleusConnectMessages.items;
+            let messages = [];
+            for (let message in m) {
+                messages.push(SpecificTextScreen.convertMessage(message));
+            }
+            this.setState({messages: messages});
             if (res.data.listNucleusConnectMessages.nextToken != null) {
                 // start background operation to fetch more data
                 // TODO: is this really needed or should we just fetch when 
@@ -43,8 +69,8 @@ export default class SpecificTextScreen extends React.Component {
         });
     }
 
-    onSendHandler = () => {
-        const newMessage = {
+    onSendHandler = (message) => {
+        /*const newMessage = {
             conversationId: this.state.passedChat.conversationId,
             author: this.state.passedChat.user1,
             content: this.state.typedMessage,
@@ -59,6 +85,12 @@ export default class SpecificTextScreen extends React.Component {
         })
         .catch(err => {
             console.log(err);
+        });*/
+        this.setState(previousState => {
+            console.log(previousState);
+            return {
+                messages: GiftedChat.append(previousState.messages, message)
+            };
         });
     }
 
@@ -66,12 +98,7 @@ export default class SpecificTextScreen extends React.Component {
         <Message id={item.messageId} sent={item.sender} />
     )
 
-
-    componentWillMount() {
-        this.fetchMoreMessages();
-    }
-
-    componentDidMount() {
+    /*componentDidMount() {
         this.setState({passedChat: this.props.navigation.getParam('chat', null)});
         API.graphql(graphqlOperation(GraphQL.SubscribeToConnectMessages, {conversationId: this.props.navigation.getParam('chat', null)}))
         .subscribe({
@@ -82,30 +109,16 @@ export default class SpecificTextScreen extends React.Component {
               this.forceUpdate();
             }
         }); 
-    }
+    }*/
 
     render() {
-        // TODO: Avoid re-rendering at every character entry
         console.log(this.state);
         return (
-                <ScrollView scrollEnabled={false}>
-                    <FlatList
-                        data={this.state.conversations}
-                        renderItem={this.renderItem}
-                        onMomentumScrollBegin={this.fetchMoreMessages}
-                    />
-                    <TextInput
-                        style={styles.input}
-                        placeholder='Type a message'
-                        secureTextEntry={false}
-                        autoCorrect={true}
-                        autoCapitalize={'sentences'}
-                        placeholderTextColor='gray'
-                        onChangeText={(text)=>this.setState({typedMessage: text})}
-                        onSubmitEditing={this.onSendHandler}
-                    />
-                    <KeyboardSpacer />
-                </ScrollView>
+            <GiftedChat
+                messages={this.state.messages}
+                onSend={this.onSendHandler}
+                user={SpecificTextScreen.convertUser(this.props.navigation.getParam('chat').user1)}
+            />
         );
     }
 } 
