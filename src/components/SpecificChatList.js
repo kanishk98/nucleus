@@ -139,6 +139,16 @@ export default class SpecificChatList extends Component {
         }
     }
 
+    // item here is a conversation
+    openChat = (item) => {
+        let chat = {
+            conversationId: item.conversationId,
+            user1: this.user, 
+            user2: item,
+        }
+        this.props.navigation.navigate('SpecificTextScreen', {chat: chat, newChat: false});
+    }
+
     deleteAllChats = async() => {
         try {
             await AsyncStorage.removeItem('CHATS');
@@ -186,7 +196,11 @@ export default class SpecificChatList extends Component {
     }
 
     renderConversation = ({item}) => (
-        <Conversation item={item} user={this.user}/>
+        <ListItem 
+            onPress={this.openChat.bind(this, item)}
+            roundAvatar
+            title={item.user2.username}
+        />
     );
 
     renderUser = ({item}) => (
