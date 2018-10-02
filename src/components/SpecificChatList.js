@@ -20,7 +20,7 @@ class Conversation extends Component {
             <ListItem 
                 onPress={this.openChat}
                 roundAvatar
-                title={this.props.item.name}
+                title={this.props.item.user2.username}
             />
         )
     }
@@ -32,7 +32,7 @@ export default class SpecificChatList extends Component {
         super(props);
         this.state = {
             conversations: [],
-            showingPeople: false,
+            showingPeople: true,
             people: [],
         };
         user = null;
@@ -75,13 +75,33 @@ export default class SpecificChatList extends Component {
         }
     }
 
+    static generateConversationId(s1, s2) {
+        let s = '';
+        const l1 = s1.length;
+        const l2 = s2.length;
+        let l = l1<l2?l1:l2;
+        for (let i = 0; i < l; ++i) {
+            let ch1 = s1.charAt(i);
+            let ch2 = s2.charAt(i);
+            s = s + (ch1<ch2?ch1:ch2);
+            s = s + (ch1<ch2?ch2:ch1); 
+        }
+        if (l < l1) {
+            s = s + s1.substring(l + 1);
+        } else if (l < l2) {
+            s = s + s2.substring(l + 1);
+        }
+        console.log('ConversationID: ' + s);
+        return s;
+    }
+
     // item here is a user
     newChat (item) {
         if (!!item) {
             // TODO: Serialising this to have one user before the other means 2 table rows for same conversation
             // TODO: Fix above issue by alternating id characters between the two on set condition
             // TODO: Define static function for the same
-            let chatId = this.user.firebaseId + "->" + item.firebaseId + "@" + String(Math.floor(new Date().getTime()/1000));;
+            let chatId = SpecificChatList.generateConversationId(this.user.firebaseId, item.firebaseId);
             // add chat to local storage
             let {conversations} = this.state;
             const chat = {
@@ -124,6 +144,8 @@ export default class SpecificChatList extends Component {
         })
     }
 
+    chatKeyExtractor = (item, index) => item.user2.firebaseId;
+
     peopleKeyExtractor = (item, index) => item.firebaseId;
     
     componentDidMount() {
@@ -133,7 +155,7 @@ export default class SpecificChatList extends Component {
         this.retrieveChats();
     }
 
-    renderItem = ({item}) => (
+    renderConversation = ({item}) => (
         <Conversation item={item} user={this.user}/>
     );
 
@@ -179,7 +201,8 @@ export default class SpecificChatList extends Component {
                         <List style={styles.container}>
                             <FlatList
                                 data={this.state.conversations}
-                                renderItem={this.renderItem}
+                                keyExtractor={(data)=>this.chatKeyExtractor(data)}
+                                renderItem={this.renderConversation}
                             />
                         </List>
                 </View>
