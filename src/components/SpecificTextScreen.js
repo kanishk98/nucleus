@@ -15,7 +15,11 @@ export default class SpecificTextScreen extends React.Component {
     }
 
     static convertUser(passedUser) {
-        let user = {};
+        let user = {
+            _id: null,
+            avatar: null,
+            name: null,
+        };
         user._id = passedUser.firebaseId;
         user.avatar = passedUser.profilePicture;
         user.name = passedUser.username;
@@ -37,8 +41,9 @@ export default class SpecificTextScreen extends React.Component {
         this.state = {
             messages: [],
         }
-        this.onSendHandler = this.onSendHandler.bind(this);
-        this.recipient = SpecificTextScreen.convertUser(this.props.navigation.getParam('chat').user2);
+        this.chat = this.props.navigation.getParam('chat');
+        this.recipient = SpecificTextScreen.convertUser(this.chat.user2);
+        this.user = this.chat.user1;
     }
     
     fetchMoreMessages = () => {
@@ -69,14 +74,15 @@ export default class SpecificTextScreen extends React.Component {
         });
     }
 
-    onSendHandler = (message) => {
-        /*const newMessage = {
-            conversationId: this.state.passedChat.conversationId,
-            author: this.state.passedChat.user1,
-            content: this.state.typedMessage,
-            recipient: this.state.passedChat.user2,
-            timestamp: String(Math.floor(new Date().getTime()/1000)),
-            messageId: this.state.passedChat.user1.firebaseId + this.state.passedChat.user2.firebaseId + String(Math.floor(new Date().getTime()/1000)),
+    onSendHandler = ({message}) => {
+        console.log('message: ' + JSON.stringify(message));
+        const newMessage = {
+            conversationId: this.chat.conversationId,
+            author: this.user,
+            recipient: this.recipient,
+            content: message, 
+            timestamp: new Date().toString(),
+            messageId: this.chat.conversationId + String(Math.floor(new Date().getTime()/1000)),
         }
         console.log(newMessage);
         API.graphql(graphqlOperation(GraphQL.CreateConnectMessage, {input: newMessage}))
@@ -85,7 +91,7 @@ export default class SpecificTextScreen extends React.Component {
         })
         .catch(err => {
             console.log(err);
-        });*/
+        });
         this.setState(previousState => {
             console.log(previousState);
             return {
@@ -113,11 +119,13 @@ export default class SpecificTextScreen extends React.Component {
 
     render() {
         console.log(this.state);
+        let user = SpecificTextScreen.convertUser(this.chat.user1);
+        console.log(user);
         return (
             <GiftedChat
                 messages={this.state.messages}
-                onSend={this.onSendHandler}
-                user={SpecificTextScreen.convertUser(this.props.navigation.getParam('chat').user1)}
+                onSend={(message)=>this.onSendHandler({message})}
+                user={user}
             />
         );
     }
