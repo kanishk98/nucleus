@@ -10,6 +10,7 @@ import AWSAppSyncClient from 'aws-appsync/lib';
 import Constants from './src/Constants';
 import Amplify from 'aws-amplify';
 import Entypo from 'react-native-vector-icons/Entypo';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import SpecificChatList from './src/components/SpecificChatList';
 import SpecificTextScreen from './src/components/SpecificTextScreen';
 
@@ -26,7 +27,7 @@ const StackNavigator = createStackNavigator(
                 Connect: {
                     screen: SpecificChatList, 
                     navigationOptions: {
-                        tabBarIcon: <Entypo name={"chat"} size={30}/>
+                        tabBarIcon: <Ionicons name={"ios-chatbubbles"} size={33}/>
                     }
                 },
                 Discover: {
