@@ -1,21 +1,18 @@
 ﻿type Mutation {
   createNucleusConnectConversations(input: CreateNucleusConnectConversationsInput!): NucleusConnectConversations
   createNucleusConnectMessages(input: CreateNucleusConnectMessagesInput!): NucleusConnectMessages
-  createNucleusConnectTexts(input: CreateNucleusConnectTextsInput!): NucleusConnectTexts
   createNucleusDiscoverChats(input: CreateNucleusDiscoverChatsInput!): NucleusDiscoverChats
   createNucleusDiscoverConversations(input: CreateNucleusDiscoverConversationsInput!): NucleusDiscoverConversations
   createNucleusDiscoverMessages(input: CreateNucleusDiscoverMessagesInput!): NucleusDiscoverMessages
   createNucleusDiscoverUsers(input: CreateNucleusDiscoverUsersInput!): NucleusDiscoverUsers
   deleteNucleusConnectConversations(input: DeleteNucleusConnectConversationsInput!): NucleusConnectConversations
   deleteNucleusConnectMessages(input: DeleteNucleusConnectMessagesInput!): NucleusConnectMessages
-  deleteNucleusConnectTexts(input: DeleteNucleusConnectTextsInput!): NucleusConnectTexts
   deleteNucleusDiscoverChats(input: DeleteNucleusDiscoverChatsInput!): NucleusDiscoverChats
   deleteNucleusDiscoverConversations(input: DeleteNucleusDiscoverConversationsInput!): NucleusDiscoverConversations
   deleteNucleusDiscoverMessages(input: DeleteNucleusDiscoverMessagesInput!): NucleusDiscoverMessages
   deleteNucleusDiscoverUsers(input: DeleteNucleusDiscoverUsersInput!): NucleusDiscoverUsers
   updateNucleusConnectConversations(input: UpdateNucleusConnectConversationsInput!): NucleusConnectConversations
   updateNucleusConnectMessages(input: UpdateNucleusConnectMessagesInput!): NucleusConnectMessages
-  updateNucleusConnectTexts(input: UpdateNucleusConnectTextsInput!): NucleusConnectTexts
   updateNucleusDiscoverChats(input: UpdateNucleusDiscoverChatsInput!): NucleusDiscoverChats
   updateNucleusDiscoverConversations(input: UpdateNucleusDiscoverConversationsInput!): NucleusDiscoverConversations
   updateNucleusDiscoverMessages(input: UpdateNucleusDiscoverMessagesInput!): NucleusDiscoverMessages
@@ -32,30 +29,16 @@ type NucleusConnectConversationsConnection {
 }
 
 type NucleusConnectMessages {
-  author: NucleusDiscoverUsers
-  content: String
   conversationId: String!
-  messageId: String
+  content: String
+  author: NucleusDiscoverUsers
   recipient: NucleusDiscoverUsers
   timestamp: String
+  messageId: String
 }
 
 type NucleusConnectMessagesConnection {
   items: [NucleusConnectMessages]
-  nextToken: String
-}
-
-type NucleusConnectTexts {
-  conversationId: String!
-  messageId: String!
-  recipient: NucleusDiscoverUsers
-  author: NucleusDiscoverUsers
-  content: String
-  timestamp: String
-}
-
-type NucleusConnectTextsConnection {
-  items: [NucleusConnectTexts]
   nextToken: String
 }
 
@@ -127,7 +110,6 @@ type NucleusDiscoverUsersConnection {
 type Query {
   getNucleusConnectConversations(conversationId: String!): NucleusConnectConversations
   getNucleusConnectMessages(conversationId: String!): NucleusConnectMessages
-  getNucleusConnectTexts(conversationId: String!, messageId: String!): NucleusConnectTexts
   getNucleusDiscoverChats(conversationId: String!): NucleusDiscoverChats
   getNucleusDiscoverConversations(conversationId: String!, messageId: [String]!): NucleusDiscoverConversations
   getNucleusDiscoverMessages(conversationId: String!, messageId: String!): NucleusDiscoverMessages
@@ -135,7 +117,6 @@ type Query {
   getOnlineNucleusDiscoverUsers(online: Int): [NucleusDiscoverUsers]
   listNucleusConnectConversations(filter: TableNucleusConnectConversationsFilterInput, limit: Int, nextToken: String): NucleusConnectConversationsConnection
   listNucleusConnectMessages(filter: TableNucleusConnectMessagesFilterInput, limit: Int, nextToken: String): NucleusConnectMessagesConnection
-  listNucleusConnectTexts(filter: TableNucleusConnectTextsFilterInput, limit: Int, nextToken: String): NucleusConnectTextsConnection
   listNucleusDiscoverChats(filter: TableNucleusDiscoverChatsFilterInput, limit: Int, nextToken: String): NucleusDiscoverChatsConnection
   listNucleusDiscoverConversations(filter: TableNucleusDiscoverConversationsFilterInput, limit: Int, nextToken: String): NucleusDiscoverConversationsConnection
   listNucleusDiscoverMessages(filter: TableNucleusDiscoverMessagesFilterInput, limit: Int, nextToken: String): NucleusDiscoverMessagesConnection
@@ -153,8 +134,6 @@ type Subscription {
     @aws_subscribe(mutations:["createNucleusConnectConversations"])
   onCreateNucleusConnectMessages(conversationId: String): NucleusConnectMessages
     @aws_subscribe(mutations:["createNucleusConnectMessages"])
-  onCreateNucleusConnectTexts(conversationId: String): NucleusConnectTexts
-    @aws_subscribe(mutations:["createNucleusConnectTexts"])
   onCreateNucleusDiscoverChats(recipient: String): NucleusDiscoverChats
     @aws_subscribe(mutations:["createNucleusDiscoverChats"])
   onCreateNucleusDiscoverConversations(conversationId: String, messageId: [String]): NucleusDiscoverConversations
@@ -167,8 +146,6 @@ type Subscription {
     @aws_subscribe(mutations:["deleteNucleusConnectConversations"])
   onDeleteNucleusConnectMessages(conversationId: String): NucleusConnectMessages
     @aws_subscribe(mutations:["deleteNucleusConnectMessages"])
-  onDeleteNucleusConnectTexts(conversationId: String, messageId: String): NucleusConnectTexts
-    @aws_subscribe(mutations:["deleteNucleusConnectTexts"])
   onDeleteNucleusDiscoverChats(conversationId: String): NucleusDiscoverChats
     @aws_subscribe(mutations:["deleteNucleusDiscoverChats"])
   onDeleteNucleusDiscoverConversations(conversationId: String, messageId: [String]): NucleusDiscoverConversations
@@ -181,8 +158,6 @@ type Subscription {
     @aws_subscribe(mutations:["updateNucleusConnectConversations"])
   onUpdateNucleusConnectMessages(conversationId: String): NucleusConnectMessages
     @aws_subscribe(mutations:["updateNucleusConnectMessages"])
-  onUpdateNucleusConnectTexts(conversationId: String, messageId: String): NucleusConnectTexts
-    @aws_subscribe(mutations:["updateNucleusConnectTexts"])
   onUpdateNucleusDiscoverChats(conversationId: String): NucleusDiscoverChats
     @aws_subscribe(mutations:["updateNucleusDiscoverChats"])
   onUpdateNucleusDiscoverConversations(conversationId: String, messageId: [String]): NucleusDiscoverConversations
@@ -198,21 +173,12 @@ input CreateNucleusConnectConversationsInput {
 }
 
 input CreateNucleusConnectMessagesInput {
-  author: CreateNucleusDiscoverUsersInput
-  content: String
   conversationId: String!
+  content: String
+  author: CreateNucleusDiscoverUsersInput
+  recipient: CreateNucleusDiscoverUsersInput
+  timestamp: String
   messageId: String
-  recipient: CreateNucleusDiscoverUsersInput
-  timestamp: String
-}
-
-input CreateNucleusConnectTextsInput {
-  conversationId: String!
-  messageId: String!
-  author: CreateNucleusDiscoverUsersInput
-  recipient: CreateNucleusDiscoverUsersInput
-  content: String
-  timestamp: String
 }
 
 input CreateNucleusDiscoverChatsInput {
@@ -253,11 +219,6 @@ input DeleteNucleusConnectConversationsInput {
 
 input DeleteNucleusConnectMessagesInput {
   conversationId: String!
-}
-
-input DeleteNucleusConnectTextsInput {
-  conversationId: String!
-  messageId: String!
 }
 
 input DeleteNucleusDiscoverChatsInput {
@@ -329,11 +290,6 @@ input TableNucleusConnectMessagesFilterInput {
   conversationId: TableStringFilterInput
 }
 
-input TableNucleusConnectTextsFilterInput {
-  conversationId: TableStringFilterInput
-  messageId: TableStringFilterInput
-}
-
 input TableNucleusDiscoverChatsFilterInput {
   conversationId: TableStringFilterInput
 }
@@ -372,11 +328,6 @@ input UpdateNucleusConnectConversationsInput {
 
 input UpdateNucleusConnectMessagesInput {
   conversationId: String!
-}
-
-input UpdateNucleusConnectTextsInput {
-  conversationId: String!
-  messageId: String!
 }
 
 input UpdateNucleusDiscoverChatsInput {
