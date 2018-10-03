@@ -120,9 +120,12 @@ export default class SpecificTextScreen extends React.Component {
             next: (res) => {
               console.log('Subscription received: ' + JSON.stringify(res));
               const newMessage = SpecificTextScreen.convertMessage(res.value.data.onCreateNucleusConnectTexts);
-              let tempArray = [];
-              tempArray.push(newMessage);
-              this.renderReceivedText(newMessage);
+              if (newMessage.user._id !== this.chat.user1.firebaseId) {
+                let tempArray = [];
+                console.log('Shit.');
+                tempArray.push(newMessage);
+                this.renderReceivedText(newMessage);
+              }
             }
         }); 
     }

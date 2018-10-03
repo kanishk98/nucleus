@@ -117,6 +117,12 @@ export const SubscribeToConnectMessages = `subscription SubscribeToConnectTexts(
         messageId
         content
         timestamp
+        author {
+            firebaseId
+            geohash
+            username
+            profilePic
+        }
     }
 }`
 
