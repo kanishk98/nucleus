@@ -51,6 +51,7 @@ type NucleusConnectTexts {
   recipient: NucleusDiscoverUsers
   author: NucleusDiscoverUsers
   content: String
+  timestamp: String
 }
 
 type NucleusConnectTextsConnection {
@@ -152,7 +153,7 @@ type Subscription {
     @aws_subscribe(mutations:["createNucleusConnectConversations"])
   onCreateNucleusConnectMessages(conversationId: String): NucleusConnectMessages
     @aws_subscribe(mutations:["createNucleusConnectMessages"])
-  onCreateNucleusConnectTexts(conversationId: String, messageId: String): NucleusConnectTexts
+  onCreateNucleusConnectTexts(conversationId: String): NucleusConnectTexts
     @aws_subscribe(mutations:["createNucleusConnectTexts"])
   onCreateNucleusDiscoverChats(recipient: String): NucleusDiscoverChats
     @aws_subscribe(mutations:["createNucleusDiscoverChats"])
@@ -211,6 +212,7 @@ input CreateNucleusConnectTextsInput {
   author: CreateNucleusDiscoverUsersInput
   recipient: CreateNucleusDiscoverUsersInput
   content: String
+  timestamp: String
 }
 
 input CreateNucleusDiscoverChatsInput {

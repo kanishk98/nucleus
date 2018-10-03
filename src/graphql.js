@@ -66,7 +66,15 @@ export const CreateDiscoverMessage = `mutation CreateNucleusDiscoverMessage($inp
 
 export const CreateConnectMessage = `mutation CreateNucleusConnectText($input: CreateNucleusConnectTextsInput!) {
     createNucleusConnectTexts(input: $input) {
+        content
         messageId
+        conversationId
+        author {
+            firebaseId
+            profilePic
+            username
+        }
+        timestamp
     }
 }`
 
@@ -86,6 +94,7 @@ export const GetDiscoverMessages = gql`query getNucleusDiscoverMessages($input: 
 export const SubscribeToDiscoverMessages = `subscription SubscribeToDiscoverMessages($conversationId: String!) {
     onCreateNucleusDiscoverMessages(conversationId: $conversationId) {
         messageId
+        content
     }
 }`
 
@@ -103,13 +112,11 @@ export const SubscribeToChatDeletion = `subscription SubscribeToChatDeletion($co
     }
 }`
 
-export const SubscribeToConnectMessages = `subscription SubscribeToConnectMessages($conversationId: String!) {
-    onCreateNucleusConnectMessages(conversationId: $conversationId) {
-        conversationId
+export const SubscribeToConnectMessages = `subscription SubscribeToConnectTexts($conversationId: String!) {
+    onCreateNucleusConnectTexts(conversationId: $conversationId) {
         messageId
         content
-        author
-        recipient
+        timestamp
     }
 }`
 
