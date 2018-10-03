@@ -66,16 +66,7 @@ export const CreateDiscoverMessage = `mutation CreateNucleusDiscoverMessage($inp
 
 export const CreateConnectMessage = `mutation CreateNucleusConnectMessage($input: CreateNucleusConnectMessagesInput!) {
     createNucleusConnectMessages(input: $input) {
-        conversationId
         messageId
-        author {
-            online
-        }
-        recipient {
-            online
-        }
-        timestamp
-        content
     }
 }`
 

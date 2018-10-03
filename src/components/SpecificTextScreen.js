@@ -75,14 +75,14 @@ export default class SpecificTextScreen extends React.Component {
     }
 
     onSendHandler = ({message}) => {
-        console.log('message: ' + JSON.stringify(message));
+        console.log('message: ' + JSON.stringify(this.message));
+        console.log(this.chat.user1);
         const newMessage = {
             conversationId: this.chat.conversationId,
-            author: this.user,
-            recipient: this.recipient,
-            content: message, 
-            timestamp: new Date().toString(),
-            messageId: this.chat.conversationId + String(Math.floor(new Date().getTime()/1000)),
+            author: this.chat.user1,
+            recipient: this.chat.user2.user2,
+            content: message.text,
+            messageId: String(Math.floor(new Date().getTime()/1000)),
         }
         console.log(newMessage);
         API.graphql(graphqlOperation(GraphQL.CreateConnectMessage, {input: newMessage}))
