@@ -75,13 +75,13 @@ export default class SpecificTextScreen extends React.Component {
     }
 
     onSendHandler = ({message}) => {
-        console.log('message: ' + JSON.stringify(this.message));
+        console.log('message: ' + JSON.stringify(message));
         console.log(this.chat.user1);
         const newMessage = {
             conversationId: this.chat.conversationId,
             author: this.chat.user1,
-            recipient: this.chat.user2.user2,
-            content: message.text,
+            recipient: this.chat.user2,
+            content: message[0].text,
             messageId: String(Math.floor(new Date().getTime()/1000)),
         }
         console.log(newMessage);

@@ -64,8 +64,8 @@ export const CreateDiscoverMessage = `mutation CreateNucleusDiscoverMessage($inp
     }
 }`
 
-export const CreateConnectMessage = `mutation CreateNucleusConnectMessage($input: CreateNucleusConnectMessagesInput!) {
-    createNucleusConnectMessages(input: $input) {
+export const CreateConnectMessage = `mutation CreateNucleusConnectText($input: CreateNucleusConnectTextsInput!) {
+    createNucleusConnectTexts(input: $input) {
         messageId
     }
 }`
