@@ -9,7 +9,7 @@ import {AUTH_TYPE} from 'aws-appsync/lib';
 import AWSAppSyncClient from 'aws-appsync/lib';
 import Constants from './src/Constants';
 import Amplify from 'aws-amplify';
-import Icon from 'react-native-vector-icons/FontAwesome5';
+import Entypo from 'react-native-vector-icons/Entypo';
 import SpecificChatList from './src/components/SpecificChatList';
 import SpecificTextScreen from './src/components/SpecificTextScreen';
 
@@ -26,13 +26,13 @@ const StackNavigator = createStackNavigator(
                 Connect: {
                     screen: SpecificChatList, 
                     navigationOptions: {
-                        tabBarIcon: <Icon name={"rocketchat"} size={30} showIcon={true} />
+                        tabBarIcon: <Entypo name={"chat"} size={30}/>
                     }
                 },
                 Discover: {
                     screen: PreDiscover,
                     navigationOptions: {
-                        tabBarIcon: <Icon name={"rocketchat"} size={30} showIcon={true} />
+                        tabBarIcon: <Entypo name={"network"} size={30}/>
                     }
                 }
             }, {
@@ -41,6 +41,7 @@ const StackNavigator = createStackNavigator(
                 showIcon: true,
                 activeTintColor: Constants.primaryColor,
                 inactiveTintColor: 'gray',
+                showLabel: false,
             },  
         }), navigationOptions: {
             title: 'Canopy',
