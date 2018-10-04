@@ -1,9 +1,9 @@
 import React from 'react';
-import {Text, TouchableHighlight, View, StyleSheet, Button} from 'react-native';
+import {Text, TouchableHighlight, View, StyleSheet, Button, Platform} from 'react-native';
 import * as GraphQL from '../graphql';
 import {API, graphqlOperation} from 'aws-amplify';
 import firebase from 'react-native-firebase';
-import { Platform } from '@aws-amplify/core';
+import { renderProgress } from './renderIf';
 
 export default class PreDiscover extends React.Component {
     
@@ -15,17 +15,23 @@ export default class PreDiscover extends React.Component {
             onlineUsers: [],
             requestId: null,
             notificationsAllowed: false,
+            progress: false
         };
+        this.ProgressBar = Platform.select({
+            ios: () => ProgressViewIOS,
+            android: () => ProgressBarAndroid
+        });
     }
 
     startDiscover = () => {
-        this.setState({text: 'Finding randomly chosen user...'})
+        this.setState({text: 'Finding someone for you', progress: true})
         let {onlineUsers} = this.state;
-        let user = this.props.navigation.getParam("signedInUser", null);
+        let user = this.props.navigation.getParam("user", null);
         console.log(this.state);
         // TODO: Make button available (greyed out until component updates) for user to initiate conversation
         if (onlineUsers && onlineUsers.length > 1) {
-            randUser = Math.floor(Math.random() * onlineUsers.length);
+            let randUser = Math.floor(Math.random() * onlineUsers.length);
+            console.log(randUser);
             if(onlineUsers[randUser].firebaseId === user.firebaseId) {
                 randUser = randUser + 1;
                 try {
@@ -62,7 +68,7 @@ export default class PreDiscover extends React.Component {
                     this.props.navigation.navigate('Discover', {randomUser: connectedUser, conversationId: chatId});  
                 })
                 .catch(err => {
-                    this.setState({text: 'Sorry, we messed up. Please try again'});
+                    this.setState({text: 'Sorry, we messed up. Please try again', progress: false});
                     console.log('Sender-side subscription error ' + String(err));
                     Alert.alert('Oops', 'Your chat was lost somewhere in the Nucleus. Try connecting again.');
                 })
@@ -130,7 +136,7 @@ export default class PreDiscover extends React.Component {
             this.setState({onlineUsers: temp});
         })
         .catch(err => console.log(err));
-        let user = this.props.navigation.getParam("signedInUser", null);
+        let user = this.props.navigation.getParam("user", null);
         // subscribing to requested conversations
         this.chatSubscription = API.graphql(
             graphqlOperation(GraphQL.SubscribeToDiscoverChats, {recipient: user.firebaseId})
@@ -140,7 +146,7 @@ export default class PreDiscover extends React.Component {
                 const newChat = res.value.data.onCreateNucleusDiscoverChats;
                 // notifies sender of request of conversation ignore after 5 seconds of subscription receipt
                 setTimeout( (newChat) => this.cancelRequest, 5000);
-                this.setState({requestId: newChat.conversationId, requestChat: newChat});
+                this.setState({requestId: newChat.conversationId, requestChat: newChat, progress: false});
             }
         });
         // subscribing to deleted conversations for removing accept button
@@ -168,7 +174,7 @@ export default class PreDiscover extends React.Component {
     }   
     
     render() {
-        let {text, onlineUsers, requestId} = this.state;
+        let {text, onlineUsers, requestId, progress} = this.state;
         if (requestId !== null) {
             return (
                 <View style={styles.container} onTouchStart={this.startDiscover}>
@@ -180,6 +186,7 @@ export default class PreDiscover extends React.Component {
             return (
                 <View style={styles.container} onTouchStart={this.startDiscover}>
                     <Text style={styles.title}>{text}</Text>
+                    {renderProgress(this.ProgressBar, null)}
                 </View>
             );
         }
@@ -198,7 +205,7 @@ const styles=StyleSheet.create({
         backgroundColor: 'white',
     },
     instructions: {
-        color: '#003366',
+        color: '#1a237e',
         marginBottom: 16,
         fontSize: 12,
         fontWeight: 'bold',
@@ -206,7 +213,7 @@ const styles=StyleSheet.create({
         justifyContent: 'center'
     },
     title: {
-        color: '#003366',
+        color: '#1a237e',
         marginBottom: 16,
         fontSize: 18,
         fontWeight: 'bold',
@@ -214,7 +221,7 @@ const styles=StyleSheet.create({
         justifyContent: 'center'
     },
     connectButton: {
-        backgroundColor: '#003366',
+        backgroundColor: '#1a237e',
         fontSize: 18,
         alignItems: 'center', 
         justifyContent: 'center',
