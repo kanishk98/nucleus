@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, View, StyleSheet, Button} from 'react-native';
+import {Text, TouchableHighlight, View, StyleSheet, Button} from 'react-native';
 import * as GraphQL from '../graphql';
 import {API, graphqlOperation} from 'aws-amplify';
 import firebase from 'react-native-firebase';
@@ -171,20 +171,15 @@ export default class PreDiscover extends React.Component {
         let {text, onlineUsers, requestId} = this.state;
         if (requestId !== null) {
             return (
-                <View style={styles.container}>
-                    <Text style={styles.title}>{text}</Text>
-                    <Text style={styles.instructions}>{onlineUsers.length} users online</Text>
-                    <Button style={styles.connectButton} onPress={this.startDiscover} title={"Get started"}/>
-                    <Text style={styles.instructions}>Someone got connected to you!</Text>
-                    <Button style={styles.connectButton} onPress={this.acceptDiscover} title={"Accept request"}/>
+                <View style={styles.container} onTouchStart={this.startDiscover}>
+                        <Text style={styles.title}>{text}</Text>
+                        <Text style={styles.instructions}>Someone got connected to you!</Text>
                 </View>
             );
         } else {
             return (
-                <View style={styles.container}>
+                <View style={styles.container} onTouchStart={this.startDiscover}>
                     <Text style={styles.title}>{text}</Text>
-                    <Text style={styles.instructions}>{onlineUsers.length} users online</Text>
-                    <Button style={styles.connectButton} onPress={this.startDiscover} title={"Get started"}/>
                 </View>
             );
         }
