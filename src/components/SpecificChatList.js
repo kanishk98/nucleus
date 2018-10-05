@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import { View, ScrollView, FlatList, StyleSheet, AsyncStorage, Image } from 'react-native';
+import { View, ScrollView, FlatList, StyleSheet, AsyncStorage } from 'react-native';
 import { List, ListItem, SearchBar } from 'react-native-elements';
 import Constants from '../Constants';
 import AWS from 'aws-sdk';
 import * as JsSearch from 'js-search';
-import { renderSearch } from './renderIf';
-import { API, graphqlOperation } from 'aws-amplify';
+import { renderSearch, renderOnline } from './renderIf';
 
 export default class SpecificChatList extends Component {
 
@@ -187,6 +186,7 @@ export default class SpecificChatList extends Component {
             roundAvatar
             avatar={{uri: item.user2.profilePic}}
             title={item.user2.username}
+            subtitle={renderOnline(item.user2.online)}
         />);
     };
 
@@ -198,6 +198,7 @@ export default class SpecificChatList extends Component {
             roundAvatar
             avatar={{uri: item.profilePic}}
             title={item.username}
+            subtitle={renderOnline(item.online)}
         />);
     };
 
@@ -233,7 +234,7 @@ export default class SpecificChatList extends Component {
     render() {
         if (!this.state.showingPeople && this.state.conversations.length > 0) {
             return(
-                <View>
+                <View style={styles.layout}>
                     <ScrollView scrollEnabled={false}>
                         <SearchBar
                             ref={search=>{this.search = search}}
@@ -242,8 +243,7 @@ export default class SpecificChatList extends Component {
                             onChangeText={(text)=>this.searchConversations({text})}  
                             onSubmitEditing={this.submitSearch}
                         />
-                        </ScrollView>
-                        <List style={styles.container}>
+                        <List>
                         {renderSearch(
                             (this.state.searchResults.length > 0),
                             <FlatList
@@ -257,6 +257,7 @@ export default class SpecificChatList extends Component {
                                 renderItem={this.renderConversation}
                             />)}
                         </List>
+                    </ScrollView>
                 </View>
             );
         }  else {
@@ -269,30 +270,37 @@ export default class SpecificChatList extends Component {
             }
             console.log(this.state);
             return (
-                <List style={styles.container}>
-                {renderSearch(
-                    this.state.searchResults > 0,
-                    <FlatList
-                        data={this.state.searchResults}
-                        keyExtractor={(data)=>this.peopleKeyExtractor(data)}
-                        renderItem={this.renderUser}
-                    />,
-                    <FlatList
-                        data={this.state.people}
-                        renderItem={this.renderUser}
-                        keyExtractor={this.peopleKeyExtractor}
-                    />
-                    )}
-                </List>
+                <View style={styles.layout}>
+                    <List>
+                    {renderSearch(
+                        this.state.searchResults > 0,
+                        <FlatList
+                            data={this.state.searchResults}
+                            keyExtractor={(data)=>this.peopleKeyExtractor(data)}
+                            renderItem={this.renderUser}
+                        />,
+                        <FlatList
+                            data={this.state.people}
+                            renderItem={this.renderUser}
+                            keyExtractor={this.peopleKeyExtractor}
+                        />
+                        )}
+                    </List>
+                </View>
             );
         }
     }
 }
 
 const styles = StyleSheet.create({
+    layout: {
+        backgroundColor: 'white',
+        flexDirection: 'column',
+        flex: 1,
+        justifyContent: 'flex-start',
+    }, 
     container: {
       backgroundColor: 'white',
-      flex: 1,
     },
     chatContainer: {
       flex: 1,
