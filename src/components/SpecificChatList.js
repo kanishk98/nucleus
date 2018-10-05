@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView, FlatList, StyleSheet, AsyncStorage } from 'react-native';
+import { View, ScrollView, FlatList, StyleSheet, AsyncStorage, Image } from 'react-native';
 import { List, ListItem, SearchBar } from 'react-native-elements';
 import Constants from '../Constants';
 import AWS from 'aws-sdk';
@@ -179,21 +179,27 @@ export default class SpecificChatList extends Component {
         this.retrieveChats();
     }
 
-    renderConversation = ({item}) => (
+    renderConversation = ({item}) => {
+        console.log(item);
+        return (
         <ListItem 
             onPress={this.openChat.bind(this, item)}
             roundAvatar
+            avatar={{uri: item.user2.profilePic}}
             title={item.user2.username}
-        />
-    );
+        />);
+    };
 
-    renderUser = ({item}) => (
+    renderUser = ({item}) => {
+        console.log(item);
+        return (
         <ListItem
             onPress={this.newChat.bind(this, item)}
             roundAvatar
+            avatar={{uri: item.profilePic}}
             title={item.username}
-        />
-    );
+        />);
+    };
 
     searchConversations = ({text}) => {
         // text contains user names
@@ -232,6 +238,7 @@ export default class SpecificChatList extends Component {
                         <SearchBar
                             ref={search=>{this.search = search}}
                             lightTheme
+                            placeholder='#comeconnect, for real.'
                             onChangeText={(text)=>this.searchConversations({text})}  
                             onSubmitEditing={this.submitSearch}
                         />
