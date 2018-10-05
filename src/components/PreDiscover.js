@@ -200,10 +200,10 @@ const styles=StyleSheet.create({
         justifyContent: 'center',
         flex: 1,
         alignItems: 'center',
-        backgroundColor: '#003366',
+        backgroundColor: 'white',
     },
     instructions: {
-        color: 'white',
+        color: '#003366',
         marginBottom: 16,
         fontSize: 12,
         fontWeight: 'bold',
@@ -211,7 +211,7 @@ const styles=StyleSheet.create({
         justifyContent: 'center'
     },
     title: {
-        color: 'white',
+        color: '#003366',
         marginBottom: 16,
         fontSize: 18,
         fontWeight: 'bold',
@@ -219,7 +219,7 @@ const styles=StyleSheet.create({
         justifyContent: 'center'
     },
     connectButton: {
-        backgroundColor: 'white',
+        backgroundColor: '#003366',
         fontSize: 18,
         alignItems: 'center', 
         justifyContent: 'center',
