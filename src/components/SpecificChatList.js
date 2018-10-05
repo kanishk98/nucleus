@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView, FlatList, StyleSheet, AsyncStorage } from 'react-native';
+import { Text, View, ScrollView, FlatList, StyleSheet, AsyncStorage, ImageBackground } from 'react-native';
 import { List, ListItem, SearchBar } from 'react-native-elements';
 import Constants from '../Constants';
 import AWS from 'aws-sdk';
@@ -215,11 +215,8 @@ export default class SpecificChatList extends Component {
     getStoredUsers () {
         AsyncStorage.getItem(Constants.UserList)
         .then(res => {
-            console.log(res);
-            if (res != null || res != undefined) {
-                // if res is not null or undefined
-                this.setState({people: JSON.parse(res)});
-            }
+            console.log('Stored users ' + JSON.stringify(res));
+            this.setState({people: JSON.parse(res)});
         })
         .catch(err => {
             console.log(err);
@@ -260,7 +257,19 @@ export default class SpecificChatList extends Component {
                     </ScrollView>
                 </View>
             );
-        }  else {
+        } else if (this.state.people == null) {
+            return (
+                <ImageBackground style={styles.initialLayout} source={require('../../assets/pattern.png')}>
+                    <SearchBar
+                        ref={search=>{this.search = search}}
+                        lightTheme
+                        placeholder='Search for your friends!'
+                        onChangeText={(text)=>this.searchConversations({text})}  
+                        onSubmitEditing={this.submitSearch}
+                    />
+                </ImageBackground>
+            );
+        } else {
             // making initial call for users
             // future calls delegated to background task
             console.log('Inside render() else block');
@@ -271,6 +280,13 @@ export default class SpecificChatList extends Component {
             console.log(this.state);
             return (
                 <View style={styles.layout}>
+                    <SearchBar
+                        ref={search=>{this.search = search}}
+                        lightTheme
+                        placeholder='#comeconnect, for real.'
+                        onChangeText={(text)=>this.searchConversations({text})}  
+                        onSubmitEditing={this.submitSearch}
+                    />
                     <List>
                     {renderSearch(
                         this.state.searchResults > 0,
@@ -299,8 +315,25 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'flex-start',
     }, 
+    initialLayout: {
+        flex: 1,
+        justifyContent: 'center',
+    }, 
     container: {
       backgroundColor: 'white',
+    },
+    textContainer: {
+        flex: 1, 
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    title: {
+        color: 'black',
+        marginBottom: 16,
+        fontSize: 18,
+        fontWeight: 'bold',
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     chatContainer: {
       flex: 1,
