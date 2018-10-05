@@ -29,6 +29,7 @@ export const GetAllDiscoverUsers = `query GetAllDiscoverUsers($filter: TableNucl
             geohash
             online
             username
+            profilePic
         }
         nextToken
     }

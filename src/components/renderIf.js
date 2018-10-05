@@ -1,3 +1,6 @@
+import { Text } from 'react-native';
+import React from 'react';
+
 export function renderProgress(condition, content, progress) {
     if (condition) {
         return content;
@@ -11,5 +14,13 @@ export function renderSearch(condition, searching, notSearching) {
         return searching;
     } else {
         return notSearching;
+    }
+}
+
+export function renderOnline(online) {
+    if (online === 1) {
+        return (<Text>   online</Text>);
+    } else {
+        return (<Text>   offline</Text>);
     }
 }

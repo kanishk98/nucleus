@@ -107,7 +107,7 @@ export default class LoginForm extends Component {
             return (
             <View style={styles.container}>
                 <Text style={styles.instructions}>
-                    Signed in as {user.user.email}
+                    Signing you in as {user.user.email}
                 </Text>
             </View>
             );

@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import { View, ScrollView, FlatList, StyleSheet, AsyncStorage } from 'react-native';
+import { Text, View, ScrollView, FlatList, StyleSheet, AsyncStorage, ImageBackground } from 'react-native';
 import { List, ListItem, SearchBar } from 'react-native-elements';
 import Constants from '../Constants';
 import AWS from 'aws-sdk';
 import * as JsSearch from 'js-search';
-import { renderSearch } from './renderIf';
-import { API, graphqlOperation } from 'aws-amplify';
+import { renderSearch, renderOnline } from './renderIf';
 
 export default class SpecificChatList extends Component {
 
@@ -179,21 +178,29 @@ export default class SpecificChatList extends Component {
         this.retrieveChats();
     }
 
-    renderConversation = ({item}) => (
+    renderConversation = ({item}) => {
+        console.log(item);
+        return (
         <ListItem 
             onPress={this.openChat.bind(this, item)}
             roundAvatar
+            avatar={{uri: item.user2.profilePic}}
             title={item.user2.username}
-        />
-    );
+            subtitle={renderOnline(item.user2.online)}
+        />);
+    };
 
-    renderUser = ({item}) => (
+    renderUser = ({item}) => {
+        console.log(item);
+        return (
         <ListItem
             onPress={this.newChat.bind(this, item)}
             roundAvatar
+            avatar={{uri: item.profilePic}}
             title={item.username}
-        />
-    );
+            subtitle={renderOnline(item.online)}
+        />);
+    };
 
     searchConversations = ({text}) => {
         // text contains user names
@@ -208,11 +215,8 @@ export default class SpecificChatList extends Component {
     getStoredUsers () {
         AsyncStorage.getItem(Constants.UserList)
         .then(res => {
-            console.log(res);
-            if (res != null || res != undefined) {
-                // if res is not null or undefined
-                this.setState({people: JSON.parse(res)});
-            }
+            console.log('Stored users ' + JSON.stringify(res));
+            this.setState({people: JSON.parse(res)});
         })
         .catch(err => {
             console.log(err);
@@ -227,16 +231,16 @@ export default class SpecificChatList extends Component {
     render() {
         if (!this.state.showingPeople && this.state.conversations.length > 0) {
             return(
-                <View>
+                <View style={styles.layout}>
                     <ScrollView scrollEnabled={false}>
                         <SearchBar
                             ref={search=>{this.search = search}}
                             lightTheme
+                            placeholder='#comeconnect, for real.'
                             onChangeText={(text)=>this.searchConversations({text})}  
                             onSubmitEditing={this.submitSearch}
                         />
-                        </ScrollView>
-                        <List style={styles.container}>
+                        <List>
                         {renderSearch(
                             (this.state.searchResults.length > 0),
                             <FlatList
@@ -250,9 +254,22 @@ export default class SpecificChatList extends Component {
                                 renderItem={this.renderConversation}
                             />)}
                         </List>
+                    </ScrollView>
                 </View>
             );
-        }  else {
+        } else if (this.state.people == null) {
+            return (
+                <ImageBackground style={styles.initialLayout} source={require('../../assets/pattern.png')}>
+                    <SearchBar
+                        ref={search=>{this.search = search}}
+                        lightTheme
+                        placeholder='Search for your friends!'
+                        onChangeText={(text)=>this.searchConversations({text})}  
+                        onSubmitEditing={this.submitSearch}
+                    />
+                </ImageBackground>
+            );
+        } else {
             // making initial call for users
             // future calls delegated to background task
             console.log('Inside render() else block');
@@ -262,30 +279,61 @@ export default class SpecificChatList extends Component {
             }
             console.log(this.state);
             return (
-                <List style={styles.container}>
-                {renderSearch(
-                    this.state.searchResults > 0,
-                    <FlatList
-                        data={this.state.searchResults}
-                        keyExtractor={(data)=>this.peopleKeyExtractor(data)}
-                        renderItem={this.renderUser}
-                    />,
-                    <FlatList
-                        data={this.state.people}
-                        renderItem={this.renderUser}
-                        keyExtractor={this.peopleKeyExtractor}
+                <View style={styles.layout}>
+                    <SearchBar
+                        ref={search=>{this.search = search}}
+                        lightTheme
+                        placeholder='#comeconnect, for real.'
+                        onChangeText={(text)=>this.searchConversations({text})}  
+                        onSubmitEditing={this.submitSearch}
                     />
-                    )}
-                </List>
+                    <List>
+                    {renderSearch(
+                        this.state.searchResults > 0,
+                        <FlatList
+                            data={this.state.searchResults}
+                            keyExtractor={(data)=>this.peopleKeyExtractor(data)}
+                            renderItem={this.renderUser}
+                        />,
+                        <FlatList
+                            data={this.state.people}
+                            renderItem={this.renderUser}
+                            keyExtractor={this.peopleKeyExtractor}
+                        />
+                        )}
+                    </List>
+                </View>
             );
         }
     }
 }
 
 const styles = StyleSheet.create({
+    layout: {
+        backgroundColor: 'white',
+        flexDirection: 'column',
+        flex: 1,
+        justifyContent: 'flex-start',
+    }, 
+    initialLayout: {
+        flex: 1,
+        justifyContent: 'center',
+    }, 
     container: {
       backgroundColor: 'white',
-      flex: 1,
+    },
+    textContainer: {
+        flex: 1, 
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    title: {
+        color: 'black',
+        marginBottom: 16,
+        fontSize: 18,
+        fontWeight: 'bold',
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     chatContainer: {
       flex: 1,
