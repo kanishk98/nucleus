@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, TouchableHighlight, View, StyleSheet, Button, Platform} from 'react-native';
+import {Text, Dimensions, View, StyleSheet, ImageBackground, Platform} from 'react-native';
 import * as GraphQL from '../graphql';
 import {API, graphqlOperation} from 'aws-amplify';
 import firebase from 'react-native-firebase';
@@ -10,7 +10,7 @@ export default class PreDiscover extends React.Component {
     constructor(props) {
         super(props);
         this.state={
-            text: "Tap anywhere to get started",
+            text: "Get online",
             connected: true,
             onlineUsers: [],
             requestId: null,
@@ -21,6 +21,7 @@ export default class PreDiscover extends React.Component {
             ios: () => ProgressViewIOS,
             android: () => ProgressBarAndroid
         });
+        this.user = this.props.navigation.getParam("user", null);
     }
 
     startDiscover = () => {
@@ -177,17 +178,17 @@ export default class PreDiscover extends React.Component {
         let {text, onlineUsers, requestId, progress} = this.state;
         if (requestId !== null) {
             return (
-                <View style={styles.container} onTouchStart={this.startDiscover}>
-                        <Text style={styles.title}>{text}</Text>
-                        <Text style={styles.instructions}>Someone got connected to you!</Text>
-                </View>
+                <ImageBackground onTouchStart={this.startDiscover} source={require('../../assets/background.png')} style={styles.container}>
+                    <Text style={styles.title}>{text}</Text>
+                    <Text style={styles.instructions}>Someone got connected to you!</Text>
+                </ImageBackground>
             );
         } else {
             return (
-                <View style={styles.container} onTouchStart={this.startDiscover}>
+                <ImageBackground onTouchStart={this.startDiscover} source={require('../../assets/background.png')} style={styles.container}>
                     <Text style={styles.title}>{text}</Text>
                     {renderProgress(this.ProgressBar, null)}
-                </View>
+                </ImageBackground>
             );
         }
     }
@@ -197,17 +198,21 @@ export default class PreDiscover extends React.Component {
     }
 }
 
+const DEVICE_HEIGHT = Dimensions.get('window').height;
+const DEVICE_WIDTH = Dimensions.get('window').width;
+
 const styles=StyleSheet.create({
     container: {
         justifyContent: 'center',
         flex: 1,
         alignItems: 'center',
-        backgroundColor: 'white',
+        width: DEVICE_WIDTH,
+        height: DEVICE_HEIGHT,
     },
     instructions: {
-        color: '#1a237e',
+        color: '#8C9EFF',
         marginBottom: 16,
-        fontSize: 12,
+        fontSize: 26,
         fontWeight: 'bold',
         alignItems: 'center',
         justifyContent: 'center'
@@ -215,7 +220,7 @@ const styles=StyleSheet.create({
     title: {
         color: '#1a237e',
         marginBottom: 16,
-        fontSize: 18,
+        fontSize: 30,
         fontWeight: 'bold',
         alignItems: 'center',
         justifyContent: 'center'
