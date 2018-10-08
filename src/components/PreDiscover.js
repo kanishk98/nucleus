@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, Dimensions, View, StyleSheet, ImageBackground, Platform, TouchableHighlight} from 'react-native';
+import {Text, Dimensions, View, StyleSheet, ImageBackground, Platform, TouchableHighlight, Animated, Easing} from 'react-native';
 import * as GraphQL from '../graphql';
 import {API, graphqlOperation} from 'aws-amplify';
 import firebase from 'react-native-firebase';
@@ -15,7 +15,9 @@ export default class PreDiscover extends React.Component {
             onlineUsers: [],
             requestId: null,
             notificationsAllowed: false,
-            progress: false
+            progress: false, 
+            scaleValue: new Animated.Value(0.1),
+            opacityValue: new Animated.Value(0.12),
         };
         this.ProgressBar = Platform.select({
             ios: () => ProgressViewIOS,
@@ -173,6 +175,40 @@ export default class PreDiscover extends React.Component {
             })
         }
     }   
+
+    onPressedIn() {
+        Animated.timing(this.state.scaleValue, {
+            toValue: 1,
+            duration: 225,
+            easing: Easing.bezier(0.0, 0.0, 0.2, 1),
+        }).start();
+    }
+    onPressedOut() {
+        Animated.timing(this.state.opacityValue, {
+            toValue: 0,
+        }).start(() => {
+            this.state.scaleValue.setValue(0.01);
+            this.state.opacityValue.setValue(this.state.maxOpacity);
+        });
+    }
+
+    renderBottomSheet = () => {
+        const {scaleValue, opacityValue} = this.state;
+        const rippleSize = 80;
+        <Animated.View
+            style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: rippleSize,
+                height: rippleSize,
+                borderRadius: rippleSize / 2,
+                transform: [{ scale: scaleValue }],
+                opacity: opacityValue,
+                backgroundColor: 'black',
+            }}
+        />
+    }
     
     render() {
         let {text, onlineUsers, requestId, progress} = this.state;
@@ -183,9 +219,7 @@ export default class PreDiscover extends React.Component {
                         <Text style={styles.title}>{text}</Text>
                         <Text style={styles.instructions}>Someone got connected to you!</Text>
                     </ImageBackground>
-                    <TouchableHighlight onPress={console.log('Hello')}>
-                        <Text>Bottom sheet</Text>
-                    </TouchableHighlight>
+                    {this.renderBottomSheet()}
                 </View>
             );
         } else {
@@ -195,9 +229,7 @@ export default class PreDiscover extends React.Component {
                         <Text style={styles.title}>{text}</Text>
                         {renderProgress(this.ProgressBar, null)}
                     </ImageBackground>
-                    <TouchableHighlight style={styles.bottomSheet} onPress={console.log('Hello')}>
-                        <Text>Bottom Sheet</Text>
-                    </TouchableHighlight>
+                    {this.renderBottomSheet()}
                 </View>
             );
         }
@@ -211,6 +243,8 @@ export default class PreDiscover extends React.Component {
 const DEVICE_HEIGHT = Dimensions.get('window').height;
 const DEVICE_WIDTH = Dimensions.get('window').width;
 const BOTTOM_SHEET_HEIGHT = Dimensions.get('window').height/10;
+console.log(DEVICE_HEIGHT);
+console.log(BOTTOM_SHEET_HEIGHT);
 
 const styles=StyleSheet.create({
     container: {
@@ -222,7 +256,6 @@ const styles=StyleSheet.create({
     },
     bottomSheet: {
         justifyContent: 'center',
-        flex: 1,
         alignItems: 'center',
         backgroundColor: '#8C9EFF',
         width: DEVICE_WIDTH,
