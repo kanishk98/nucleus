@@ -178,7 +178,7 @@ export default class PreDiscover extends React.Component {
         let {text, onlineUsers, requestId, progress} = this.state;
         if (requestId !== null) {
             return (
-                <ImageBackground onTouchStart={this.startDiscover} source={require('../../assets/background.png')} style={styles.container}>
+                <ImageBackground onTouchStart={this.acceptDiscover} source={require('../../assets/background.png')} style={styles.container}>
                     <Text style={styles.title}>{text}</Text>
                     <Text style={styles.instructions}>Someone got connected to you!</Text>
                 </ImageBackground>
