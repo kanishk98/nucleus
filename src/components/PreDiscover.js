@@ -184,7 +184,7 @@ export default class PreDiscover extends React.Component {
                         <Text style={styles.instructions}>Someone got connected to you!</Text>
                     </ImageBackground>
                     <TouchableHighlight onPress={console.log('Hello')}>
-                        <Text>Fuck my life</Text>
+                        <Text>Bottom sheet</Text>
                     </TouchableHighlight>
                 </View>
             );
