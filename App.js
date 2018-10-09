@@ -13,6 +13,7 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import SpecificChatList from './src/components/SpecificChatList';
 import SpecificTextScreen from './src/components/SpecificTextScreen';
+import Trending from './src/components/Trending';
 
 const StackNavigator = createStackNavigator(
     {
@@ -35,6 +36,12 @@ const StackNavigator = createStackNavigator(
                     navigationOptions: {
                         tabBarIcon: <Entypo name={"network"} size={30}/>
                     }
+                }, 
+                Trending: {
+                    screen: Trending, 
+                    navigationOptions: {
+                        tabBarIcon: <Entypo name={"network"} size={30}/>
+                    }
                 }
             }, {
             tabBarOptions: {
@@ -45,7 +52,7 @@ const StackNavigator = createStackNavigator(
                 showLabel: false,
             },  
         }), navigationOptions: {
-            title: 'Canopy',
+            title: 'Joint',
             headerLeft: null,
             gesturesEnabled: false,
         }},
