@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, Dimensions, View, StyleSheet, ImageBackground, Platform, TouchableHighlight, Animated, Easing} from 'react-native';
+import {Text, Dimensions, View, StyleSheet, ImageBackground, Platform, ScrollView, Animated, Easing} from 'react-native';
 import * as GraphQL from '../graphql';
 import {API, graphqlOperation} from 'aws-amplify';
 import firebase from 'react-native-firebase';
@@ -10,7 +10,6 @@ export default class PreDiscover extends React.Component {
     constructor(props) {
         super(props);
         this.state={
-            text: "Get online",
             connected: true,
             onlineUsers: [],
             requestId: null,
@@ -176,42 +175,22 @@ export default class PreDiscover extends React.Component {
         }
     }   
 
-    onPressedIn() {
-        Animated.timing(this.state.scaleValue, {
-            toValue: 1,
-            duration: 225,
-            easing: Easing.bezier(0.0, 0.0, 0.2, 1),
-        }).start();
-    }
-    onPressedOut() {
-        Animated.timing(this.state.opacityValue, {
-            toValue: 0,
-        }).start(() => {
-            this.state.scaleValue.setValue(0.01);
-            this.state.opacityValue.setValue(this.state.maxOpacity);
-        });
-    }
-
-    renderBottomSheet = () => {
-        const {scaleValue, opacityValue} = this.state;
-        const rippleSize = 80;
-        <Animated.View
-            style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: rippleSize,
-                height: rippleSize,
-                borderRadius: rippleSize / 2,
-                transform: [{ scale: scaleValue }],
-                opacity: opacityValue,
-                backgroundColor: 'black',
-            }}
-        />
+    changeOnlineStatus = () => {
+        this.user.online = !this.user.online;
+        console.log(this.user.online)
+        // TODO: this change must be pushed to Dynamo
+        this.forceUpdate();
     }
     
     render() {
-        let {text, onlineUsers, requestId, progress} = this.state;
+        let {requestId} = this.state;
+        let text = 'Pull to go ';
+        // checking online status of user
+        if (this.user.online) {
+            text = text + 'offline';
+        } else {
+            text = text + 'online';
+        }
         if (requestId !== null) {
             return (
                 <View style={styles.container}>
@@ -224,13 +203,12 @@ export default class PreDiscover extends React.Component {
             );
         } else {
             return (
-                <View style={styles.container}>
-                    <ImageBackground onTouchStart={this.startDiscover} source={require('../../assets/background.png')} style={styles.container}>
+                <ScrollView contentContainerStyle={styles.container} onScrollEndDrag={this.changeOnlineStatus}>
+                    <ImageBackground source={require('../../assets/background.png')} style={styles.container}>
                         <Text style={styles.title}>{text}</Text>
                         {renderProgress(this.ProgressBar, null)}
                     </ImageBackground>
-                    {this.renderBottomSheet()}
-                </View>
+                </ScrollView>
             );
         }
     }
@@ -272,9 +250,8 @@ const styles=StyleSheet.create({
     title: {
         color: '#1a237e',
         marginBottom: 16,
-        fontSize: 30,
+        fontSize: 25,
         fontWeight: 'bold',
-        alignItems: 'center',
         justifyContent: 'center'
     },
     connectButton: {
