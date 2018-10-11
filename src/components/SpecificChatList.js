@@ -123,11 +123,10 @@ export default class SpecificChatList extends Component {
 
     // item here is a conversation
     openChat = (item) => {
-        console.log('Item: ' + JSON.stringify(item));
         let chat = {
             conversationId: item.conversationId,
             user1: this.user, 
-            user2: item.user2,
+            user2: item,
         }
         this.props.navigation.navigate('SpecificTextScreen', {chat: chat, newChat: false});
     }

@@ -35,7 +35,7 @@ const StackNavigator = createStackNavigator(
                 Discover: {
                     screen: PreDiscover,
                     navigationOptions: {
-                        tabBarIcon: <Entypo name={"network"} size={30}/>
+                        tabBarIcon: <Icon name={"rocketchat"} size={30} showIcon={true} />
                     }
                 }, 
                 Trending: {
@@ -50,7 +50,6 @@ const StackNavigator = createStackNavigator(
                 showIcon: true,
                 activeTintColor: Constants.primaryColor,
                 inactiveTintColor: 'gray',
-                showLabel: false,
             },  
         }), navigationOptions: {
             title: 'Joint',
