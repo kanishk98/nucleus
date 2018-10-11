@@ -15,10 +15,12 @@ class PollCard extends React.PureComponent {
                 <View style={styles.buttonContainer}>
                     <Button
                         buttonStyle={styles.buttonStyle}
-                        title={button1Title} />
+                        title={button1Title}
+                        onPress={console.log('Button pressed')} />
                     <Button
                         buttonStyle={styles.buttonStyle}
-                        title={button2Title} />
+                        title={button2Title}
+                        onPress={console.log('Button pressed')} />
                 </View>
             </Card>
         );
@@ -33,7 +35,7 @@ export default class Trending extends React.PureComponent {
 
     render() {
         return (
-            <PollCard title={'Poll'} caption={'How is this background?'}
+            <PollCard title={'Poll'} caption={'How is this background?'} image={require('../../assets/background.png')}
             button1Title={'Yay'} button2Title={'Nay'} />
         );
     }
