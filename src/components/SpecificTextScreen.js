@@ -15,9 +15,13 @@ export default class SpecificTextScreen extends React.Component {
     }
 
     static convertUser(passedUser) {
-        let user = {};
+        let user = {
+            _id: null,
+            avatar: null,
+            name: null,
+        };
         user._id = passedUser.firebaseId;
-        user.avatar = passedUser.profilePicture;
+        user.avatar = passedUser.profilePic;
         user.name = passedUser.username;
         return user;
     }
@@ -26,8 +30,8 @@ export default class SpecificTextScreen extends React.Component {
         let m = {};
         m._id = message.messageId;
         m.text = message.content;
-        m.createdAt = message.timestamp;
-        m.user = SpecificTextScreen.convertUser(message.sender);
+        m.createdAt = new Date(message.timestamp);
+        m.user = SpecificTextScreen.convertUser(message.author);
         m.image = message.image;
         return m;
     }
@@ -37,8 +41,10 @@ export default class SpecificTextScreen extends React.Component {
         this.state = {
             messages: [],
         }
-        this.onSendHandler = this.onSendHandler.bind(this);
-        this.recipient = SpecificTextScreen.convertUser(this.props.navigation.getParam('chat').user2);
+        this.chat = this.props.navigation.getParam('chat');
+        this.recipient = SpecificTextScreen.convertUser(this.chat.user2);
+        this.user = this.chat.user1;
+        this.subscribeToConnectMessages();
     }
     
     fetchMoreMessages = () => {
@@ -69,14 +75,14 @@ export default class SpecificTextScreen extends React.Component {
         });
     }
 
-    onSendHandler = (message) => {
-        /*const newMessage = {
-            conversationId: this.state.passedChat.conversationId,
-            author: this.state.passedChat.user1,
-            content: this.state.typedMessage,
-            recipient: this.state.passedChat.user2,
-            timestamp: String(Math.floor(new Date().getTime()/1000)),
-            messageId: this.state.passedChat.user1.firebaseId + this.state.passedChat.user2.firebaseId + String(Math.floor(new Date().getTime()/1000)),
+    onSendHandler = ({message}) => {
+        const newMessage = {
+            conversationId: this.chat.conversationId,
+            author: this.chat.user1,
+            recipient: this.chat.user2,
+            content: message[0].text,
+            messageId: String(Math.floor(new Date().getTime()/1000)),
+            timestamp: new Date().toDateString(),
         }
         console.log(newMessage);
         API.graphql(graphqlOperation(GraphQL.CreateConnectMessage, {input: newMessage}))
@@ -85,7 +91,7 @@ export default class SpecificTextScreen extends React.Component {
         })
         .catch(err => {
             console.log(err);
-        });*/
+        });
         this.setState(previousState => {
             console.log(previousState);
             return {
@@ -97,27 +103,41 @@ export default class SpecificTextScreen extends React.Component {
     renderItem = ({item}) => (
         <Message id={item.messageId} sent={item.sender} />
     )
+    
+    renderReceivedText (message) {
+        this.setState(previousState => {
+            console.log(previousState);
+            return {
+                messages: GiftedChat.append(previousState.messages, message)
+            };
+        });
+    }
 
-    /*componentDidMount() {
-        this.setState({passedChat: this.props.navigation.getParam('chat', null)});
-        API.graphql(graphqlOperation(GraphQL.SubscribeToConnectMessages, {conversationId: this.props.navigation.getParam('chat', null)}))
+    subscribeToConnectMessages() {
+        console.log('Subscription function: ' + this.chat.conversationId);
+        API.graphql(graphqlOperation(GraphQL.SubscribeToConnectMessages, {conversationId: this.chat.conversationId}))
         .subscribe({
             next: (res) => {
-              console.log('Subscription received: ' + String(res));
-              const newMessage = res.value.data.onCreateNucleusConnectMessages;
-              this.state.messages.push(newMessage);
-              this.forceUpdate();
+              console.log('Subscription received: ' + JSON.stringify(res));
+              const newMessage = SpecificTextScreen.convertMessage(res.value.data.onCreateNucleusConnectTexts);
+              if (newMessage.user._id !== this.chat.user1.firebaseId) {
+                let tempArray = [];
+                console.log('Shit.');
+                tempArray.push(newMessage);
+                this.renderReceivedText(newMessage);
+              }
             }
         }); 
-    }*/
+    }
 
     render() {
         console.log(this.state);
+        let user = SpecificTextScreen.convertUser(this.chat.user1);
+        console.log(user);
         return (
             <GiftedChat
                 messages={this.state.messages}
-                onSend={this.onSendHandler}
-                user={SpecificTextScreen.convertUser(this.props.navigation.getParam('chat').user1)}
+                onSend={(message)=>this.onSendHandler({message})}
             />
         );
     }
