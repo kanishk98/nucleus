@@ -10,10 +10,11 @@ import AWSAppSyncClient from 'aws-appsync/lib';
 import Constants from './src/Constants';
 import Amplify from 'aws-amplify';
 import Entypo from 'react-native-vector-icons/Entypo';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import SpecificChatList from './src/components/SpecificChatList';
 import SpecificTextScreen from './src/components/SpecificTextScreen';
-import Trending from './src/components/Trending';
+import TrendingScreen  from './src/components/TrendingScreen';
 
 const StackNavigator = createStackNavigator(
     {
@@ -38,9 +39,9 @@ const StackNavigator = createStackNavigator(
                     }
                 }, 
                 Trending: {
-                    screen: Trending, 
+                    screen: TrendingScreen, 
                     navigationOptions: {
-                        tabBarIcon: <Entypo name={"network"} size={30}/>
+                        tabBarIcon: <FontAwesome name={"fire"} size={30}/>
                     }
                 }
             }, {

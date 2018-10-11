@@ -259,7 +259,7 @@ export default class SpecificChatList extends Component {
             );
         } else if (this.state.people == null) {
             return (
-                <ImageBackground style={styles.initialLayout} source={require('../../assets/pattern.png')}>
+                <ImageBackground style={styles.initialLayout} source={require('../../assets/background.png')}>
                     <SearchBar
                         ref={search=>{this.search = search}}
                         lightTheme

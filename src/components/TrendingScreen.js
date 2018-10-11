@@ -33,7 +33,7 @@ export default class Trending extends React.PureComponent {
 
     render() {
         return (
-            <PollCard title={'Poll'} caption={'How is this background?'} image={require('../../assets/pattern.png')}
+            <PollCard title={'Poll'} caption={'How is this background?'}
             button1Title={'Yay'} button2Title={'Nay'} />
         );
     }
