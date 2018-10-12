@@ -228,72 +228,7 @@ export default class SpecificChatList extends Component {
         this.setState({searchResults: []});
     }
 
-    testApi = () => {
-        fetch('http://localhost:5000/add-operation', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            }, 
-            body: JSON.stringify(
-                [
-                    {
-                        "item": {
-                            "variable": "x",
-                            "kind": false
-                        }, 
-                        "tid": 1
-                    }, 
-                    {
-                        "item": {
-                            "variable": "x",
-                            "kind": true
-                        }, 
-                        "tid": 2
-                    },
-                    {
-                        "item": {
-                            "variable": "x",
-                            "kind": false
-                        },
-                        "tid": 3
-                    }, 
-                    {
-                        "item": {
-                            "variable": "y",
-                            "kind": false
-                        },
-                        "tid": 4
-                    },
-                    {
-                        "item": {
-                            "variable": "y",
-                            "kind": true
-                        },
-                        "tid": 5
-                    }, 
-                        {
-                        "item": {
-                            "variable": "y",
-                            "kind": true
-                        },
-                        "tid": 6
-                    }, 
-                    {
-                        "item": {
-                            "variable": "x",
-                            "kind": false
-                        }, 
-                        "tid": 7
-                    }
-                ]),
-        })
-        .then(res => console.log(res))
-        .catch(err => console.log(err));
-    }
-
     render() {
-        // this.testApi();
         if (!this.state.showingPeople && this.state.conversations.length > 0) {
             return(
                 <View style={styles.layout}>
