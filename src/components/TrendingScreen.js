@@ -1,8 +1,7 @@
 import React from 'react';
-import { Text, Button, StyleSheet, View, FlatList } from 'react-native';
-import { Card } from 'react-native-elements';
+import { Text, StyleSheet, View, FlatList } from 'react-native';
+import { Card, Button } from 'react-native-elements';
 import Constants from '../Constants';
-import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elements';
 import NavigationService from './NavigationService';
 
 class PollCard extends React.PureComponent {
@@ -11,17 +10,21 @@ class PollCard extends React.PureComponent {
         return (
             <Card
                 title={title}>
-                <Text style={{marginBottom: 10}}>
+                <Text style={{marginBottom: 10, textAlign: 'center'}}>
                     {caption}
                 </Text>
                 <View style={styles.buttonContainer}>
                     <Button
-                        buttonStyle={styles.buttonStyle}
+                        style={{flex: 1, justifyContent: 'flex-start', paddingRight: 10}}
+                        textStyle={{textAlign: 'center', color: Constants.primaryColor}}
                         title={button1Title}
+                        backgroundColor={'white'}
                         onPress={newTrendingPost} />
                     <Button
-                        buttonStyle={styles.buttonStyle}
+                        textStyle={{textAlign: 'center', color: Constants.primaryColor}}
                         title={button2Title}
+                        backgroundColor={'white'}
+                        style={{flex: 1, justifyContent: 'flex-end', paddingLeft: 10}}
                         onPress={console.log('Button pressed')} />
                 </View>
             </Card>
@@ -30,7 +33,6 @@ class PollCard extends React.PureComponent {
 }
 
 export const newTrendingPost = () => {
-    console.log('Navigation happening');
     NavigationService.navigate('NewTrendingScreen');
 }
 
@@ -115,9 +117,9 @@ export default class Trending extends React.PureComponent {
 
 const styles = StyleSheet.create({
     buttonContainer: {
-        flexDirection: 'row', 
-        justifyContent: 'center', 
-        alignItems: 'center'
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     pollButton: {
         borderRadius: 0,
