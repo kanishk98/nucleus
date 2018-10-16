@@ -2,15 +2,14 @@ import React from 'react';
 import { Text, Button, StyleSheet, View, FlatList } from 'react-native';
 import { Card } from 'react-native-elements';
 import Constants from '../Constants';
-import { FloatingAction } from 'react-native-floating-action';
+import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elements';
 
 class PollCard extends React.PureComponent {
     render() {
         const {title, caption, image, button1Title, button2Title} = this.props;
         return (
             <Card
-                title={title}
-                image={image}>
+                title={title}>
                 <Text style={{marginBottom: 10}}>
                     {caption}
                 </Text>
@@ -34,8 +33,7 @@ class ConfessionCard extends React.PureComponent {
         const {title, caption, image, button1Title, button2Title} = this.props;
         return (
             <Card
-                title={title}
-                image={image}>
+                title={title}>
                 <Text style={{marginBottom: 10}}>
                     {caption}
                 </Text>
@@ -60,20 +58,25 @@ export default class Trending extends React.PureComponent {
     constructor(props) {
         super(props);
         this.state={
-            currentPage: 0,
+            currentPage: 1,
         };
     }
 
     getMorePosts = () => {
         let {currentPage} = this.state;
         currentPage = currentPage + 1;
-        fetch('http://' + Constants.postsIp + '/get-posts?perPage=3&currentPage=' + currentPage)
+        console.log('CurrentPage: ' + currentPage);
+        fetch('http://' + Constants.postsIp + '/get-posts?perPage=5&currentPage=' + currentPage)
         .then(res => {
             console.log(res);
             let tempList = this.state.postList;
+            console.log('TEMPLIST: ' + JSON.stringify(tempList));
             let receivedList = JSON.parse(res._bodyInit);
+            console.log('RECEIVED LIST: ' + JSON.stringify(receivedList));
             for (item in receivedList) {
-                tempList.push(receivedList[item]);
+                if (tempList.indexOf(receivedList[item]) == -1) {
+                    tempList.push(receivedList[item]);
+                }
             }
             this.setState({postList: tempList, currentPage: currentPage});
         })
@@ -83,7 +86,7 @@ export default class Trending extends React.PureComponent {
     }
 
     getPosts = () => {
-        fetch('http://' + Constants.postsIp + '/get-posts?perPage=3')
+        fetch('http://' + Constants.postsIp + '/get-posts?perPage=5')
         .then(res => {
             console.log(res);
             const postList = JSON.parse(res._bodyInit);
@@ -97,26 +100,15 @@ export default class Trending extends React.PureComponent {
     postKeyExtractor = (item, index) => item._id;
 
     renderPost = ({item}) => {
-        if (item.title == 'Poll') {
-            return (
+        return (
             <PollCard
-                title={item.title}
+                title='Anonymous'
                 image={item.image}
                 caption={item.caption}
                 button1Title={item.button1Title}
                 button2Title={item.button2Title}
-            />);
-        } else {
-            return (
-                <ConfessionCard
-                title={item.title}
-                image={item.image}
-                caption={item.caption}
-                button1Title={item.button1Title}
-                button2Title={item.button2Title}
-                />
-            );
-        }
+            />
+        );
     }
 
     componentWillMount() {
@@ -128,18 +120,13 @@ export default class Trending extends React.PureComponent {
     render() {
         console.log(this.state.postList);
         return (
-            <View>
-                <FlatList
-                    data={this.state.postList}
-                    keyExtractor={this.postKeyExtractor}
-                    renderItem={this.renderPost}
-                    onEndReached={this.getMorePosts}
-                    onEndReachedThreshold={0.25}
-                />
-                <FloatingAction
-                    onPressMain={console.log('Main pressed')}
-                />
-            </View>
+            <FlatList
+                data={this.state.postList}
+                keyExtractor={this.postKeyExtractor}
+                renderItem={this.renderPost}
+                onEndReached={this.getMorePosts}
+                onEndReachedThreshold={0.25}
+            />
         );
     }
 }
