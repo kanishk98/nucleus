@@ -1,6 +1,7 @@
 import React from 'react';
-import { Text, Button, StyleSheet, View } from 'react-native';
+import { Text, Button, StyleSheet, View, FlatList } from 'react-native';
 import { Card } from 'react-native-elements';
+import Constants from '../Constants';
 
 class PollCard extends React.PureComponent {
     render() {
@@ -31,12 +32,63 @@ export default class Trending extends React.PureComponent {
 
     constructor(props) {
         super(props);
+        this.state={
+            postList: []
+        };
+    }
+
+    getMorePosts = ({viewableItems, changed}) => {
+        fetch('http://' + Constants.postsIp + '/get-posts?perPage=5')
+        .then(res => {
+            console.log(res);
+            this.postList = res;
+        })
+        .catch(err => {
+            console.log(err);
+        });
+        console.log(viewableItems);
+        console.log(changed);
+    }
+
+    getPosts = () => {
+        fetch('http://' + Constants.postsIp + '/get-posts?perPage=5')
+        .then(res => {
+            console.log(res);
+            const postList = JSON.parse(res._bodyInit);
+            this.setState({postList: postList});
+        })
+        .catch(err => {
+            console.log(err);
+        });
+    }
+
+    postKeyExtractor = (item, index) => item._id;
+
+    renderPost = ({item}) => {
+        console.log(item);
+        return (
+        <PollCard
+            title={item.title}
+            image={item.image}
+            caption={item.caption}
+            button1Title={item.button1Title}
+            button2Title={item.button2Title}
+        />);
+    }
+
+    componentWillMount() {
+        this.getPosts();
     }
 
     render() {
+        console.log(this.state.postList);
         return (
-            <PollCard title={'Poll'} caption={'How is this background?'} image={require('../../assets/background.png')}
-            button1Title={'Yay'} button2Title={'Nay'} />
+            <FlatList
+                onViewableItemsChanged={this.getMorePosts}
+                data={this.state.postList}
+                keyExtractor={this.postKeyExtractor}
+                renderItem={this.renderPost} 
+            />
         );
     }
 }
