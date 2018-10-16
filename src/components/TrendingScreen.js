@@ -28,30 +28,61 @@ class PollCard extends React.PureComponent {
     }
 }
 
+class ConfessionCard extends React.PureComponent {
+    render() {
+        const {title, caption, image, button1Title, button2Title} = this.props;
+        return (
+            <Card
+                title={title}
+                image={image}>
+                <Text style={{marginBottom: 10}}>
+                    {caption}
+                </Text>
+                <View style={styles.buttonContainer}>
+                    <Button
+                        buttonStyle={styles.buttonStyle}
+                        title={button1Title}
+                        onPress={console.log('Button pressed')} />
+                    <Button
+                        buttonStyle={styles.buttonStyle}
+                        title={button2Title}
+                        onPress={console.log('Button pressed')} />
+                </View>
+            </Card>
+        );
+    }
+}
+
+
 export default class Trending extends React.PureComponent {
 
     constructor(props) {
         super(props);
         this.state={
-            postList: []
+            currentPage: 0,
         };
     }
 
-    getMorePosts = ({viewableItems, changed}) => {
-        fetch('http://' + Constants.postsIp + '/get-posts?perPage=5')
+    getMorePosts = () => {
+        let {currentPage} = this.state;
+        currentPage = currentPage + 1;
+        fetch('http://' + Constants.postsIp + '/get-posts?perPage=5&currentPage=' + currentPage)
         .then(res => {
             console.log(res);
-            this.postList = res;
+            let tempList = this.state.postList;
+            let receivedList = JSON.parse(res._bodyInit);
+            for (item in receivedList) {
+                tempList.push(receivedList[item]);
+            }
+            this.setState({postList: tempList, currentPage: currentPage});
         })
         .catch(err => {
             console.log(err);
         });
-        console.log(viewableItems);
-        console.log(changed);
     }
 
     getPosts = () => {
-        fetch('http://' + Constants.postsIp + '/get-posts?perPage=5')
+        fetch('http://' + Constants.postsIp + '/get-posts?perPage=3')
         .then(res => {
             console.log(res);
             const postList = JSON.parse(res._bodyInit);
@@ -65,29 +96,43 @@ export default class Trending extends React.PureComponent {
     postKeyExtractor = (item, index) => item._id;
 
     renderPost = ({item}) => {
-        console.log(item);
-        return (
-        <PollCard
-            title={item.title}
-            image={item.image}
-            caption={item.caption}
-            button1Title={item.button1Title}
-            button2Title={item.button2Title}
-        />);
+        if (item.title == 'Poll') {
+            return (
+            <PollCard
+                title={item.title}
+                image={item.image}
+                caption={item.caption}
+                button1Title={item.button1Title}
+                button2Title={item.button2Title}
+            />);
+        } else {
+            return (
+                <ConfessionCard
+                title={item.title}
+                image={item.image}
+                caption={item.caption}
+                button1Title={item.button1Title}
+                button2Title={item.button2Title}
+                />
+            );
+        }
     }
 
     componentWillMount() {
-        this.getPosts();
+        if (this.state.postList == null || this.state.postList == undefined) {
+            this.getPosts();
+        }
     }
 
     render() {
         console.log(this.state.postList);
         return (
             <FlatList
-                onViewableItemsChanged={this.getMorePosts}
                 data={this.state.postList}
                 keyExtractor={this.postKeyExtractor}
                 renderItem={this.renderPost} 
+                onEndReached={this.getMorePosts}
+                onEndReachedThreshold={0.25}
             />
         );
     }
