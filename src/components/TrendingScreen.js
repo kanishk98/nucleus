@@ -2,6 +2,7 @@ import React from 'react';
 import { Text, Button, StyleSheet, View, FlatList } from 'react-native';
 import { Card } from 'react-native-elements';
 import Constants from '../Constants';
+import { FloatingAction } from 'react-native-floating-action';
 
 class PollCard extends React.PureComponent {
     render() {
@@ -66,7 +67,7 @@ export default class Trending extends React.PureComponent {
     getMorePosts = () => {
         let {currentPage} = this.state;
         currentPage = currentPage + 1;
-        fetch('http://' + Constants.postsIp + '/get-posts?perPage=5&currentPage=' + currentPage)
+        fetch('http://' + Constants.postsIp + '/get-posts?perPage=3&currentPage=' + currentPage)
         .then(res => {
             console.log(res);
             let tempList = this.state.postList;
@@ -127,13 +128,18 @@ export default class Trending extends React.PureComponent {
     render() {
         console.log(this.state.postList);
         return (
-            <FlatList
-                data={this.state.postList}
-                keyExtractor={this.postKeyExtractor}
-                renderItem={this.renderPost} 
-                onEndReached={this.getMorePosts}
-                onEndReachedThreshold={0.25}
-            />
+            <View>
+                <FlatList
+                    data={this.state.postList}
+                    keyExtractor={this.postKeyExtractor}
+                    renderItem={this.renderPost}
+                    onEndReached={this.getMorePosts}
+                    onEndReachedThreshold={0.25}
+                />
+                <FloatingAction
+                    onPressMain={console.log('Main pressed')}
+                />
+            </View>
         );
     }
 }
