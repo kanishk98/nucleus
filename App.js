@@ -14,7 +14,39 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import SpecificChatList from './src/components/SpecificChatList';
 import SpecificTextScreen from './src/components/SpecificTextScreen';
-import TrendingScreen  from './src/components/TrendingScreen';
+import TrendingScreen, { newTrendingPost } from './src/components/TrendingScreen';
+import NewTrendingScreen from './src/components/NewTrendingScreen';
+import { Button } from 'react-native';
+import NavigationService from './src/components/NavigationService';
+
+const BottomNavigator = createBottomTabNavigator({
+    Connect: {
+        screen: SpecificChatList, 
+        navigationOptions: {
+            tabBarIcon: <Ionicons name={"ios-chatbubbles"} size={33}/>
+        }
+    },
+    Discover: {
+        screen: PreDiscover,
+        navigationOptions: {
+            tabBarIcon: <Entypo name={"network"} size={30}/>
+        }
+    }, 
+    Trending: {
+        screen: TrendingScreen, 
+        navigationOptions: {
+            tabBarIcon: <FontAwesome name={"fire"} size={30}/>,
+        }
+    }
+    }, {
+    tabBarOptions: {
+        swipeEnabled: true,
+        showIcon: true,
+        activeTintColor: Constants.primaryColor,
+        inactiveTintColor: 'gray',
+        showLabel: false,
+    },  
+});
 
 const StackNavigator = createStackNavigator(
     {
@@ -25,44 +57,31 @@ const StackNavigator = createStackNavigator(
             }
         },
         Chat: {
-            screen: createBottomTabNavigator({
-                Connect: {
-                    screen: SpecificChatList, 
-                    navigationOptions: {
-                        tabBarIcon: <Ionicons name={"ios-chatbubbles"} size={33}/>
-                    }
-                },
-                Discover: {
-                    screen: PreDiscover,
-                    navigationOptions: {
-                        tabBarIcon: <Entypo name={"network"} size={30}/>
-                    }
-                }, 
-                Trending: {
-                    screen: TrendingScreen, 
-                    navigationOptions: {
-                        tabBarIcon: <FontAwesome name={"fire"} size={30}/>
-                    }
-                }
-            }, {
-            tabBarOptions: {
-                swipeEnabled: true,
-                showIcon: true,
-                activeTintColor: Constants.primaryColor,
-                inactiveTintColor: 'gray',
-                showLabel: false,
-            },  
-        }), navigationOptions: {
+            screen: BottomNavigator, 
+            navigationOptions: {
             title: 'Joint',
             headerLeft: null,
             gesturesEnabled: false,
+            headerRight: (
+                <Button
+                  onPress={newTrendingPost}
+                  title="+1"
+                  color="black"
+                />
+            ),
         }},
         SpecificTextScreen: {
             screen: SpecificTextScreen, 
             navigationOptions: {
                 title: 'Connected',
             }
-        } 
+        },
+        NewTrendingScreen: {
+            screen: NewTrendingScreen,
+            navigationOptions: {
+                title: 'New anonymous post',
+            }
+        },
     },
     {
         initialRouteName: 'Login'
@@ -89,7 +108,11 @@ export default class App extends React.Component {
         return (
             <ApolloProvider client={connectClient}>
                 <Rehydrated>
-                    <StackNavigator />
+                    <StackNavigator
+                        ref={navigatorRef => {
+                            NavigationService.setTopLevelNavigator(navigatorRef);
+                        }}
+                    />
                 </Rehydrated>
             </ApolloProvider>
         );

@@ -3,6 +3,7 @@ import { Text, Button, StyleSheet, View, FlatList } from 'react-native';
 import { Card } from 'react-native-elements';
 import Constants from '../Constants';
 import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elements';
+import NavigationService from './NavigationService';
 
 class PollCard extends React.PureComponent {
     render() {
@@ -17,7 +18,7 @@ class PollCard extends React.PureComponent {
                     <Button
                         buttonStyle={styles.buttonStyle}
                         title={button1Title}
-                        onPress={console.log('Button pressed')} />
+                        onPress={newTrendingPost} />
                     <Button
                         buttonStyle={styles.buttonStyle}
                         title={button2Title}
@@ -28,28 +29,9 @@ class PollCard extends React.PureComponent {
     }
 }
 
-class ConfessionCard extends React.PureComponent {
-    render() {
-        const {title, caption, image, button1Title, button2Title} = this.props;
-        return (
-            <Card
-                title={title}>
-                <Text style={{marginBottom: 10}}>
-                    {caption}
-                </Text>
-                <View style={styles.buttonContainer}>
-                    <Button
-                        buttonStyle={styles.buttonStyle}
-                        title={button1Title}
-                        onPress={console.log('Button pressed')} />
-                    <Button
-                        buttonStyle={styles.buttonStyle}
-                        title={button2Title}
-                        onPress={console.log('Button pressed')} />
-                </View>
-            </Card>
-        );
-    }
+export const newTrendingPost = () => {
+    console.log('Navigation happening');
+    NavigationService.navigate('NewTrendingScreen');
 }
 
 
