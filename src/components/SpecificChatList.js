@@ -39,8 +39,8 @@ export default class SpecificChatList extends Component {
         this.search = React.createRef();
     }
 
-    static noFilter = {
-        firebaseId: {ne: 'random_user_placeholder'},
+    noFilter = {
+        firebaseId: {ne: this.props.navigation.getParam('user', null).firebaseId},
         geohash: {ne: 'random_user_geohash'},
     }
 
@@ -169,9 +169,9 @@ export default class SpecificChatList extends Component {
         });
     }
 
-    chatKeyExtractor = (item, index) => item.user2.firebaseId;
+    chatKeyExtractor = (item, index) => item.user2.geohash;
 
-    peopleKeyExtractor = (item, index) => item.firebaseId;
+    peopleKeyExtractor = (item, index) => item.geohash;
     
     componentDidMount() {
         this.user = this.props.navigation.getParam('user', null);
@@ -231,9 +231,11 @@ export default class SpecificChatList extends Component {
     }
 
     fetchUsers () {
-        API.graphql(graphqlOperation(GraphQL.GetAllDiscoverUsers, {filter: SpecificChatList.noFilter}))
+        API.graphql(graphqlOperation(GraphQL.GetAllDiscoverUsers, {filter: this.noFilter}))
         .then(res => {
-            AsyncStorage.setItem(Constants.UserList, JSON.stringify(res.data.listNucleusDiscoverUsers.items))
+            // removing signed-in user from UserList
+            const users = res.data.listNucleusDiscoverUsers.items;
+            AsyncStorage.setItem(Constants.UserList, JSON.stringify(users))
                 .then(asyncStorageResult => {
                     console.log(asyncStorageResult);
                 })
@@ -302,6 +304,7 @@ export default class SpecificChatList extends Component {
             console.log('Inside render() else block');
             if (this.state.people == null || this.state.people.length == 0 || this.state == undefined) {
                 console.log('Getting more users from render function');
+                this.fetchUsers();
                 this.getStoredUsers();
             }
             console.log(this.state);

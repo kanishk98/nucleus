@@ -7,6 +7,7 @@ import firebase from 'react-native-firebase';
 import { AsyncStorage } from '@aws-amplify/core';
 import * as GraphQL from '../graphql';
 import Constants from '../Constants';
+import * as JsSearch from 'js-search';
 
 export default class LoginForm extends Component {
 
@@ -20,15 +21,15 @@ export default class LoginForm extends Component {
         };
     }
 
-    static noFilter = {
-        firebaseId: {ne: 'random_user_placeholder'},
-        geohash: {ne: 'random_user_geohash'},
-    }
-
-    fetchUsers () {
-        API.graphql(graphqlOperation(GraphQL.GetAllDiscoverUsers, {filter: LoginForm.noFilter}))
+    fetchUsers (firebaseId) {
+        const noFilter = {
+            firebaseId: {ne: firebaseId},
+            geohash: {ne: 'random_user_geohash'},
+        }
+        API.graphql(graphqlOperation(GraphQL.GetAllDiscoverUsers, {filter: noFilter}))
         .then(res => {
-            AsyncStorage.setItem(Constants.UserList, JSON.stringify(res.data.listNucleusDiscoverUsers.items))
+            const users = res.data.listNucleusDiscoverUsers.items;
+            AsyncStorage.setItem(Constants.UserList, JSON.stringify(users))
                 .then(asyncStorageResult => {
                     console.log(asyncStorageResult);
                 })
@@ -145,7 +146,7 @@ export default class LoginForm extends Component {
                         this.setLoggedIn('LOGGED_IN', 'true');
                         let newUser = {
                             firebaseId: firebaseUser.user.uid,
-                            geohash: "null", 
+                            geohash: new Date().getMilliseconds().toString(), 
                             offenses: 0,
                             online: 1,
                             paid: false, 
@@ -204,7 +205,7 @@ export default class LoginForm extends Component {
         .catch(err => {
             console.log(err);
         });
-        this.fetchUsers();
+        this.fetchUsers(newUser.firebaseId);
         this.props.navigation.navigate('Chat', {user: newUser});
     }
 
