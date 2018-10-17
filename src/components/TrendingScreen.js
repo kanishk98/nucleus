@@ -5,8 +5,22 @@ import Constants from '../Constants';
 import NavigationService from './NavigationService';
 
 class PollCard extends React.PureComponent {
+
+    constructor(props) {
+        super(props);
+        this.state = this.props;
+    }
+
+    onPressButton1 = () => {
+        this.setState({button1Value: this.state.button1Value + 1});
+    }
+
+    onPressButton2 = () => {
+        this.setState({button2Value: this.state.button2Value + 1});
+    }
+    
     render() {
-        const {title, caption, image, button1Title, button2Title} = this.props;
+        const {title, caption, image, button1Title, button2Title, button1Value, button2Value} = this.state;
         return (
             <Card
                 title={title}>
@@ -14,18 +28,20 @@ class PollCard extends React.PureComponent {
                     {caption}
                 </Text>
                 <View style={styles.buttonContainer}>
+                    <Text>{button1Value}</Text>
                     <Button
                         style={{flex: 1, justifyContent: 'flex-start', paddingRight: 10}}
                         textStyle={{textAlign: 'center', color: Constants.primaryColor}}
                         title={button1Title}
                         backgroundColor={'white'}
-                        onPress={newTrendingPost} />
+                        onPress={this.onPressButton1} />
                     <Button
                         textStyle={{textAlign: 'center', color: Constants.primaryColor}}
                         title={button2Title}
                         backgroundColor={'white'}
                         style={{flex: 1, justifyContent: 'flex-end', paddingLeft: 10}}
-                        onPress={console.log('Button pressed')} />
+                        onPress={this.onPressButton2} />
+                    <Text>{button2Value}</Text>
                 </View>
             </Card>
         );
@@ -91,6 +107,8 @@ export default class Trending extends React.PureComponent {
                 caption={item.caption}
                 button1Title={item.button1Title}
                 button2Title={item.button2Title}
+                button1Value={item.button1Value || 0}
+                button2Value={item.button1Value || 0}
             />
         );
     }
