@@ -3,6 +3,7 @@ import { View, StyleSheet, FlatList, Text, KeyboardAvoidingView, Dimensions, Tex
 import Message from "./Message";
 import * as GraphQL from "../graphql";
 import { API, graphqlOperation } from "../../node_modules/aws-amplify";
+import { GiftedChat } from 'react-native-gifted-chat';
 
 // TODO: Major problem: Schema allows String, not user types. Last checked, subscriptions only worked with String.
 

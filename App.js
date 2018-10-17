@@ -18,6 +18,7 @@ import TrendingScreen, { newTrendingPost } from './src/components/TrendingScreen
 import NewTrendingScreen from './src/components/NewTrendingScreen';
 import { Button } from 'react-native';
 import NavigationService from './src/components/NavigationService';
+import RandomConnect from './src/components/RandomConnect';
 
 const BottomNavigator = createBottomTabNavigator({
     Connect: {
@@ -70,6 +71,12 @@ const StackNavigator = createStackNavigator(
                 />
             ),
         }},
+        Random: {
+            screen: RandomConnect, 
+            navigationOptions: {
+                title: 'Randomly connected',
+            }
+        },
         SpecificTextScreen: {
             screen: SpecificTextScreen, 
             navigationOptions: {

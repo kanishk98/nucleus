@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, Dimensions, View, StyleSheet, ImageBackground, Platform, ScrollView, Animated, Easing} from 'react-native';
+import {Text, Dimensions, StyleSheet, ImageBackground, Platform, ScrollView, Animated, Easing} from 'react-native';
 import * as GraphQL from '../graphql';
 import {API, graphqlOperation} from 'aws-amplify';
 import firebase from 'react-native-firebase';
@@ -62,7 +62,7 @@ export default class PreDiscover extends React.Component {
                 console.log('Resolved chat: ' + JSON.stringify(res));
                 // waiting for acceptance from another user for 5 seconds
                 setTimeout(this.startDiscover, 5000);
-                this.setState({text: connectedUser.username});
+                this.setState({username: connectedUser.username});
                 API.graphql(graphqlOperation(GraphQL.SubscribeToDiscoverChats, {recipient: connectedUser.firebaseId}))
                 .subscribe(res => {
                     console.log(res);
@@ -85,7 +85,7 @@ export default class PreDiscover extends React.Component {
             console.log(res);
             // chatting resolved, moving on to another screen
             let {author, conversationId} = this.state.requestChat;
-            this.props.navigation.navigate('Discover', {randomUser: author, conversationId: conversationId});
+            this.props.navigation.navigate('Random', {randomUser: author, conversationId: conversationId});
         })
         .catch(err => {
             console.log(err);
@@ -191,18 +191,19 @@ export default class PreDiscover extends React.Component {
         }
         if (requestId !== null) {
             return (
-                <View style={styles.container}>
+                <ScrollView contentContainerStyle={styles.container} onScrollEndDrag={this.changeOnlineStatus}>
                     <ImageBackground onTouchStart={this.acceptDiscover} source={require('../../assets/background.png')} style={styles.container}>
                         <Text style={styles.title}>{text}</Text>
                         <Text style={styles.instructions}>Someone got connected to you!</Text>
                     </ImageBackground>
-                </View>
+                </ScrollView>
             );
         } else {
             return (
                 <ScrollView contentContainerStyle={styles.container} onScrollEndDrag={this.changeOnlineStatus}>
                     <ImageBackground source={require('../../assets/background.png')} style={styles.container} onTouchStart={this.startDiscover}>
                         <Text style={styles.title}>{text}</Text>
+                        <Text style={styles.instructions}>{this.state.username}</Text>
                         {renderProgress(this.ProgressBar, null)}
                     </ImageBackground>
                 </ScrollView>
