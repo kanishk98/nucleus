@@ -5,6 +5,8 @@ import Constants from '../Constants';
 import AWS from 'aws-sdk';
 import * as JsSearch from 'js-search';
 import { renderSearch, renderOnline } from './renderIf';
+import {Auth, API, graphqlOperation} from 'aws-amplify';
+import * as GraphQL from '../graphql';
 
 export default class SpecificChatList extends Component {
 
@@ -216,12 +218,37 @@ export default class SpecificChatList extends Component {
         AsyncStorage.getItem(Constants.UserList)
         .then(res => {
             console.log('Stored users ' + JSON.stringify(res));
-            this.setState({people: JSON.parse(res)});
+            if (res != null) {
+                this.setState({people: JSON.parse(res)});
+            } else {
+                this.fetchUsers();
+                this.getStoredUsers();
+            }
         })
         .catch(err => {
             console.log(err);
         });
     }
+
+    fetchUsers () {
+        API.graphql(graphqlOperation(GraphQL.GetAllDiscoverUsers, {filter: SpecificChatList.noFilter}))
+        .then(res => {
+            AsyncStorage.setItem(Constants.UserList, JSON.stringify(res.data.listNucleusDiscoverUsers.items))
+                .then(asyncStorageResult => {
+                    console.log(asyncStorageResult);
+                })
+                .catch(asyncStorageError => {
+                    console.log(asyncStorageError);
+            });
+            if (res.data.listNucleusDiscoverUsers.nextToken != null) {
+                // start background operation to fetch more data
+            }
+        })
+        .catch(err => {
+            console.log(err);
+        });
+    }
+
 
     submitSearch = () => {
         this.search.cancel;
