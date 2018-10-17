@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {StyleSheet, View, Dimensions, Text, Platform, ProgressBarAndroid, ProgressViewIOS, Alert} from 'react-native';
+import {StyleSheet, View, Text, Platform, ProgressBarAndroid, ProgressViewIOS, Alert} from 'react-native';
 import {GoogleSignin, GoogleSigninButton} from 'react-native-google-signin';
 import { renderProgress } from './renderIf';
 import {Auth, API, graphqlOperation} from 'aws-amplify';
@@ -94,7 +94,7 @@ export default class LoginForm extends Component {
         if (!user) {
             return (
             <View style={styles.container}>
-                <Text style={styles.instructions}>Sign in with your SNU account.</Text>
+                <Text style={styles.instructions}>Only SNU accounts allowed.</Text>
                 {renderProgress(!this.state.progress, <GoogleSigninButton
                     style={styles.signInButton}
                     size={GoogleSigninButton.Size.Wide}
