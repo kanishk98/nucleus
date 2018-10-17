@@ -11,12 +11,37 @@ class PollCard extends React.PureComponent {
         this.state = this.props;
     }
 
+    updatePost = (button1Value, button2Value) => {
+        console.log('BUTTON1VAL: ' + this.state.button1Value);
+        console.log('BUTTON2VAL: ' + this.state.button2Value);
+        fetch('http://' + Constants.postsIp + '/update-post',  {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                _id: this.props._id,
+                title: this.props.title,
+                caption: this.props.caption,
+                button1Title: this.props.button1Title,
+                button2Title: this.props.button2Title,
+                button1Value: button1Value,
+                button2Value: button2Value,
+            }),
+        })
+        .then(res => console.log(res))
+        .catch(err => console.log(err));
+    }
+
     onPressButton1 = () => {
         this.setState({button1Value: this.state.button1Value + 1});
+        this.updatePost(this.state.button1Value + 1, this.state.button2Value);
     }
 
     onPressButton2 = () => {
         this.setState({button2Value: this.state.button2Value + 1});
+        this.updatePost(this.state.button1Value, this.state.button2Value + 1);
     }
     
     render() {
@@ -102,13 +127,14 @@ export default class Trending extends React.PureComponent {
     renderPost = ({item}) => {
         return (
             <PollCard
-                title='Anonymous'
+                _id = {item._id}
+                title={item.title || 'Anonymous'}
                 image={item.image}
                 caption={item.caption}
                 button1Title={item.button1Title}
                 button2Title={item.button2Title}
                 button1Value={item.button1Value || 0}
-                button2Value={item.button1Value || 0}
+                button2Value={item.button2Value || 0}
             />
         );
     }

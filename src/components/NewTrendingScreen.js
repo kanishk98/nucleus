@@ -36,6 +36,8 @@ export default class NewTrendingScreen extends React.Component {
                     caption: this.caption,
                     button1Title: this.option1,
                     button2Title: this.option2,
+                    button1Value: 0,
+                    button2Value: 0,
                 }),
             })
             .then(res => {
