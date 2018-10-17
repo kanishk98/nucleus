@@ -69,26 +69,11 @@ export default class RandomConnect extends React.Component {
     if (isMessagePresent) {
       const messages = this.state.messages;
       //TODO: Fill ListEmptyComponent with an actual component
-      return ( 
-        <KeyboardAvoidingView 
-        style={styles.container}>
-          <FlatList
-            data={messages}
-            renderItem={this.renderItem}
-            extraData={this.state.messages}
-            keyExtractor={this.keyExtractor}
-            ListEmptyComponent={<View />} />
-          <TextInput
-            style={styles.input}
-            placeholder={placeholderText}
-            secureTextEntry={false}
-            autoCorrect={true}
-            autoCapitalize={'sentences'}
-            placeholderTextColor='gray'
-            onChangeText={(text)=>this.setState({typedMessage: text})}
-            onSubmitEditing={this.onSendHandler}
+      return (
+        <GiftedChat
+            messages={this.state.messages}
+            onSend={(message)=>this.onSendHandler({message})}
         />
-        </KeyboardAvoidingView>
       );
     } else {
       return (

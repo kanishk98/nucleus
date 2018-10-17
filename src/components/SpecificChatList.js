@@ -259,24 +259,27 @@ export default class SpecificChatList extends Component {
         });
     }
 
-    getPaginatedUsers = async(nextToken) => {
+    getPaginatedUsers = (nextToken) => {
         API.graphql(graphqlOperation(GraphQL.GetAllDiscoverUsers, {filter: this.noFilter, nextToken: nextToken}))
         .then(res => {
             const users = res.data.listNucleusDiscoverUsers.items;
-            let savedUsers = await AsyncStorage.getItem(Constants.UserList);
-            savedUsers = JSON.parse(savedUsers);
-            savedUsers.push(users);
-            AsyncStorage.setItem(Constants.UserList, JSON.stringify(users))
-                .then(asyncStorageResult => {
-                    console.log(asyncStorageResult);
-                })
-                .catch(asyncStorageError => {
-                    console.log(asyncStorageError);
-            });
-            if (res.data.listNucleusDiscoverUsers.nextToken != null) {
-                // start background operation to fetch more data
-                this.getPaginatedUsers(res.data.listNucleusDiscoverUsers.nextToken);
-            }
+            AsyncStorage.getItem(Constants.UserList)
+            .then(res => {
+                savedUsers = JSON.parse(res);
+                savedUsers.push(users);
+                AsyncStorage.setItem(Constants.UserList, JSON.stringify(users))
+                    .then(asyncStorageResult => {
+                        console.log(asyncStorageResult);
+                    })
+                    .catch(asyncStorageError => {
+                        console.log(asyncStorageError);
+                });
+                if (res.data.listNucleusDiscoverUsers.nextToken != null) {
+                    // start background operation to fetch more data
+                    this.getPaginatedUsers(res.data.listNucleusDiscoverUsers.nextToken);
+                }
+            })
+            .catch(err => console.log(err));
         })
         .catch(err => {
             console.log(err);

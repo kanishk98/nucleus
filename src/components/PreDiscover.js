@@ -59,25 +59,23 @@ export default class PreDiscover extends React.Component {
             console.log('Initiating chat: ' + chatId);
             API.graphql(graphqlOperation(GraphQL.CreateDiscoverChat, {input: newChat}))
             .then(res => {
-                console.log(res);
+                console.log('Resolved chat: ' + JSON.stringify(res));
                 // waiting for acceptance from another user for 5 seconds
                 setTimeout(this.startDiscover, 5000);
                 this.setState({text: connectedUser.username});
                 API.graphql(graphqlOperation(GraphQL.SubscribeToDiscoverChats, {recipient: connectedUser.firebaseId}))
-                .then(res => {
+                .subscribe(res => {
                     console.log(res);
                     // request for chatting accepted by user
                     this.props.navigation.navigate('Discover', {randomUser: connectedUser, conversationId: chatId});  
-                })
-                .catch(err => {
-                    this.setState({text: 'Sorry, we messed up. Please try again', progress: false});
-                    console.log('Sender-side subscription error ' + String(err));
-                    Alert.alert('Oops', 'Your chat was lost somewhere in the Nucleus. Try connecting again.');
                 })
             })
             .catch(err => console.log(err));
         }
     }
+
+    // API.graphql(graphqlOperation(GraphQL.GetAllDiscoverUsers, {filter: this.noFilter}))
+    // .then(res => {
 
     acceptDiscover = () => {
         // creating redundant mutation for activation of subscription on other side
@@ -198,13 +196,12 @@ export default class PreDiscover extends React.Component {
                         <Text style={styles.title}>{text}</Text>
                         <Text style={styles.instructions}>Someone got connected to you!</Text>
                     </ImageBackground>
-                    {this.renderBottomSheet()}
                 </View>
             );
         } else {
             return (
                 <ScrollView contentContainerStyle={styles.container} onScrollEndDrag={this.changeOnlineStatus}>
-                    <ImageBackground source={require('../../assets/background.png')} style={styles.container}>
+                    <ImageBackground source={require('../../assets/background.png')} style={styles.container} onTouchStart={this.startDiscover}>
                         <Text style={styles.title}>{text}</Text>
                         {renderProgress(this.ProgressBar, null)}
                     </ImageBackground>
@@ -242,8 +239,7 @@ const styles=StyleSheet.create({
     instructions: {
         color: '#8C9EFF',
         marginBottom: 16,
-        fontSize: 26,
-        fontWeight: 'bold',
+        fontSize: 16,
         alignItems: 'center',
         justifyContent: 'center'
     },
