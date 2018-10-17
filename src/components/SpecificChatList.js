@@ -124,13 +124,20 @@ export default class SpecificChatList extends Component {
     }
 
     // item here is a conversation
-    openChat = (item) => {
+    openChat = async(item) => {
         console.log('Item: ' + JSON.stringify(item));
         let chat = {
             conversationId: item.conversationId,
             user1: this.user, 
             user2: item.user2,
         }
+        // get conversations here, move selected conversation to top of FlatList
+        const {conversations} = this.state;
+        console.log('Conversations: ' + JSON.stringify(conversations));
+        conversations.sort(function(x,y){ return x == item ? -1 : y == item ? 1 : 0; });
+        // save newly sorted list
+        console.log('Sorted conversations: ' + JSON.stringify(conversations));
+        await AsyncStorage.setItem('CHATS', JSON.stringify(conversations));
         this.props.navigation.navigate('SpecificTextScreen', {chat: chat, newChat: false});
     }
 
