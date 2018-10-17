@@ -7,7 +7,6 @@ import firebase from 'react-native-firebase';
 import { AsyncStorage } from '@aws-amplify/core';
 import * as GraphQL from '../graphql';
 import Constants from '../Constants';
-import * as JsSearch from 'js-search';
 
 export default class LoginForm extends Component {
 
@@ -98,7 +97,7 @@ export default class LoginForm extends Component {
                 <Text style={styles.instructions}>Sign in with your SNU account.</Text>
                 {renderProgress(!this.state.progress, <GoogleSigninButton
                     style={styles.signInButton}
-                    size={GoogleSigninButton.Size.Icon}
+                    size={GoogleSigninButton.Size.Wide}
                     color={GoogleSigninButton.Color.Light}
                     onPress={this.signIn}
                 />, <ProgressBar />)}
@@ -237,8 +236,8 @@ const styles = StyleSheet.create({
        alignItems: 'center',
    },
     signInButton: {
-        width: 312, 
-        height: 60
+        width: 200, 
+        height: 48
     },
     instructions: {
        color: 'white',
