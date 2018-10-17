@@ -6,6 +6,7 @@ import {Auth, API, graphqlOperation} from 'aws-amplify';
 import firebase from 'react-native-firebase';
 import { AsyncStorage } from '@aws-amplify/core';
 import * as GraphQL from '../graphql';
+import AWS from 'aws-sdk';
 import Constants from '../Constants';
 
 export default class LoginForm extends Component {
@@ -145,7 +146,7 @@ export default class LoginForm extends Component {
                         this.setLoggedIn('LOGGED_IN', 'true');
                         let newUser = {
                             firebaseId: firebaseUser.user.uid,
-                            geohash: new Date().getMilliseconds().toString(), 
+                            geohash: 'null', 
                             offenses: 0,
                             online: 1,
                             paid: false, 
@@ -158,7 +159,7 @@ export default class LoginForm extends Component {
                         })
                         .catch(err => {
                             console.log(err);
-                            if (JSON.stringify(err).indexOf('Dynamo') == -1) {
+                            if (JSON.stringify(err).indexOf('Dynamo') != -1) {
                                 this.resolveUser(newUser);
                             } else {
                                 Alert.alert(
