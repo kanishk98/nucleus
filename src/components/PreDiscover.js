@@ -52,8 +52,8 @@ export default class PreDiscover extends React.Component {
             let chatId = user.firebaseId + connectedUser.firebaseId + String(Math.floor(new Date().getTime()/1000));
             let newChat = {
                 conversationId: chatId, 
-                author: user.firebaseId,
-                recipient: connectedUser.firebaseId,
+                author: user,
+                recipient: connectedUser,
             };
             console.log(newChat);
             console.log('Initiating chat: ' + chatId);

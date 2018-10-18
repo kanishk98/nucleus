@@ -44,8 +44,8 @@ export default class RandomConnect extends React.Component {
     const newMessage = {
       conversationId: chatId,
       messageId: new Date().getTime().toString(),
-      author: this.user,
-      recipient: this.randomUser,
+      author: this.user.username,
+      recipient: this.randomUser.username,
     }
     console.log(newMessage);
     API.graphql(graphqlOperation(GraphQL.CreateDiscoverMessage, {input: newMessage}))

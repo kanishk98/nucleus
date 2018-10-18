@@ -38,8 +38,6 @@ export const GetAllDiscoverUsers = `query GetAllDiscoverUsers($filter: TableNucl
 export const CreateDiscoverChat = `mutation CreateNucleusDiscoverChats($input: CreateNucleusDiscoverChatsInput!) {
     createNucleusDiscoverChats(input: $input) {
         conversationId
-        author
-        recipient
     }
 }`;
 
@@ -62,12 +60,10 @@ export const CreateDiscoverMessage = `mutation CreateNucleusDiscoverMessage($inp
         conversationId
         author {
             firebaseId
-            profilePic
             username
         }
         recipient {
             firebaseId
-            profilePic
             username
         }
     }
