@@ -409,6 +409,7 @@
 		87866488EDB7923A5C33D4F9 /* Pods-Nucleus-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Nucleus-tvOSTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Nucleus-tvOSTests/Pods-Nucleus-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		87ED1B186F214DC7B78FCE73 /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
 		9573FD85BEF1E4B434E8F082 /* libPods-Nucleus-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Nucleus-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		9736AF352179331700A4C0BE /* Nucleus.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Nucleus.entitlements; path = Nucleus/Nucleus.entitlements; sourceTree = "<group>"; };
 		979238C62135266800C4827F /* GoogleAppUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleAppUtilities.framework; path = "../node_modules/react-native-google-signin/ios/GoogleSdk/GoogleAppUtilities.framework"; sourceTree = "<group>"; };
 		979238EE2135266900C4827F /* GoogleAuthUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleAuthUtilities.framework; path = "../node_modules/react-native-google-signin/ios/GoogleSdk/GoogleAuthUtilities.framework"; sourceTree = "<group>"; };
 		979238EF2135266900C4827F /* GoogleNetworkingUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleNetworkingUtilities.framework; path = "../node_modules/react-native-google-signin/ios/GoogleSdk/GoogleNetworkingUtilities.framework"; sourceTree = "<group>"; };
@@ -589,6 +590,7 @@
 		13B07FAE1A68108700A75B9A /* Nucleus */ = {
 			isa = PBXGroup;
 			children = (
+				9736AF352179331700A4C0BE /* Nucleus.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -893,6 +895,11 @@
 					};
 					13B07F861A680F5B00A75B9A = {
 						DevelopmentTeam = Q5PJ8364VQ;
+						SystemCapabilities = {
+							com.apple.Push = {
+								enabled = 1;
+							};
+						};
 					};
 					2D02E47A1E0B4A5D006451C7 = {
 						CreatedOnToolsVersion = 8.2.1;
@@ -1554,6 +1561,7 @@
 			baseConfigurationReference = B52C116AFD8AAB5B57D20938 /* Pods-Nucleus.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Nucleus/Nucleus.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = Q5PJ8364VQ;
@@ -1596,6 +1604,7 @@
 			baseConfigurationReference = 0E31446725344A53457A10FA /* Pods-Nucleus.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Nucleus/Nucleus.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Q5PJ8364VQ;
 				FRAMEWORK_SEARCH_PATHS = (
