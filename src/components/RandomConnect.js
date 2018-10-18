@@ -26,7 +26,7 @@ export default class RandomConnect extends React.Component {
           console.log('Subscription received: ' + JSON.stringify(res));
           const newMessage = this.convertMessage(res.value.data.onCreateNucleusDiscoverMessages);
           console.log(newMessage);
-          if (newMessage.user._id !== this.user.firebaseId) {
+          if (res.value.data.onCreateNucleusDiscoverMessages.recipient.firebaseId == this.user.firebaseId) {
             let tempArray = [];
             console.log('Shit.');
             tempArray.push(newMessage);
