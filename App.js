@@ -73,9 +73,7 @@ const StackNavigator = createStackNavigator(
         }},
         Random: {
             screen: RandomConnect, 
-            navigationOptions: {
-                title: 'Randomly connected',
-            }
+            navigationOptions: 'Discover'
         },
         SpecificTextScreen: {
             screen: SpecificTextScreen, 
