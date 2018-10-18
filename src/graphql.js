@@ -38,6 +38,11 @@ export const GetAllDiscoverUsers = `query GetAllDiscoverUsers($filter: TableNucl
 export const CreateDiscoverChat = `mutation CreateNucleusDiscoverChats($input: CreateNucleusDiscoverChatsInput!) {
     createNucleusDiscoverChats(input: $input) {
         conversationId
+        author {
+            firebaseId
+            geohash
+        }
+        recipient
     }
 }`;
 
@@ -106,7 +111,10 @@ export const SubscribeToDiscoverMessages = `subscription SubscribeToDiscoverMess
 export const SubscribeToDiscoverChats = `subscription SubscribeToDiscoverChats($recipient: String) {
     onCreateNucleusDiscoverChats(recipient: $recipient) {
         conversationId
-        author
+        author {
+            firebaseId
+            geohash
+        }
     }
 }`
 

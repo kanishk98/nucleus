@@ -49,11 +49,11 @@ export default class PreDiscover extends React.Component {
             console.log(onlineUsers[randUser]);
             let connectedUser = onlineUsers[randUser];
             // TODO: Create conversationId and a new UserConversation
-            let chatId = user.firebaseId + connectedUser.firebaseId + String(Math.floor(new Date().getTime()/1000));
+            let chatId = String(Math.floor(new Date().getTime()));
             let newChat = {
                 conversationId: chatId, 
                 author: user,
-                recipient: connectedUser,
+                recipient: connectedUser.firebaseId,
             };
             console.log(newChat);
             console.log('Initiating chat: ' + chatId);
@@ -80,6 +80,8 @@ export default class PreDiscover extends React.Component {
     acceptDiscover = () => {
         // creating redundant mutation for activation of subscription on other side
         delete this.state.requestChat.__typename;
+        delete this.state.requestChat.author.__typename;
+        console.log(this.state.requestChat);
         API.graphql(graphqlOperation(GraphQL.CreateDiscoverChat, {input: this.state.requestChat}))
         .then(res => {
             console.log(res);
@@ -89,6 +91,8 @@ export default class PreDiscover extends React.Component {
         })
         .catch(err => {
             console.log(err);
+            let {author, conversationId} = this.state.requestChat;
+            this.props.navigation.navigate('Random', {randomUser: author, conversationId: conversationId, user: this.user});
         });
     }
 

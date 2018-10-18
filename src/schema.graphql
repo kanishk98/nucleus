@@ -60,7 +60,7 @@ type NucleusConnectTextsConnection {
 }
 
 type NucleusDiscoverChats {
-  author: String
+  author: NucleusDiscoverUsers
   content: String
   conversationId: String!
   createdAt: String
@@ -224,7 +224,7 @@ input CreateNucleusDiscoverChatsInput {
   isReceived: Boolean
   isSent: Boolean
   messageId: [String]
-  recipient: CreateNucleusDiscoverUsersInput
+  recipient: String
 }
 
 input CreateNucleusDiscoverConversationsInput {
