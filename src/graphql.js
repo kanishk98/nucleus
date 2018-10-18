@@ -43,6 +43,7 @@ export const CreateDiscoverChat = `mutation CreateNucleusDiscoverChats($input: C
             geohash
         }
         recipient
+        messageId
     }
 }`;
 
@@ -71,6 +72,9 @@ export const CreateDiscoverMessage = `mutation CreateNucleusDiscoverMessage($inp
             firebaseId
             username
         }
+        messageId
+        content
+        timestamp
     }
 }`
 
@@ -105,6 +109,7 @@ export const SubscribeToDiscoverMessages = `subscription SubscribeToDiscoverMess
     onCreateNucleusDiscoverMessages(conversationId: $conversationId) {
         messageId
         content
+        timestamp
     }
 }`
 

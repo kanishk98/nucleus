@@ -1,11 +1,9 @@
 import React from "react";
 import { StyleSheet, Dimensions } from "react-native";
-import Message from "./Message";
+import SpecificTextScreen from "./SpecificTextScreen";
 import * as GraphQL from "../graphql";
 import { API, graphqlOperation } from "../../node_modules/aws-amplify";
 import { GiftedChat } from 'react-native-gifted-chat';
-
-// TODO: Major problem: Schema allows String, not user types. Last checked, subscriptions only worked with String.
 
 export default class RandomConnect extends React.Component {
   constructor(props) {
@@ -14,29 +12,48 @@ export default class RandomConnect extends React.Component {
       messages: [],
       typedMessage: '',
     };
+    this.conversationId = this.props.navigation.getParam('conversationId');
+    this.user = this.props.navigation.getParam('user');
+    this.randomUser = this.props.navigation.getParam('randomUser');
+    this.subscribeToDiscoverMessages();
   }
 
-  static navigationOptions = ({navigation}) => {
-    title: 'Discover'
-  }
+  subscribeToDiscoverMessages() {
+    console.log('Subscription function: ' + this.conversationId);
+    API.graphql(graphqlOperation(GraphQL.SubscribeToDiscoverMessages, {conversationId: this.conversationId}))
+    .subscribe({
+        next: (res) => {
+          console.log('Subscription received: ' + JSON.stringify(res));
+          const newMessage = this.convertMessage(res.value.data.onCreateNucleusDiscoverMessages);
+          console.log(newMessage);
+          if (newMessage.user._id !== this.user.firebaseId) {
+            let tempArray = [];
+            console.log('Shit.');
+            tempArray.push(newMessage);
+            this.renderReceivedText(newMessage);
+          }
+        }
+    }); 
+}
 
-  componentDidMount() {
-    let chatId = this.props.navigation.getParam("conversationId", 0);
-    this.subscription = API.graphql(
-      graphqlOperation(GraphQL.SubscribeToDiscoverMessages, {conversationId: chatId})
-    ).subscribe({
-      next: (res) => {
-        console.log('Subscription received: ' + String(res));
-        const newMessage = res.value.data.onCreateNucleusDiscoverMessages;
-        newMessage.sender = false;
-        this.state.messages.push(newMessage);
-        this.forceUpdate();
-      }
-    });
-    this.user = this.props.navigation.getParam("user", null);
-    this.randomUser = this.props.navigation.getParam("randomUser", null);
-    
-  }
+renderReceivedText (message) {
+  this.setState(previousState => {
+      console.log(previousState);
+      return {
+          messages: GiftedChat.append(previousState.messages, message)
+      };
+  });
+}
+
+convertMessage(message) {
+  let m = {};
+  m._id = message.messageId;
+  m.text = message.content;
+  m.createdAt = new Date(message.timestamp);
+  m.user = {_id: 'unknown', name: 'Unknown'};
+  m.image = message.image;
+  return m;
+}
   
    onSendHandler = ({message}) => {
     console.log('onSendHandler ' + this.state.typedMessage);
@@ -46,6 +63,8 @@ export default class RandomConnect extends React.Component {
       messageId: new Date().getTime().toString(),
       author: this.user,
       recipient: this.randomUser,
+      content: message[0].text,
+      timestamp: new Date().toDateString()
     }
     console.log(newMessage);
     API.graphql(graphqlOperation(GraphQL.CreateDiscoverMessage, {input: newMessage}))

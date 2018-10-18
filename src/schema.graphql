@@ -94,14 +94,12 @@ type NucleusDiscoverConversationsConnection {
 }
 
 type NucleusDiscoverMessages {
-  author: NucleusDiscoverUsers
-  content: String
   conversationId: String!
-  createdAt: String
-  isRead: Boolean
-  isReceived: Boolean
   messageId: String!
   recipient: NucleusDiscoverUsers
+  author: NucleusDiscoverUsers
+  content: String
+  timestamp: String
 }
 
 type NucleusDiscoverMessagesConnection {
@@ -237,6 +235,8 @@ input CreateNucleusDiscoverMessagesInput {
   messageId: String!
   author: CreateNucleusDiscoverUsersInput,
   recipient: CreateNucleusDiscoverUsersInput
+  content: String
+  timestamp: String
 }
 
 input CreateNucleusDiscoverUsersInput {

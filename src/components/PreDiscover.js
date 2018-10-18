@@ -54,6 +54,7 @@ export default class PreDiscover extends React.Component {
                 conversationId: chatId, 
                 author: user,
                 recipient: connectedUser.firebaseId,
+                messageId: new Date().getUTCMilliseconds().toString()
             };
             console.log(newChat);
             console.log('Initiating chat: ' + chatId);
@@ -148,7 +149,6 @@ export default class PreDiscover extends React.Component {
             next: (res) => {
                 console.log('Subscription for chat received: ' + String(res));
                 const newChat = res.value.data.onCreateNucleusDiscoverChats;
-                console.log('newChat: ' + JSON.stringify(newChat));
                 // notifies sender of request of conversation ignore after 5 seconds of subscription receipt
                 setTimeout( (newChat) => this.cancelRequest, 5000);
                 this.setState({requestId: newChat.conversationId, requestChat: newChat, progress: false});
