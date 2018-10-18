@@ -60,8 +60,16 @@ export const GetDiscoverChat = gql`query GetDiscoverChat($input: CreateNucleusDi
 export const CreateDiscoverMessage = `mutation CreateNucleusDiscoverMessage($input: CreateNucleusDiscoverMessagesInput!) {
     createNucleusDiscoverMessages(input: $input) {
         conversationId
-        author
-        recipient
+        author {
+            firebaseId
+            profilePic
+            username
+        }
+        recipient {
+            firebaseId
+            profilePic
+            username
+        }
     }
 }`
 

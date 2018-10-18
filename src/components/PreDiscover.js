@@ -67,7 +67,7 @@ export default class PreDiscover extends React.Component {
                 .subscribe(res => {
                     console.log(res);
                     // request for chatting accepted by user
-                    this.props.navigation.navigate('Discover', {randomUser: connectedUser, conversationId: chatId});  
+                    this.props.navigation.navigate('Random', {randomUser: connectedUser, conversationId: chatId, user: this.user});  
                 })
             })
             .catch(err => console.log(err));
@@ -85,7 +85,7 @@ export default class PreDiscover extends React.Component {
             console.log(res);
             // chatting resolved, moving on to another screen
             let {author, conversationId} = this.state.requestChat;
-            this.props.navigation.navigate('Random', {randomUser: author, conversationId: conversationId});
+            this.props.navigation.navigate('Random', {randomUser: author, conversationId: conversationId, user: this.user});
         })
         .catch(err => {
             console.log(err);
@@ -144,6 +144,7 @@ export default class PreDiscover extends React.Component {
             next: (res) => {
                 console.log('Subscription for chat received: ' + String(res));
                 const newChat = res.value.data.onCreateNucleusDiscoverChats;
+                console.log('newChat: ' + JSON.stringify(newChat));
                 // notifies sender of request of conversation ignore after 5 seconds of subscription receipt
                 setTimeout( (newChat) => this.cancelRequest, 5000);
                 this.setState({requestId: newChat.conversationId, requestChat: newChat, progress: false});

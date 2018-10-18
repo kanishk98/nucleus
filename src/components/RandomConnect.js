@@ -10,11 +10,9 @@ import { GiftedChat } from 'react-native-gifted-chat';
 export default class RandomConnect extends React.Component {
   constructor(props) {
     super(props);
-    props.user = this.props.navigation.getParam("user", null);
     this.state = {
       messages: [],
       typedMessage: '',
-      randomUser: this.props.navigation.getParam("randomUser", null)
     };
   }
 
@@ -35,21 +33,21 @@ export default class RandomConnect extends React.Component {
         this.forceUpdate();
       }
     });
+    this.user = this.props.navigation.getParam("user", null);
+    this.randomUser = this.props.navigation.getParam("randomUser", null);
+    
   }
-
-  keyExtractor = (item, index) => item.messageId;
-
-  renderItem = ({ item: {messageId, sender} }) => (
-    <Message id={messageId} sent={sender}/>
-  );
-
   
    onSendHandler = ({message}) => {
     console.log('onSendHandler ' + this.state.typedMessage);
     let chatId = this.props.navigation.getParam("conversationId", 0);
     const newMessage = {
       conversationId: chatId,
+      messageId: new Date().getTime().toString(),
+      author: this.user,
+      recipient: this.randomUser,
     }
+    console.log(newMessage);
     API.graphql(graphqlOperation(GraphQL.CreateDiscoverMessage, {input: newMessage}))
     .then(res => {
       // optimistic UI, updates message regardless of network status
@@ -69,8 +67,8 @@ export default class RandomConnect extends React.Component {
   render() {
     console.log(this.state);
     let placeholderText = null;
-    if(this.state.randomUser) {
-      placeholderText = "You're talking to " + this.state.randomUser.username;
+    if(this.props.randomUser) {
+      placeholderText = "You're talking to " + this.props.randomUser.username;
     } else {
       placeholderText = "You're talking to " + this.props.navigation.getParam("randomUser", null).username;
     }

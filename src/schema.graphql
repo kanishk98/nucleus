@@ -235,6 +235,8 @@ input CreateNucleusDiscoverConversationsInput {
 input CreateNucleusDiscoverMessagesInput {
   conversationId: String!
   messageId: String!
+  author: CreateNucleusDiscoverUsersInput,
+  recipient: CreateNucleusDiscoverUsersInput
 }
 
 input CreateNucleusDiscoverUsersInput {
