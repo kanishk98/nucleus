@@ -224,6 +224,16 @@ export default class SpecificChatList extends Component {
             this.notificationListener = firebase.notifications().onNotification((notification) => {
                 // Process your notification as required
                 console.log(notification);
+                const displayNotification = new firebase.notifications.Notification()
+                .setNotificationId(notification.notificationId)
+                .setTitle(notification.title)
+                .setBody(notification.body)
+                .setData({
+                    title: notification.title,
+                    body: notification.body,
+                });
+                displayNotification.ios.setBadge(notification.ios.badge);
+                firebase.notifications().displayNotification(displayNotification);
             });
             this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen) => {
                 // Get the action triggered by the notification being opened
