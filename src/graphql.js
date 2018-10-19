@@ -19,6 +19,7 @@ export const GetOnlineDiscoverUsers = `query GetOnlineNucleusDiscoverUsers($onli
         paid
         profilePic
         username
+        fcmToken
     }
 }`;
 
@@ -30,6 +31,7 @@ export const GetAllDiscoverUsers = `query GetAllDiscoverUsers($filter: TableNucl
             online
             username
             profilePic
+            fcmToken
         }
         nextToken
     }
@@ -156,5 +158,6 @@ export const GetConnectMessages = gql`query GetPagedConnectMessages($filter: Tab
 export const UpdateDiscoverUser = `mutation UpdateDiscoverUsers($input: UpdateNucleusDiscoverUsersInput!) {
     updateNucleusDiscoverUsers(input: $input) {
         online
+        fcmToken
     }
 }`

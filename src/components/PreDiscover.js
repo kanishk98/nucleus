@@ -107,31 +107,6 @@ export default class PreDiscover extends React.Component {
     }
 
     async componentDidMount() {
-        // checking for notification permissions
-        let enabled = false;
-        if (Platform.OS == 'ios')
-            enabled = await firebase.messaging().hasPermission();
-        if(!enabled || Platform.OS == 'android') {
-            try {
-                console.log('Awaiting Firebase request for permission');
-                if (Platform.OS == 'ios')
-                    await firebase.messaging().requestPermission();
-                // User has authorised
-                this.setState({notificationsAllowed: true});
-                this.fcmToken = firebase.messaging().getToken()
-                .then(res => {
-                    console.log('User message ' + res);
-                    // storing token as user attribute
-                    console.log('FCM token: ' + res);
-                })
-                .catch(err => {
-                    console.log('FCM error: ' + err);
-                    // handle error appropriately
-                })
-            } catch (error) {
-                // User has rejected permissions
-            }
-        }
         // querying online users
         API.graphql(graphqlOperation(GraphQL.GetOnlineDiscoverUsers), {
             online: 1

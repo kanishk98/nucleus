@@ -1,12 +1,11 @@
 import React from 'react';
 import { Message } from './Message';
 import * as GraphQL from '../graphql';
-import { noFilter } from './SpecificChatList';
-import { FlatList, KeyboardAvoidingView, Dimensions, StyleSheet, TextInput, ScrollView } from 'react-native';
+import { Dimensions, StyleSheet} from 'react-native';
 import { API, graphqlOperation } from 'aws-amplify';
 import { connectClient } from '../../App';
-import KeyboardSpacer from 'react-native-keyboard-spacer';
 import { GiftedChat } from 'react-native-gifted-chat';
+import Constants from '../Constants';
 
 export default class SpecificTextScreen extends React.Component {
 
@@ -85,6 +84,7 @@ export default class SpecificTextScreen extends React.Component {
             timestamp: new Date().toDateString(),
         }
         console.log(newMessage);
+        // mutate Dynamo table
         API.graphql(graphqlOperation(GraphQL.CreateConnectMessage, {input: newMessage}))
         .then(res => {
             console.log(res);
@@ -98,6 +98,21 @@ export default class SpecificTextScreen extends React.Component {
                 messages: GiftedChat.append(previousState.messages, message)
             };
         });
+        // send notification to other user
+        fetch(Constants.notificationsUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'key': Constants.googleAuthKey,
+            },
+            body: JSON.stringify({
+                content: message[0].text,
+                author: this.chat.user1.username,
+                token: this.chat.user2.fcmToken,
+            })
+        })
+        .then(res => console.log(res))
+        .catch(err => console.log(err));
     }
 
     renderItem = ({item}) => (

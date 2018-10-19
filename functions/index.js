@@ -17,8 +17,8 @@ exports.sendDiscoverTextNotification = functions.https.onRequest((req, res) => {
           payload: {
             aps: {
               alert: {
-                title: 'Kanishk Kakar',
-                body: 'Notification sent over a server. Real-world test.',
+                title: author,
+                body: content,
               },
               badge: 1,
               sound: 'default'

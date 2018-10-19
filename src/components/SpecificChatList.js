@@ -180,11 +180,44 @@ export default class SpecificChatList extends Component {
 
     peopleKeyExtractor = (item, index) => item.firebaseId;
     
-    componentDidMount() {
+    async componentDidMount() {
         this.user = this.props.navigation.getParam('user', null);
         console.log(this.user);
         // fetch previously made conversations here
         this.retrieveChats();
+        // checking for notification permissions
+        let enabled = false;
+        if (Platform.OS == 'ios')
+            enabled = await firebase.messaging().hasPermission();
+        if(!enabled || Platform.OS == 'android') {
+            try {
+                console.log('Awaiting Firebase request for permission');
+                if (Platform.OS == 'ios')
+                    await firebase.messaging().requestPermission();
+                // User has authorised
+                this.setState({notificationsAllowed: true});
+                this.fcmToken = firebase.messaging().getToken()
+                .then(res => {
+                    console.log('User message ' + res);
+                    // storing token as user attribute
+                    this.user = res;
+                    API.graphql(graphqlOperation(GraphQL.UpdateDiscoverUser, {input: this.user}))
+                    .then(updated => {
+                        console.log(updated);
+                    })
+                    .catch(fcmErr => {
+                        console.log(fcmErr);
+                    });
+                    console.log('FCM token: ' + res);
+                })
+                .catch(err => {
+                    console.log('FCM error: ' + err);
+                    // handle error appropriately
+                })
+            } catch (error) {
+                // User has rejected permissions
+            }
+        }
     }
 
     renderConversation = ({item}) => {

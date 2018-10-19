@@ -152,6 +152,7 @@ export default class LoginForm extends Component {
                             paid: false, 
                             profilePic: this.state.user.user.photo,
                             username: firebaseUser.user.displayName,
+                            fcmToken: 'null',
                         };
                         API.graphql(graphqlOperation(GraphQL.CreateDiscoverUser, {input: newUser}))
                         .then(res => {

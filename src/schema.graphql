@@ -115,6 +115,7 @@ type NucleusDiscoverUsers {
   paid: Boolean
   profilePic: String
   username: String
+  fcmToken: String
 }
 
 type NucleusDiscoverUsersConnection {
@@ -247,6 +248,7 @@ input CreateNucleusDiscoverUsersInput {
   paid: Boolean
   profilePic: String
   username: String
+  fcmToken: String
 }
 
 input DeleteNucleusConnectConversationsInput {
@@ -403,4 +405,5 @@ input UpdateNucleusDiscoverUsersInput {
   paid: Boolean
   profilePic: String
   username: String
+  fcmToken: String
 }
