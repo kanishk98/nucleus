@@ -229,8 +229,7 @@ export default class SpecificChatList extends Component {
                 .setTitle(notification.title)
                 .setBody(notification.body)
                 .setData({
-                    title: notification.title,
-                    body: notification.body,
+                    chat: notification.data.chat,
                 });
                 displayNotification.ios.setBadge(notification.ios.badge);
                 firebase.notifications().displayNotification(displayNotification);
@@ -242,7 +241,7 @@ export default class SpecificChatList extends Component {
                 // Get information about the notification that was opened
                 const notification = notificationOpen.notification;
                 console.log(notification);
-                const chat = JSON.parse(notification.subtitle);
+                const chat = JSON.parse(notification.data.chat);
                 this.openChat(chat);
             });
             const notificationOpen = await firebase.notifications().getInitialNotification();

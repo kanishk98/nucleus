@@ -10,30 +10,31 @@ exports.sendDiscoverTextNotification = functions.https.onRequest((req, res) => {
     const author = req.body.author;
     const fcmToken = req.body.token;
     const chat = req.body.chat;
-    console.log(chat);
     const message = {
+      notification: {
+        title: author,
+        body: content,
+      },
+      data: {
+        chat: JSON.stringify(chat)
+      },
+      android: {
         notification: {
-          title: author,
-          body: content,
+          icon: 'stock_ticker_update',
+          color: '#f45342',
         },
-        apns: {
-          headers: {
-            'apns-priority': '10'
+      },
+      apns: {
+        payload: {
+          aps: {
+            badge: 1,
+            sound: 'default',
           },
-          payload: {
-            aps: {
-              alert: {
-                title: author,
-                body: content,
-                subtitle: JSON.stringify(chat),
-              },
-              badge: 1,
-              sound: 'default'
-            }
-          }
         },
-        token: fcmToken,
-      };
+      },
+      token: fcmToken
+    };
+    
     admin.messaging().send(message)
     .then((response) => {
         console.log('notification delivered');
