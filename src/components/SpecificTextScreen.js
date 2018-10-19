@@ -66,7 +66,6 @@ export default class SpecificTextScreen extends React.Component {
                 // start background operation to fetch more data
                 // TODO: is this really needed or should we just fetch when 
                 // user scrolls upwards?
-
             }
         })
         .catch(err => {

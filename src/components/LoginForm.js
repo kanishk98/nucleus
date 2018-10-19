@@ -6,7 +6,6 @@ import {Auth, API, graphqlOperation} from 'aws-amplify';
 import firebase from 'react-native-firebase';
 import { AsyncStorage } from '@aws-amplify/core';
 import * as GraphQL from '../graphql';
-import AWS from 'aws-sdk';
 import Constants from '../Constants';
 
 export default class LoginForm extends Component {
@@ -54,7 +53,18 @@ export default class LoginForm extends Component {
                     AsyncStorage.getItem(Constants.UserObject)
                     .then(savedUser => {
                         console.log(savedUser);
-                        this.props.navigation.navigate('Chat', {user: JSON.parse(savedUser)});
+                        if (!!savedUser) {
+                            this.props.navigation.navigate('Chat', {user: JSON.parse(savedUser)});
+                        } else {
+                            // setting user setting to logged out
+                            AsyncStorage.setItem(Constants.LoggedIn, 'F')
+                            .then(saved => {
+                                this.forceUpdate();
+                            })
+                            .catch(saveError => {
+                                console.log(saveError);
+                            });
+                        }
                     })
                     .catch(err => {
                         console.log(err);
