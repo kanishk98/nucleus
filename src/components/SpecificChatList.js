@@ -242,6 +242,8 @@ export default class SpecificChatList extends Component {
                 // Get information about the notification that was opened
                 const notification = notificationOpen.notification;
                 console.log(notification);
+                const chat = JSON.parse(notification.subtitle);
+                this.openChat(chat);
             });
             const notificationOpen = await firebase.notifications().getInitialNotification();
             if (notificationOpen) {
@@ -252,6 +254,8 @@ export default class SpecificChatList extends Component {
                 // Get information about the notification that was opened
                 const notification = notificationOpen.notification;
                 console.log(notification);
+                const chat = JSON.parse(notification.data.chat);
+                this.openChat(chat);
             }
         }
     }

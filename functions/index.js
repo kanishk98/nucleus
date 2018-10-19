@@ -9,10 +9,12 @@ exports.sendDiscoverTextNotification = functions.https.onRequest((req, res) => {
     const content = req.body.content;
     const author = req.body.author;
     const fcmToken = req.body.token;
+    const chat = req.body.chat;
+    console.log(chat);
     const message = {
         notification: {
           title: author,
-          body: content
+          body: content,
         },
         apns: {
           headers: {
@@ -20,6 +22,11 @@ exports.sendDiscoverTextNotification = functions.https.onRequest((req, res) => {
           },
           payload: {
             aps: {
+              alert: {
+                title: author,
+                body: content,
+                subtitle: JSON.stringify(chat),
+              },
               badge: 1,
               sound: 'default'
             }

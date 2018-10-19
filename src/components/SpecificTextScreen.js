@@ -41,6 +41,7 @@ export default class SpecificTextScreen extends React.Component {
             messages: [],
         }
         this.chat = this.props.navigation.getParam('chat');
+        console.log(this.chat);
         this.recipient = SpecificTextScreen.convertUser(this.chat.user2);
         this.user = this.chat.user1;
         this.subscribeToConnectMessages();
@@ -108,6 +109,7 @@ export default class SpecificTextScreen extends React.Component {
                 content: message[0].text,
                 author: this.chat.user1.username,
                 token: this.chat.user2.fcmToken,
+                chat: this.chat,
             })
         })
         .then(res => console.log(res))
