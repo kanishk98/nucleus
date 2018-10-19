@@ -241,7 +241,8 @@ export default class SpecificChatList extends Component {
                 // Get information about the notification that was opened
                 const notification = notificationOpen.notification;
                 console.log(notification);
-                if (!!chat && chat != 'null') {
+                const chat = notification.data.chat;
+                if (chat != undefined) {
                     const chat = JSON.parse(notification.data.chat);
                     this.openChat(chat);
                 }
@@ -255,6 +256,7 @@ export default class SpecificChatList extends Component {
                 // Get information about the notification that was opened
                 const notification = notificationOpen.notification;
                 console.log(notification);
+                const chat = notification.data.chat;
                 if (!!chat && chat != 'null') {
                     const chat = JSON.parse(notification.data.chat);
                     this.openChat(chat);

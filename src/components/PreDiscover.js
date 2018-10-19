@@ -4,25 +4,92 @@ import * as GraphQL from '../graphql';
 import {API, graphqlOperation} from 'aws-amplify';
 import firebase from 'react-native-firebase';
 import { renderProgress } from './renderIf';
+import Constants from '../Constants';
 
 export default class PreDiscover extends React.Component {
     
     constructor(props) {
         super(props);
         this.state={
+            looking: false,
             connected: true,
             onlineUsers: [],
             requestId: null,
             notificationsAllowed: false,
             progress: false, 
-            scaleValue: new Animated.Value(0.1),
-            opacityValue: new Animated.Value(0.12),
         };
         this.ProgressBar = Platform.select({
             ios: () => ProgressViewIOS,
             android: () => ProgressBarAndroid
         });
         this.user = this.props.navigation.getParam("user", null);
+    }
+
+    sendRequest = (user, connectedUser, newChat) => {
+        fetch(Constants.discoverNotificationsUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'key': Constants.googleAuthKey,
+            },
+            body: JSON.stringify({
+                content: 'Someone new would like to talk to you.',
+                author: 'Discover',
+                token: connectedUser.fcmToken,
+                chat: newChat,
+                connectedUser: user,
+                request: true,
+            })
+        })
+        .then(res => console.log(res))
+        .catch(err => console.log(err));
+    }
+
+    openChat = (randomChat, connectedUser) => {
+        this.props.navigation.navigate('Random', {randomUser: connectedUser, conversationId: randomChat.conversationId, user: this.user});
+    }
+
+    setupNotificationListeners = async() => {
+        this.notificationListener = firebase.notifications().onNotification((notification) => {
+            // Process your notification as required
+            console.log(notification);
+            const displayNotification = new firebase.notifications.Notification()
+            .setNotificationId(notification.notificationId)
+            .setTitle(notification.title)
+            .setBody(notification.body)
+            .setData({
+                random: notification.data.random,
+                randomChat: notification.data.chat,
+                request: notification.data.request,
+                connectedUser: notification.data.connectedUser,
+            });
+            displayNotification.ios.setBadge(notification.ios.badge);
+            firebase.notifications().displayNotification(displayNotification);
+        });
+        this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen) => {
+            // Get the action triggered by the notification being opened
+            const action = notificationOpen.action;
+            console.log(action);
+            // Get information about the notification that was opened
+            const notification = notificationOpen.notification;
+            console.log(notification);
+            const randomChat = JSON.parse(notification.data.randomChat);
+            const connectedUser = JSON.parse(notification.data.connectedUser);
+            this.openChat(randomChat, connectedUser);
+        });
+        const notificationOpen = await firebase.notifications().getInitialNotification();
+        if (notificationOpen) {
+            // Get the action triggered by the notification being opened
+            const action = notificationOpen.action;
+            console.log(action);
+            // Get information about the notification that was opened
+            const notification = notificationOpen.notification;
+            console.log(notification);
+            if (!!random) {
+                const randomChat = JSON.parse(notification.data.randomChat);
+                this.openChat(randomChat);
+            }
+        }
     }
 
     startDiscover = () => {
@@ -48,6 +115,8 @@ export default class PreDiscover extends React.Component {
             }
             console.log(onlineUsers[randUser]);
             let connectedUser = onlineUsers[randUser];
+            console.log('Connected user: ' + JSON.stringify(connectedUser));
+            debugger
             // TODO: Create conversationId and a new UserConversation
             let chatId = String(Math.floor(new Date().getTime()));
             let newChat = {
@@ -72,6 +141,7 @@ export default class PreDiscover extends React.Component {
                 })
             })
             .catch(err => console.log(err));
+            this.sendRequest(user, connectedUser, newChat);
         }
     }
 
@@ -139,18 +209,7 @@ export default class PreDiscover extends React.Component {
                 this.setState({requestId: null, requestChat: null});
             }
         });
-        if (this.state.notificationsAllowed) {
-            this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen) => {
-                console.log(notificationOpen);
-            })
-            firebase.notifications().getInitialNotification()
-            .then((notificationOpen) => {
-                if (notificationOpen) {
-                    // app was opened from killed state by notification
-                    console.log(notificationOpen);
-                }
-            })
-        }
+        this.setupNotificationListeners();
     }   
 
     changeOnlineStatus = () => {
@@ -172,31 +231,27 @@ export default class PreDiscover extends React.Component {
     }
     
     render() {
-        let {requestId} = this.state;
-        let text = 'Pull to go ';
+        let {requestId, looking} = this.state;
+        let text = 'Pull to talk!';
         // checking online status of user
-        if (this.user.online) {
+        /*if (this.user.online) {
             text = text + 'offline';
         } else {
             text = text + 'online';
-        }
-        if (requestId !== null) {
+        }*/
+        if (requestId !== null && !looking) {
             return (
-                <ScrollView contentContainerStyle={styles.container} onScrollEndDrag={this.changeOnlineStatus}>
-                    <ImageBackground onTouchStart={this.acceptDiscover} source={require('../../assets/background.png')} style={styles.container}>
+                <ScrollView contentContainerStyle={styles.container} onScrollEndDrag={this.acceptDiscover}>
                         <Text style={styles.title}>{text}</Text>
                         <Text style={styles.instructions}>Someone got connected to you!</Text>
-                    </ImageBackground>
                 </ScrollView>
             );
         } else {
             return (
-                <ScrollView contentContainerStyle={styles.container} onScrollEndDrag={this.changeOnlineStatus}>
-                    <ImageBackground source={require('../../assets/background.png')} style={styles.container}>
+                <ScrollView contentContainerStyle={styles.container} onScrollEndDrag={this.startDiscover}>
                         <Text style={styles.title}>{text}</Text>
                         <Text style={styles.instructions}>{this.state.username}</Text>
                         {renderProgress(this.ProgressBar, null)}
-                    </ImageBackground>
                 </ScrollView>
             );
         }

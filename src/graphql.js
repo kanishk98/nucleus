@@ -128,7 +128,10 @@ export const SubscribeToDiscoverChats = `subscription SubscribeToDiscoverChats($
 export const SubscribeToChatDeletion = `subscription SubscribeToChatDeletion($conversationId: String) {
     onDeleteNucleusDiscoverChats(conversationId: $conversationId) {
         conversationId
-        author
+        author {
+            firebaseId
+            geohash
+        }
     }
 }`
 
