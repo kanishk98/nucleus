@@ -176,9 +176,9 @@ export default class SpecificChatList extends Component {
         });
     }
 
-    chatKeyExtractor = (item, index) => item.user2.geohash;
+    chatKeyExtractor = (item, index) => item.user2.firebaseId;
 
-    peopleKeyExtractor = (item, index) => item.geohash;
+    peopleKeyExtractor = (item, index) => item.firebaseId;
     
     componentDidMount() {
         this.user = this.props.navigation.getParam('user', null);
