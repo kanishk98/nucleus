@@ -398,4 +398,9 @@ input UpdateNucleusDiscoverMessagesInput {
 input UpdateNucleusDiscoverUsersInput {
   firebaseId: String!
   geohash: String!
+  offenses: Int
+  online: Int
+  paid: Boolean
+  profilePic: String
+  username: String
 }

@@ -98,10 +98,6 @@ convertMessage(message) {
       />
     );
   }
-
-  componentWillUnmount() {
-    this.subscription.unsubscribe();
-  }
 }
 
 const DEVICE_WIDTH = Dimensions.get('window').width;

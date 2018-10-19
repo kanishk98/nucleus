@@ -1,6 +1,5 @@
 let functions = require('firebase-functions');
 let admin = require('firebase-admin');
-let qs = require('querystring');
 
 admin.initializeApp(functions.config().firebase);
 exports.sendDiscoverTextNotification = functions.https.onRequest((req, res) => {

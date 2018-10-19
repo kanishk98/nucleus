@@ -152,3 +152,9 @@ export const GetConnectMessages = gql`query GetPagedConnectMessages($filter: Tab
         nextToken
     }
 }`
+
+export const UpdateDiscoverUser = `mutation UpdateDiscoverUsers($input: UpdateNucleusDiscoverUsersInput!) {
+    updateNucleusDiscoverUsers(input: $input) {
+        online
+    }
+}`

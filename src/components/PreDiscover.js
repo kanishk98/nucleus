@@ -179,10 +179,21 @@ export default class PreDiscover extends React.Component {
     }   
 
     changeOnlineStatus = () => {
-        this.user.online = !this.user.online;
-        console.log(this.user.online)
-        // TODO: this change must be pushed to Dynamo
-        this.forceUpdate();
+        if (this.user.online) {
+            this.user.online = 0;
+        } else {
+            this.user.online = 1;
+        }
+        console.log(JSON.stringify(this.user));
+        API.graphql(graphqlOperation(GraphQL.UpdateDiscoverUser, {input: this.user}))
+        .then(res => {
+            console.log(res);
+            console.log(this.user.online)
+            this.forceUpdate();
+        })
+        .catch(err => {
+            console.log(err);
+        });
     }
     
     render() {
@@ -206,7 +217,7 @@ export default class PreDiscover extends React.Component {
         } else {
             return (
                 <ScrollView contentContainerStyle={styles.container} onScrollEndDrag={this.changeOnlineStatus}>
-                    <ImageBackground source={require('../../assets/background.png')} style={styles.container} onTouchStart={this.startDiscover}>
+                    <ImageBackground source={require('../../assets/background.png')} style={styles.container}>
                         <Text style={styles.title}>{text}</Text>
                         <Text style={styles.instructions}>{this.state.username}</Text>
                         {renderProgress(this.ProgressBar, null)}
