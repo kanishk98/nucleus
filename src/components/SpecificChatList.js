@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, ScrollView, FlatList, StyleSheet, AsyncStorage, ImageBackground } from 'react-native';
+import { Platform, View, ScrollView, FlatList, StyleSheet, AsyncStorage, ImageBackground } from 'react-native';
 import { List, ListItem, SearchBar } from 'react-native-elements';
 import Constants from '../Constants';
 import AWS from 'aws-sdk';
@@ -7,6 +7,7 @@ import * as JsSearch from 'js-search';
 import { renderSearch, renderOnline } from './renderIf';
 import {Auth, API, graphqlOperation} from 'aws-amplify';
 import * as GraphQL from '../graphql';
+import firebase from 'react-native-firebase';
 
 export default class SpecificChatList extends Component {
 
@@ -195,29 +196,59 @@ export default class SpecificChatList extends Component {
                 if (Platform.OS == 'ios')
                     await firebase.messaging().requestPermission();
                 // User has authorised
-                this.setState({notificationsAllowed: true});
-                this.fcmToken = firebase.messaging().getToken()
-                .then(res => {
-                    console.log('User message ' + res);
-                    // storing token as user attribute
-                    this.user = res;
-                    API.graphql(graphqlOperation(GraphQL.UpdateDiscoverUser, {input: this.user}))
-                    .then(updated => {
-                        console.log(updated);
-                    })
-                    .catch(fcmErr => {
-                        console.log(fcmErr);
-                    });
-                    console.log('FCM token: ' + res);
-                })
-                .catch(err => {
-                    console.log('FCM error: ' + err);
-                    // handle error appropriately
-                })
+                enabled = true;
             } catch (error) {
                 // User has rejected permissions
             }
         }
+        if (enabled) {
+            this.fcmToken = firebase.messaging().getToken()
+            .then(res => {
+                console.log('User message ' + res);
+                // storing token as user attribute
+                this.user.fcmToken = res;
+                API.graphql(graphqlOperation(GraphQL.UpdateDiscoverUser, {input: this.user}))
+                .then(updated => {
+                    console.log(updated);
+                })
+                .catch(fcmErr => {
+                    console.log(fcmErr);
+                });
+                console.log('FCM token: ' + res);
+            })
+            .catch(err => {
+                console.log('FCM error: ' + err);
+                // handle error appropriately
+            });
+            // setting up notification listeners
+            this.notificationListener = firebase.notifications().onNotification((notification) => {
+                // Process your notification as required
+                console.log(notification);
+            });
+            this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen) => {
+                // Get the action triggered by the notification being opened
+                const action = notificationOpen.action;
+                console.log(action);
+                // Get information about the notification that was opened
+                const notification = notificationOpen.notification;
+                console.log(notification);
+            });
+            const notificationOpen = await firebase.notifications().getInitialNotification();
+            if (notificationOpen) {
+                // App was opened by a notification when closed
+                // Get the action triggered by the notification being opened
+                const action = notificationOpen.action;
+                console.log(action);
+                // Get information about the notification that was opened
+                const notification = notificationOpen.notification;
+                console.log(notification);
+            }
+        }
+    }
+
+    componentWillUnmount() {
+        this.notificationOpenedListener();
+        this.notificationListener();
     }
 
     renderConversation = ({item}) => {

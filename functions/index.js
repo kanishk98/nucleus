@@ -10,22 +10,22 @@ exports.sendDiscoverTextNotification = functions.https.onRequest((req, res) => {
     const author = req.body.author;
     const fcmToken = req.body.token;
     const message = {
+        notification: {
+          title: author,
+          body: content
+        },
         apns: {
           headers: {
             'apns-priority': '10'
           },
           payload: {
             aps: {
-              alert: {
-                title: author,
-                body: content,
-              },
               badge: 1,
               sound: 'default'
             }
           }
         },
-        token: fcmToken
+        token: fcmToken,
       };
     admin.messaging().send(message)
     .then((response) => {
