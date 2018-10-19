@@ -18,10 +18,11 @@ exports.sendDiscoverTextNotification = functions.https.onRequest((req, res) => {
           payload: {
             aps: {
               alert: {
-                title: '$GOOG up 1.43% on the day',
-                body: '$GOOG gained 11.80 points to close at 835.67, up 1.43% on the day.',
+                title: 'Kanishk Kakar',
+                body: 'Notification sent over a server. Real-world test.',
               },
               badge: 1,
+              sound: 'default'
             }
           }
         },
@@ -37,22 +38,4 @@ exports.sendDiscoverTextNotification = functions.https.onRequest((req, res) => {
         console.log('Error: ' + error);
         res.send(error);
     })
-})
-
-var message = {
-    apns: {
-      headers: {
-        'apns-priority': '10'
-      },
-      payload: {
-        aps: {
-          alert: {
-            title: '$GOOG up 1.43% on the day',
-            body: '$GOOG gained 11.80 points to close at 835.67, up 1.43% on the day.',
-          },
-          badge: 42,
-        }
-      }
-    },
-    topic: 'industry-tech'
-  };
+});
