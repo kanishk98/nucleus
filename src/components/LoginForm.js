@@ -125,11 +125,25 @@ export default class LoginForm extends Component {
         }
     }
 
+    verifyMail = (email) => {
+        const index = email.indexOf('snu.edu.in');
+        if (index != -1) {
+            // snu mail
+            const char1 = email.charAt(0);
+            const char2 = email.charAt(1);
+            const char3 = email.substring(2, 5);
+            if (char1.toLowerCase() != char1.toUpperCase() && char2.toLowerCase() != char2.toUpperCase() && /^\d+$/.test(char3)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     signIn = async() => {
         try {
             this.setState({progress: true});
             let signedInUser = await GoogleSignin.signIn();
-            if (signedInUser.user.email !== null) {
+            if (signedInUser.user.email !== null && this.verifyMail(signedInUser.user.email)) {
                 console.log('Valid student');
                 console.log(JSON.stringify(signedInUser));
                 this.setState({user: signedInUser, error: null, progress: true, loggedIn: true});
@@ -188,6 +202,7 @@ export default class LoginForm extends Component {
                     });
             } else {
                 console.log('Signing out user');
+                console.log(await GoogleSignin.signOut());   
                 this.configureGoogleSignIn();
                 this.signOut();
             }

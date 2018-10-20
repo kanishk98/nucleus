@@ -409,7 +409,7 @@ export default class SpecificChatList extends Component {
                     <SearchBar
                         ref={search=>{this.search = search}}
                         lightTheme
-                        placeholder='Search for your friends!'
+                        placeholder='Search'
                         onChangeText={(text)=>this.searchConversations({text})}  
                         onSubmitEditing={this.submitSearch}
                     />
@@ -430,7 +430,7 @@ export default class SpecificChatList extends Component {
                     <SearchBar
                         ref={search=>{this.search = search}}
                         lightTheme
-                        placeholder='#comeconnect, for real.'
+                        placeholder='Search'
                         onChangeText={(text)=>this.searchConversations({text})}  
                         onSubmitEditing={this.submitSearch}
                     />
