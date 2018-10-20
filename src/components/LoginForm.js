@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
         height: 48
     },
     instructions: {
-       color: 'white',
+       color: Constants.primaryColor,
        marginBottom: 16,
        fontSize: 18,
        fontWeight: 'bold'

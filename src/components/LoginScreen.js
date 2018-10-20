@@ -9,7 +9,7 @@ export default class LoginScreen extends Component {
             <KeyboardAvoidingView style = {styles.container}>
                 <View style = {styles.logoContainer}>
                     <Image
-                        source={require('../../assets/GitHub-Mark-Light-120px-plus.png')}
+                        source={require('../../assets/logo.png')}
                         style={styles.logo}
                     />
                 </View>
@@ -22,7 +22,7 @@ export default class LoginScreen extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Constants.primaryColor,
+        backgroundColor: 'white',
         alignItems: 'center',
         justifyContent: 'center'
     },
@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
       alignItems: 'center'
     },
     logo: {
-      height: 100,
-      width: 100
+      height: 200,
+      width: 200
     }
 });
