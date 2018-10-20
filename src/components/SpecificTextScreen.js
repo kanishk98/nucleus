@@ -91,13 +91,14 @@ export default class SpecificTextScreen extends React.Component {
     }
 
     onSendHandler = ({message}) => {
+        console.log(message[0]);
         const newMessage = {
             conversationId: this.chat.conversationId,
             author: this.chat.user1,
             recipient: this.chat.user2,
             content: message[0].text,
             messageId: String(Constants.MaxDate - Math.floor(new Date().getTime()/1000)),
-            timestamp: new Date().toDateString(),
+            timestamp: message[0].createdAt,
         }
         console.log(newMessage);
         // mutate Dynamo table
