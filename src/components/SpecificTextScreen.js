@@ -31,7 +31,17 @@ export default class SpecificTextScreen extends React.Component {
         m._id = message.messageId;
         m.text = message.content;
         m.createdAt = new Date(message.timestamp);
-        m.user = SpecificTextScreen.convertUser(message.recipient);
+        m.user = SpecificTextScreen.convertUser(message.author);
+        m.image = message.image;
+        return m;
+    }
+
+    static convertQueryMessage(message) {
+        let m = {};
+        m._id = message.messageId;
+        m.text = message.content;
+        m.createdAt = new Date(message.timestamp);
+        m.user = SpecificTextScreen.convertUser(message.author);
         m.image = message.image;
         return m;
     }
@@ -49,33 +59,35 @@ export default class SpecificTextScreen extends React.Component {
     }
     
     fetchMoreMessages = () => {
-        connectClient.query({
-            query: GraphQL.GetConnectMessages, 
-            options: {
-                variables: {filter: SpecificTextScreen.noFilter},
-                fetchPolicy: 'cache-and-network',
-            }
-        })
-        .then(res => {
-            console.log(res);
-            let m = res.data.listNucleusConnectTexts.items;
-            let messages = [];
-            for (let message in m) {
-                console.log(m[message].recipient);
-                if (m[message].recipient.firebaseId == this.user.firebaseId) {
-                    messages.push(SpecificTextScreen.convertMessage(m[message]));
+        const dynamoDB = new AWS.DynamoDB.DocumentClient();
+        const params = {
+            TableName : "Nucleus.ConnectTexts",
+            KeyConditionExpression: "#conversationId = :id",
+            ExpressionAttributeNames:{
+                "#conversationId": "conversationId"
+            },
+            ExpressionAttributeValues: {
+                ":id": this.chat.conversationId
+            }, 
+        };
+        console.log('Querying data');
+        let messages = null;
+        dynamoDB.query(params, function (err, data) {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log(data);
+                let m = data.Items;
+                messages = [];
+                console.log(m);
+                for (let message in m) {
+                    console.log(message);
+                    console.log(m[message].author);
+                    messages.push(SpecificTextScreen.convertQueryMessage(m[message]));
                 }
+                this.setState({messages: messages});
             }
-            this.setState({messages: messages});
-            if (res.data.listNucleusConnectTexts.nextToken != null) {
-                // start background operation to fetch more data
-                // TODO: is this really needed or should we just fetch when 
-                // user scrolls upwards?
-            }
-        })
-        .catch(err => {
-            console.log(err);
-        });
+        }.bind(this));
     }
 
     onSendHandler = ({message}) => {
@@ -84,7 +96,7 @@ export default class SpecificTextScreen extends React.Component {
             author: this.chat.user1,
             recipient: this.chat.user2,
             content: message[0].text,
-            messageId: String(Math.floor(new Date().getTime()/1000)),
+            messageId: String(Constants.MaxDate - Math.floor(new Date().getTime()/1000)),
             timestamp: new Date().toDateString(),
         }
         console.log(newMessage);

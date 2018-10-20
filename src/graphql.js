@@ -153,7 +153,7 @@ export const GetConnectMessages = gql`query GetPagedConnectMessages($filter: Tab
     listNucleusConnectTexts(filter: $filter, limit: $limit, nextToken: $nextToken) {
         items {
             conversationId
-            recipient {
+            author {
                 firebaseId
                 profilePic
                 username
