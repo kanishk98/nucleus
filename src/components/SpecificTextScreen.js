@@ -1,12 +1,13 @@
 import React from 'react';
 import { Message } from './Message';
 import * as GraphQL from '../graphql';
-import { Dimensions, StyleSheet} from 'react-native';
+import { Dimensions, StyleSheet, Text} from 'react-native';
 import { API, graphqlOperation } from 'aws-amplify';
 import { connectClient } from '../../App';
 import { GiftedChat } from 'react-native-gifted-chat';
 import Constants from '../Constants';
 import AWS from 'aws-sdk';
+import { Button } from 'react-native-elements';
 
 export default class SpecificTextScreen extends React.Component {
 
@@ -62,6 +63,7 @@ export default class SpecificTextScreen extends React.Component {
             ExpressionAttributeValues: {
                 ":id": this.chat.conversationId
             }, 
+            Limit: 100,
         };
         console.log('Querying data');
         let messages = null;
