@@ -146,10 +146,10 @@ export default class Trending extends React.PureComponent {
     }
 
     render() {
-        console.log(this.state.postList);
+        const {postList} = this.state;
         return (
             <FlatList
-                data={this.state.postList}
+                data={postList}
                 keyExtractor={this.postKeyExtractor}
                 renderItem={this.renderPost}
                 onEndReached={this.getMorePosts}
