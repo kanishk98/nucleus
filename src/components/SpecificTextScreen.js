@@ -61,7 +61,10 @@ export default class SpecificTextScreen extends React.Component {
             let m = res.data.listNucleusConnectTexts.items;
             let messages = [];
             for (let message in m) {
-                messages.push(SpecificTextScreen.convertMessage(m[message]));
+                console.log(m[message].recipient);
+                if (m[message].recipient.firebaseId == this.user.firebaseId) {
+                    messages.push(SpecificTextScreen.convertMessage(m[message]));
+                }
             }
             this.setState({messages: messages});
             if (res.data.listNucleusConnectTexts.nextToken != null) {
@@ -73,20 +76,6 @@ export default class SpecificTextScreen extends React.Component {
         .catch(err => {
             console.log(err);
         });
-    }
-
-    fetchAllMessages = () => {
-        const dynamoDB = new AWS.DynamoDB();
-        const table = {TableName: "Nucleus.ConnectTexts"};
-        dynamoDB.describeTable(table, function(err, data) {
-            if (err) {
-                console.log(err, err.stack);
-            } else {
-                console.log(data);
-                this.itemCount = data.ItemCount;
-            }
-        });
-        dynamoDB
     }
 
     onSendHandler = ({message}) => {
