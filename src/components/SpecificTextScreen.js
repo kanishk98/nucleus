@@ -14,7 +14,7 @@ export default class SpecificTextScreen extends React.Component {
         conversationId: {ne: 'null'}
     }
 
-    static convertUser(passedUser) {
+    convertUser(passedUser) {
         let user = {
             _id: null,
             avatar: null,
@@ -23,25 +23,18 @@ export default class SpecificTextScreen extends React.Component {
         user._id = passedUser.firebaseId;
         user.avatar = passedUser.profilePic;
         user.name = passedUser.username;
+        if (user._id == this.props.navigation.getParam('chat').user1.firebaseId) {
+            return {};
+        }
         return user;
     }
 
-    static convertMessage(message) {
+    convertMessage(message) {
         let m = {};
         m._id = message.messageId;
         m.text = message.content;
         m.createdAt = new Date(message.timestamp);
-        m.user = SpecificTextScreen.convertUser(message.author);
-        m.image = message.image;
-        return m;
-    }
-
-    static convertQueryMessage(message) {
-        let m = {};
-        m._id = message.messageId;
-        m.text = message.content;
-        m.createdAt = new Date(message.timestamp);
-        m.user = SpecificTextScreen.convertUser(message.author);
+        m.user = this.convertUser(message.author);
         m.image = message.image;
         return m;
     }
@@ -53,7 +46,7 @@ export default class SpecificTextScreen extends React.Component {
         }
         this.chat = this.props.navigation.getParam('chat');
         console.log(this.chat);
-        this.recipient = SpecificTextScreen.convertUser(this.chat.user2);
+        this.recipient = this.convertUser(this.chat.user2);
         this.user = this.chat.user1;
         this.subscribeToConnectMessages();
     }
@@ -83,9 +76,14 @@ export default class SpecificTextScreen extends React.Component {
                 for (let message in m) {
                     console.log(message);
                     console.log(m[message].author);
-                    messages.push(SpecificTextScreen.convertQueryMessage(m[message]));
+                    messages.push(this.convertMessage(m[message]));
                 }
-                this.setState({messages: messages});
+                this.setState(previousState => {
+                    console.log(previousState);
+                    return {
+                        messages: GiftedChat.append(previousState.messages, messages)
+                    };
+                });
             }
         }.bind(this));
     }
@@ -152,8 +150,8 @@ export default class SpecificTextScreen extends React.Component {
         .subscribe({
             next: (res) => {
               console.log('Subscription received: ' + JSON.stringify(res));
-              const newMessage = SpecificTextScreen.convertMessage(res.value.data.onCreateNucleusConnectTexts);
-              if (newMessage.user._id !== this.chat.user1.firebaseId) {
+              const newMessage = this.convertMessage(res.value.data.onCreateNucleusConnectTexts);
+              if (newMessage.user._id == this.chat.user2.firebaseId) {
                 let tempArray = [];
                 console.log('Shit.');
                 tempArray.push(newMessage);
@@ -169,7 +167,7 @@ export default class SpecificTextScreen extends React.Component {
 
     render() {
         console.log(this.state);
-        let user = SpecificTextScreen.convertUser(this.chat.user1);
+        let user = this.convertUser(this.chat.user1);
         console.log(user);
         return (
             <GiftedChat
