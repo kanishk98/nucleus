@@ -6,6 +6,7 @@ import { API, graphqlOperation } from 'aws-amplify';
 import { connectClient } from '../../App';
 import { GiftedChat } from 'react-native-gifted-chat';
 import Constants from '../Constants';
+import AWS from 'aws-sdk';
 
 export default class SpecificTextScreen extends React.Component {
 
@@ -30,7 +31,7 @@ export default class SpecificTextScreen extends React.Component {
         m._id = message.messageId;
         m.text = message.content;
         m.createdAt = new Date(message.timestamp);
-        m.user = SpecificTextScreen.convertUser(message.author);
+        m.user = SpecificTextScreen.convertUser(message.recipient);
         m.image = message.image;
         return m;
     }
@@ -57,13 +58,13 @@ export default class SpecificTextScreen extends React.Component {
         })
         .then(res => {
             console.log(res);
-            let m = res.data.listNucleusConnectMessages.items;
+            let m = res.data.listNucleusConnectTexts.items;
             let messages = [];
             for (let message in m) {
-                messages.push(SpecificTextScreen.convertMessage(message));
+                messages.push(SpecificTextScreen.convertMessage(m[message]));
             }
             this.setState({messages: messages});
-            if (res.data.listNucleusConnectMessages.nextToken != null) {
+            if (res.data.listNucleusConnectTexts.nextToken != null) {
                 // start background operation to fetch more data
                 // TODO: is this really needed or should we just fetch when 
                 // user scrolls upwards?
@@ -72,6 +73,20 @@ export default class SpecificTextScreen extends React.Component {
         .catch(err => {
             console.log(err);
         });
+    }
+
+    fetchAllMessages = () => {
+        const dynamoDB = new AWS.DynamoDB();
+        const table = {TableName: "Nucleus.ConnectTexts"};
+        dynamoDB.describeTable(table, function(err, data) {
+            if (err) {
+                console.log(err, err.stack);
+            } else {
+                console.log(data);
+                this.itemCount = data.ItemCount;
+            }
+        });
+        dynamoDB
     }
 
     onSendHandler = ({message}) => {
@@ -144,6 +159,10 @@ export default class SpecificTextScreen extends React.Component {
               }
             }
         }); 
+    }
+
+    componentDidMount () {
+        this.fetchMoreMessages();
     }
 
     render() {

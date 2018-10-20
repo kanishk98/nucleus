@@ -149,10 +149,18 @@ export const SubscribeToConnectMessages = `subscription SubscribeToConnectTexts(
     }
 }`
 
-export const GetConnectMessages = gql`query GetPagedConnectMessages($filter: TableNucleusConnectMessagesFilterInput, $limit: Int, $nextToken: String) {
-    listNucleusConnectMessages(filter: $filter, limit: $limit, nextToken: $nextToken) {
+export const GetConnectMessages = gql`query GetPagedConnectMessages($filter: TableNucleusConnectTextsFilterInput, $limit: Int, $nextToken: String) {
+    listNucleusConnectTexts(filter: $filter, limit: $limit, nextToken: $nextToken) {
         items {
             conversationId
+            recipient {
+                firebaseId
+                profilePic
+                username
+            }
+            content
+            messageId
+            timestamp
         }
         nextToken
     }
