@@ -139,6 +139,11 @@ export default class Trending extends React.PureComponent {
         );
     }
 
+    _onrefresh = () => {
+        this.setState({refreshing: true});
+        this.getPosts();
+    }
+
     componentWillMount() {
         if (this.state.postList == null || this.state.postList == undefined) {
             this.getPosts();
@@ -154,6 +159,8 @@ export default class Trending extends React.PureComponent {
                 renderItem={this.renderPost}
                 onEndReached={this.getMorePosts}
                 onEndReachedThreshold={0.25}
+                onRefresh={this._onrefresh}
+                refreshing={false}
             />
         );
     }
