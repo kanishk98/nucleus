@@ -136,8 +136,10 @@ export default class PreDiscover extends React.Component {
                 API.graphql(graphqlOperation(GraphQL.SubscribeToDiscoverChats, {recipient: connectedUser.firebaseId}))
                 .subscribe(res => {
                     console.log(res);
-                    // request for chatting accepted by user
-                    this.props.navigation.navigate('Random', {randomUser: connectedUser, conversationId: chatId, user: this.user});  
+                    if (res.value.data.onCreateNucleusDiscoverChats.author.firebaseId !== this.user.firebaseId) {
+                        console.log('request for chatting accepted by user');
+                        this.props.navigation.navigate('Random', {randomUser: connectedUser, conversationId: chatId, user: this.user});  
+                    }
                 })
             })
             .catch(err => console.log(err));
