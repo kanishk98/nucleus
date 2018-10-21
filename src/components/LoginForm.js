@@ -126,7 +126,7 @@ export default class LoginForm extends Component {
     }
 
     verifyMail = (email) => {
-        if (email == 'nucleus.communications@gmail.com') {
+        if (email == 'nucleus.communicator@gmail.com') {
             return true;
         }
         const index = email.indexOf('snu.edu.in');
