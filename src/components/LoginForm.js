@@ -222,14 +222,13 @@ export default class LoginForm extends Component {
         AsyncStorage.setItem(Constants.LoggedIn, 'T')
         .then(res => {
             console.log('User saved as logged in');
-            this.setState({progress: false});
             AsyncStorage.setItem(Constants.UserObject, JSON.stringify(newUser))
             .then(res => {
                 console.log('newUser saved');
             })
             .catch(err => {
                 console.log(err);
-            })
+            });
         })
         .catch(err => {
             console.log(err);

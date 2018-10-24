@@ -55,7 +55,7 @@ export default class NewTrendingScreen extends React.Component {
 
     render () {
         return (
-            <View style={{justifyContent: 'center'}}>
+            <View style={{backgroundColor: 'white',flex: 1}}>
                 <FormLabel>Caption</FormLabel>
                 <FormInput onChangeText={(text)=>this._onSubmitEditingCaption({text})}/>
                 <FormLabel>Option 1</FormLabel>
@@ -63,7 +63,7 @@ export default class NewTrendingScreen extends React.Component {
                 <FormLabel>Option 2</FormLabel>
                 <FormInput onChangeText={(text)=>this._onSubmitEditingOption2({text})}/>
                 <Button
-                    style={{paddingTop: 20}}
+                    style={{paddingTop: 20, color: Constants.primaryColor}}
                     title={'Post'}
                     onPress={this._submitPost}
                 />
