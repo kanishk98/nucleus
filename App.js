@@ -19,6 +19,7 @@ import NewTrendingScreen from './src/components/NewTrendingScreen';
 import { Button } from 'react-native-elements';
 import NavigationService from './src/components/NavigationService';
 import RandomConnect from './src/components/RandomConnect';
+import firebase from 'react-native-firebase';
 
 const BottomNavigator = createBottomTabNavigator({
     Connect: {
@@ -113,6 +114,15 @@ export const apiConfig = {
 Amplify.configure(apiConfig);
 
 export default class App extends React.Component {
+    
+    componentDidMount() {
+        // setting up Android notifications
+        const channel = new firebase.notifications.Android.Channel('channelId', 'channelId', firebase.notifications.Android.Importance.Max)
+        .setSound('default')
+        .setDescription('Nucleus_default_channel');
+        firebase.notifications().android.createChannel(channel);
+    }
+
     render() {
         return (
             <ApolloProvider client={connectClient}>

@@ -231,7 +231,14 @@ export default class SpecificChatList extends Component {
                 .setData({
                     chat: notification.data.chat,
                 });
-                displayNotification.ios.setBadge(notification.ios.badge);
+                if (Platform.OS == 'ios') {
+                    displayNotification.ios.setBadge(notification.ios.badge);
+                } else {
+                    // android
+                    displayNotification.android.setChannelId('channelId');
+                    displayNotification.android.setOnlyAlertOnce(true);
+                    displayNotification.android.setAutoCancel(true);
+                }
                 firebase.notifications().displayNotification(displayNotification);
             });
             this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen) => {
