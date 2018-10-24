@@ -386,7 +386,7 @@ export default class SpecificChatList extends Component {
                             onChangeText={(text)=>this.searchConversations({text})}  
                             onSubmitEditing={this.submitSearch}
                         />
-                        <List>
+                        <List containerStyle={{borderColor: 'white'}}>
                         {renderSearch(
                             (this.state.searchResults.length > 0),
                             <FlatList

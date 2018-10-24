@@ -115,6 +115,7 @@ export default class SpecificTextScreen extends React.Component {
                 messages: GiftedChat.append(previousState.messages, message)
             };
         });
+        console.log(JSON.stringify(this.chat));
         // send notification to other user
         fetch(Constants.notificationsUrl, {
             method: 'POST',
