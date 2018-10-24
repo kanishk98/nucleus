@@ -65,7 +65,14 @@ export default class PreDiscover extends React.Component {
                 request: notification.data.request,
                 connectedUser: notification.data.connectedUser,
             });
-            displayNotification.ios.setBadge(notification.ios.badge);
+            if (Platform.OS == 'ios') {
+                displayNotification.ios.setBadge(notification.ios.badge);
+            } else {
+                // android
+                displayNotification.android.setChannelId('channelId');
+                displayNotification.android.setOnlyAlertOnce(true);
+                displayNotification.android.setAutoCancel(true);
+            }
             firebase.notifications().displayNotification(displayNotification);
         });
         this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen) => {
