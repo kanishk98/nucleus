@@ -5,12 +5,14 @@ import {API, graphqlOperation} from 'aws-amplify';
 import firebase from 'react-native-firebase';
 import { renderProgress } from './renderIf';
 import Constants from '../Constants';
+import { AllSubstringsIndexStrategy } from 'js-search';
 
 export default class PreDiscover extends React.Component {
     
     constructor(props) {
         super(props);
         this.state={
+            text: 'Tap to talk',
             looking: false,
             connected: true,
             onlineUsers: [],
@@ -132,7 +134,8 @@ export default class PreDiscover extends React.Component {
                 console.log('Resolved chat: ' + JSON.stringify(res));
                 // waiting for acceptance from another user for 5 seconds
                 setTimeout(this.startDiscover, 5000);
-                this.setState({username: connectedUser.username});
+                const initials = this.getInitials(connectedUser.username);
+                this.setState({username: initials});
                 API.graphql(graphqlOperation(GraphQL.SubscribeToDiscoverChats, {recipient: connectedUser.firebaseId}))
                 .subscribe(res => {
                     console.log(res);
@@ -145,6 +148,15 @@ export default class PreDiscover extends React.Component {
             .catch(err => console.log(err));
             this.sendRequest(user, connectedUser, newChat);
         }
+    }
+
+    getInitials = (name) => {
+        splits = name.split(' ');
+        let r = '';
+        for (let s in splits) {
+            r = r + splits[s].charAt(0);
+        }
+        return r;
     }
 
     // API.graphql(graphqlOperation(GraphQL.GetAllDiscoverUsers, {filter: this.noFilter}))
@@ -233,24 +245,17 @@ export default class PreDiscover extends React.Component {
     }
     
     render() {
-        let {requestId, looking} = this.state;
-        let text = 'Pull to talk!';
-        // checking online status of user
-        /*if (this.user.online) {
-            text = text + 'offline';
-        } else {
-            text = text + 'online';
-        }*/
+        let {requestId, looking, text} = this.state;
         if (requestId !== null && !looking) {
             return (
-                <ScrollView contentContainerStyle={styles.container} onScrollEndDrag={this.acceptDiscover}>
+                <ScrollView contentContainerStyle={styles.container} onTouchEnd={this.acceptDiscover}>
                         <Text style={styles.title}>{text}</Text>
                         <Text style={styles.instructions}>Someone got connected to you!</Text>
                 </ScrollView>
             );
         } else {
             return (
-                <ScrollView contentContainerStyle={styles.container} onScrollEndDrag={this.startDiscover}>
+                <ScrollView contentContainerStyle={styles.container} onTouchEnd={this.startDiscover}>
                         <Text style={styles.title}>{text}</Text>
                         <Text style={styles.instructions}>{this.state.username}</Text>
                         {renderProgress(this.ProgressBar, null)}
