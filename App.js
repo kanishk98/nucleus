@@ -44,9 +44,8 @@ const BottomNavigator = createBottomTabNavigator({
     tabBarOptions: {
         swipeEnabled: true,
         showIcon: true,
-        activeTintColor: Constants.primaryColor,
-        inactiveTintColor: 'gray',
-        showLabel: false,
+        activeTintColor: 'blue',
+        showLabel: true,
     },  
 });
 
@@ -60,20 +59,33 @@ const StackNavigator = createStackNavigator(
         },
         Chat: {
             screen: BottomNavigator, 
-            navigationOptions: {
-            title: 'Joint',
-            headerLeft: null,
-            gesturesEnabled: false,
-            headerRight: (
-                <Button
-                  onPress={newTrendingPost}
-                  title="+1"
-                  textStyle={{color: 'black'}}
-                  raised={false}
-                  backgroundColor="white"
-                />
-            ),
-        }},
+            navigationOptions: ({ navigation }) => ({
+                title: 'Joint',
+                headerLeft: null,
+                gesturesEnabled: false,
+                headerRight: (
+                    <Button
+                        onPress={newTrendingPost}
+                        title="+1"
+                        textStyle={{ color: 'black' }}
+                        raised={false}
+                        backgroundColor="white"
+                    />
+                ),
+                tabBarIcon: ({ focused, horizontal, tintColor }) => {
+                    const { routeName } = navigation.state;
+                    let iconName;
+                    if (routeName === 'Connect') {
+                        iconName = `ios-chatbubbles${focused ? '' : '-outline'}`;
+                    } else if (routeName === 'PreDiscover') {
+                        iconName = `network${focused ? '' : '-outline'}`;
+                    }
+
+                    // You can return any component that you like here! We usually use an
+                    // icon component from react-native-vector-icons
+                    return <Ionicons name={iconName} size={horizontal ? 20 : 25} color={tintColor} />;
+                }
+        })},
         Random: {
             screen: RandomConnect, 
             navigationOptions: {
