@@ -16,7 +16,7 @@ import SpecificChatList from './src/components/SpecificChatList';
 import SpecificTextScreen from './src/components/SpecificTextScreen';
 import TrendingScreen, { newTrendingPost } from './src/components/TrendingScreen';
 import NewTrendingScreen from './src/components/NewTrendingScreen';
-import { Button } from 'react-native';
+import { Button } from 'react-native-elements';
 import NavigationService from './src/components/NavigationService';
 import RandomConnect from './src/components/RandomConnect';
 
@@ -67,7 +67,9 @@ const StackNavigator = createStackNavigator(
                 <Button
                   onPress={newTrendingPost}
                   title="+1"
-                  color="black"
+                  textStyle={{color: 'black'}}
+                  raised={false}
+                  backgroundColor="white"
                 />
             ),
         }},
