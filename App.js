@@ -24,29 +24,33 @@ import firebase from 'react-native-firebase';
 const BottomNavigator = createBottomTabNavigator({
     Connect: {
         screen: SpecificChatList, 
-        navigationOptions: {
-            tabBarIcon: <Ionicons name={"ios-chatbubbles"} size={33}/>
-        }
     },
     Discover: {
         screen: PreDiscover,
-        navigationOptions: {
-            tabBarIcon: <Entypo name={"network"} size={30}/>
-        }
     }, 
     Trending: {
         screen: TrendingScreen, 
-        navigationOptions: {
-            tabBarIcon: <FontAwesome name={"fire"} size={30}/>,
-        }
     }
     }, {
-    tabBarOptions: {
-        swipeEnabled: true,
-        showIcon: true,
-        activeTintColor: 'blue',
-        showLabel: true,
-    },  
+    navigationOptions: ({navigation}) => ({
+        tabBarIcon: ({ focused, horizontal, tintColor }) => {
+            console.log(focused);
+            console.log(horizontal);
+            console.log(tintColor);
+            const { routeName } = navigation.state;
+            let iconName;
+            if (routeName === 'Connect') {
+                // iconName = `ios-chatbubbles${focused ? '' : '-outline'}`;
+                return <Ionicons name={'ios-chatbubbles'} size={horizontal ? 20 : 25} color={tintColor} />;
+            } else if (routeName === 'Discover') {
+                // iconName = `network${focused ? '' : '-outline'}`;
+                return <Entypo name={'network'} size={horizontal ? 20 : 25} color={tintColor} />;
+            } else if (routeName == 'Trending') {
+                // iconName = `fire${focused ? '' : '-outline'}`;
+                return <FontAwesome name={'fire'} size={horizontal ? 20 : 25} color={tintColor} />;
+            }
+        }
+    }),
 });
 
 const StackNavigator = createStackNavigator(
@@ -66,25 +70,12 @@ const StackNavigator = createStackNavigator(
                 headerRight: (
                     <Button
                         onPress={newTrendingPost}
-                        title="+1"
+                        title="New poll"
                         textStyle={{ color: 'black' }}
                         raised={false}
                         backgroundColor="white"
                     />
                 ),
-                tabBarIcon: ({ focused, horizontal, tintColor }) => {
-                    const { routeName } = navigation.state;
-                    let iconName;
-                    if (routeName === 'Connect') {
-                        iconName = `ios-chatbubbles${focused ? '' : '-outline'}`;
-                    } else if (routeName === 'PreDiscover') {
-                        iconName = `network${focused ? '' : '-outline'}`;
-                    }
-
-                    // You can return any component that you like here! We usually use an
-                    // icon component from react-native-vector-icons
-                    return <Ionicons name={iconName} size={horizontal ? 20 : 25} color={tintColor} />;
-                }
         })},
         Random: {
             screen: RandomConnect, 
