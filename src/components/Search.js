@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     search: {
         marginTop: 8,
         marginHorizontal: 8,
-        borderRadius: 4,
+        borderRadius: 15,
         borderWidth: 1,
         borderColor: Constants.primaryColor,
         justifyContent: 'flex-start',
