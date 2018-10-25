@@ -1,3 +1,6 @@
+# apk files
+*.apk
+
 # Constants file
 src/Constants.js
 
