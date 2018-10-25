@@ -424,15 +424,31 @@ export default class SpecificChatList extends Component {
                 );
             } else if (!!this.state.conversations && this.state.conversations.length > 0) {
                 // conversations in memory, show that List with Search bar
-                if (this.state.searching && this.state.searchResults.length > 0) {
-                    return (
-                        <Text>show search results</Text>
-                    )
-                } else if (!this.state.searching) {
-                    return (
-                        <Text>show search results</Text>
-                    )
-                }
+                return (
+                    <View style={styles.layout}>
+                        <ScrollView scrollEnabled={false}>
+                            <Search onChange={(text) => this.searchConversations({ text })} placeholder={'Find Nucleus users'} />
+                            <List containerStyle={{ borderColor: Constants.primaryColor }}>
+                                {renderSearch(
+                                    (this.state.searching),
+                                    <View style={{ flex: 1 }} >
+                                        {renderResults((this.state.searchResults.length > 0),
+                                            <FlatList
+                                                data={this.state.searchResults}
+                                                keyExtractor={(data) => this.peopleKeyExtractor(data)}
+                                                renderItem={this.renderUser} />,
+                                            <Text>No matches found</Text>
+                                        )}
+                                    </View>,
+                                    <FlatList
+                                        data={this.state.conversations}
+                                        keyExtractor={(data) => this.chatKeyExtractor(data)}
+                                        renderItem={this.renderConversation} />
+                                )}
+                            </List>
+                        </ScrollView>
+                    </View>
+                );
             }
         }
     }
