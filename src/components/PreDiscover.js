@@ -152,7 +152,7 @@ export default class PreDiscover extends React.Component {
                 })
             })
             .catch(err => console.log(err));
-            this.sendRequest(user, connectedUser, newChat);
+            // this.sendRequest(user, connectedUser, newChat);
         }
     }
 
