@@ -57,13 +57,14 @@ export default class NewTrendingScreen extends React.Component {
         return (
             <View style={{backgroundColor: 'white',flex: 1}}>
                 <FormLabel>Caption</FormLabel>
-                <FormInput onChangeText={(text)=>this._onSubmitEditingCaption({text})}/>
-                <FormLabel>Option 1</FormLabel>
-                <FormInput onChangeText={(text)=>this._onSubmitEditingOption1({text})}/>
-                <FormLabel>Option 2</FormLabel>
-                <FormInput onChangeText={(text)=>this._onSubmitEditingOption2({text})}/>
+                <FormInput onChangeText={(text)=>this._onSubmitEditingCaption({text})} underlineColorAndroid={Constants.secondaryColor} placeholder='What are you thinking about?'/>
+                <FormLabel>First response</FormLabel>
+                <FormInput onChangeText={(text)=>this._onSubmitEditingOption1({text})} underlineColorAndroid={Constants.secondaryColor} placeholder='Yes/yeah/yay/Shanjana'/>
+                <FormLabel>Second response</FormLabel>
+                <FormInput onChangeText={(text)=>this._onSubmitEditingOption2({text})} underlineColorAndroid={Constants.secondaryColor} placeholder='No/nah/nay/Sneha'/>
                 <Button
-                    style={{paddingTop: 20, color: Constants.primaryColor}}
+                    style={{paddingTop: 20}}
+                    backgroundColor={Constants.primaryColor}
                     title={'Post'}
                     onPress={this._submitPost}
                 />
