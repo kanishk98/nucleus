@@ -19,6 +19,14 @@ export function renderSearch(condition, searching, notSearching) {
     }
 }
 
+export function renderResults(condition, results, noResults) {
+    if (condition) {
+        return results;
+    } else {
+        return noResults;
+    }
+}
+
 export function renderOnline(online) {
     if (online === 1) {
         return (<Text>   online</Text>);

@@ -5,7 +5,7 @@ import Constants from '../Constants';
 import AWS from 'aws-sdk';
 import * as JsSearch from 'js-search';
 import Search from './Search';
-import { renderSearch, renderOnline } from './renderIf';
+import { renderSearch, renderOnline, renderResults } from './renderIf';
 import {Auth, API, graphqlOperation} from 'aws-amplify';
 import * as GraphQL from '../graphql';
 import firebase from 'react-native-firebase';
@@ -381,76 +381,54 @@ export default class SpecificChatList extends Component {
 
     render() {
         console.log(this.state);
-        if (!this.state.showingPeople && this.state.searching) {
-            return(
-                <View style={styles.layout}>
-                    <ScrollView scrollEnabled={false}>
-                        <Search onChange={(text)=>this.searchConversations({text})} placeholder={'Find Nucleus users'} />
-                        <List containerStyle={{borderColor: Constants.primaryColor}}>
-                        {renderSearch(
-                            (!this.state.searchResults || this.state.searchResults.length > 0),
-                            <FlatList
-                                data={this.state.searchResults}
-                                keyExtractor={(data)=>this.peopleKeyExtractor(data)}
-                                renderItem={this.renderUser}
-                                />,
-                                <Text>No matches found</Text>
-                            )}
-                        </List>
-                    </ScrollView>
-                </View>
-            );
-        } else if (!this.state.showingPeople && !this.state.searching) {
+        if (!this.state.people || this.state.people.length == 0) {
+            // no users in memory
+            this.fetchUsers();
+            this.getStoredUsers();
+            // show image designating no users
             return (
-                <View style={styles.layout}>
-                    <ScrollView scrollEnabled={false}>
-                        <Search onChange={(text) => this.searchConversations({ text })} placeholder={'Find Nucleus users'} />
-                        <List containerStyle={{ borderColor: Constants.primaryColor }}>
-                            <FlatList
-                                data={this.state.conversations}
-                                renderItem={this.renderConversation}
-                                keyExtractor={this.peopleKeyExtractor}
-                            />
-                        </List>
-                    </ScrollView>
-                </View>
-            );
-        } else if (this.state.people == null) {
-            return (
-                <ImageBackground style={styles.initialLayout} source={require('../../assets/background.png')}>
-                    <Search onChange={(text) => this.searchConversations({ text })} placeholder={'Find Nucleus users'} />
-                </ImageBackground>
+                <Text>No users found yet</Text>
             );
         } else {
-            // making initial call for users
-            // future calls delegated to background task
-            console.log('Inside render() else block');
-            if (this.state.people == null || this.state.people.length == 0 || this.state == undefined) {
-                console.log('Getting more users from render function');
-                this.fetchUsers();
-                this.getStoredUsers();
+            if (!this.state.conversations || this.state.conversations.length == 0) {
+                console.log('no conversations in memory, show user list with search bar');
+                return (
+                    <View style={styles.layout}>
+                        <ScrollView scrollEnabled={false}>
+                            <Search onChange={(text) => this.searchConversations({ text })} placeholder={'Find Nucleus users'} />
+                            <List containerStyle={{ borderColor: Constants.primaryColor }}>
+                                {renderSearch(
+                                    (this.state.searching),
+                                    <View style={{flex: 1}} >
+                                    {renderResults((this.state.searchResults.length > 0), 
+                                        <FlatList
+                                            data={this.state.searchResults}
+                                            keyExtractor={(data) => this.peopleKeyExtractor(data)}
+                                            renderItem={this.renderUser} />,
+                                        <Text>No matches found</Text>
+                                    )}
+                                    </View>,
+                                    <FlatList
+                                        data={this.state.people}
+                                        keyExtractor={(data) => this.peopleKeyExtractor(data)}
+                                        renderItem={this.renderUser} />
+                                )}
+                            </List>
+                        </ScrollView>
+                    </View>
+                );
+            } else if (!!this.state.conversations && this.state.conversations.length > 0) {
+                // conversations in memory, show that List with Search bar
+                if (this.state.searching && this.state.searchResults.length > 0) {
+                    return (
+                        <Text>show search results</Text>
+                    )
+                } else if (!this.state.searching) {
+                    return (
+                        <Text>show search results</Text>
+                    )
+                }
             }
-            console.log(this.state);
-            return (
-                <View style={styles.layout}>
-                    <Search onChange={(text) => this.searchConversations({ text })} placeholder={'Find Nucleus users'} />
-                    <List>
-                    {renderSearch(
-                        !this.state.searchResults || this.state.searchResults.length > 0,
-                        <FlatList
-                            data={this.state.searchResults}
-                            keyExtractor={(data)=>this.peopleKeyExtractor(data)}
-                            renderItem={this.renderUser}
-                        />,
-                        <FlatList
-                            data={this.state.people}
-                            renderItem={this.renderUser}
-                            keyExtractor={this.peopleKeyExtractor}
-                        />
-                        )}
-                    </List>
-                </View>
-            );
         }
     }
 }
