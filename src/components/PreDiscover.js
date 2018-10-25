@@ -5,7 +5,6 @@ import {API, graphqlOperation} from 'aws-amplify';
 import firebase from 'react-native-firebase';
 import { renderProgress } from './renderIf';
 import Constants from '../Constants';
-import { AllSubstringsIndexStrategy } from 'js-search';
 
 export default class PreDiscover extends React.Component {
     
@@ -197,6 +196,7 @@ export default class PreDiscover extends React.Component {
     }
 
     async componentDidMount() {
+        // TODO: READ SIGNED IN USER FROM STORAGE AND CHANGE THE WHOLE SCREEN ACCORDINGLY
         // querying online users
         API.graphql(graphqlOperation(GraphQL.GetOnlineDiscoverUsers), {
             online: 1

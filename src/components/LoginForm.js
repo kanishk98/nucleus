@@ -54,7 +54,7 @@ export default class LoginForm extends Component {
                     .then(savedUser => {
                         console.log(savedUser);
                         if (!!savedUser) {
-                            this.props.navigation.navigate('Chat', {user: JSON.parse(savedUser)});
+                            this.props.navigation.navigate('Connect', {user: JSON.parse(savedUser)});
                         } else {
                             // setting user setting to logged out
                             AsyncStorage.setItem(Constants.LoggedIn, 'F')

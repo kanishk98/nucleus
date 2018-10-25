@@ -58,10 +58,10 @@ export default class Search extends PureComponent {
 
 const styles = StyleSheet.create({
     search: {
-        marginTop: 8,
+        marginTop: 16,
         marginHorizontal: 8,
         borderRadius: 15,
-        borderWidth: 1,
+        borderWidth: 2,
         borderColor: Constants.primaryColor,
         justifyContent: 'flex-start',
         flexDirection: 'row',
