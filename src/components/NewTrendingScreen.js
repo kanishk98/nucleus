@@ -70,22 +70,24 @@ export default class NewTrendingScreen extends React.Component {
         return (
             <View style={{backgroundColor: 'white', flex: 1}}>
                 <FormLabel>Caption</FormLabel>
-                <FormInput onChangeText={(text)=>this._onSubmitEditingCaption({text})} underlineColorAndroid={Constants.secondaryColor} placeholder='What are you thinking about?'/>
+                <FormInput inputStyle={{color: 'black', fontWeight: 'bold'}} onChangeText={(text)=>this._onSubmitEditingCaption({text})} underlineColorAndroid={Constants.secondaryColor} placeholder='What are you thinking about?'/>
                 <FormLabel>First response</FormLabel>
-                <FormInput onChangeText={(text)=>this._onSubmitEditingOption1({text})} underlineColorAndroid={Constants.secondaryColor} placeholder='Yes/yeah/yay/Shanjana'/>
+                <FormInput inputStyle={{ color: 'black', fontWeight: 'bold'}} onChangeText={(text)=>this._onSubmitEditingOption1({text})} underlineColorAndroid={Constants.secondaryColor} placeholder='Yes/yeah/yay/Shanjana'/>
                 <FormLabel>Second response</FormLabel>
-                <FormInput onChangeText={(text)=>this._onSubmitEditingOption2({text})} underlineColorAndroid={Constants.secondaryColor} placeholder='No/nah/nay/Sneha'/>
+                <FormInput inputStyle={{ color: 'black', fontWeight: 'bold'}} onChangeText={(text)=>this._onSubmitEditingOption2({text})} underlineColorAndroid={Constants.secondaryColor} placeholder='No/nah/nay/Sneha'/>
                 {renderSearch((!!this.state.option1 && this.state.option1.length > 0 && !!this.state.option2 && this.state.option2.length > 0 && !!this.state.caption && this.state.caption.length > 0), 
                     <Button
+                        borderRadius={15}
                         style={{ paddingTop: 20 }}
                         backgroundColor={Constants.primaryColor}
                         title={'Post'}
                         onPress={this._submitPost}
                     />, 
                     <Button
+                        borderRadius={15}
                         style={{ paddingTop: 20 }}
                         backgroundColor={'gray'}
-                        title={'Post'}
+                        title={"Post"}
                     />
                 )}
             </View>
