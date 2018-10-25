@@ -125,7 +125,6 @@ export default class PreDiscover extends React.Component {
             console.log(onlineUsers[randUser]);
             let connectedUser = onlineUsers[randUser];
             console.log('Connected user: ' + JSON.stringify(connectedUser));
-            debugger
             // TODO: Create conversationId and a new UserConversation
             let chatId = String(Math.floor(new Date().getTime()));
             let newChat = {

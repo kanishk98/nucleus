@@ -20,10 +20,12 @@ export default class SpecificChatList extends Component {
             showingPeople: false,
             people: [],
             searchResults: [],
+            searching: false,
         };
         user = null;
         itemCount = 0;
         AWS.config.update({
+            dynamoDbCrc32: false,
             accessKeyId: Constants.accessKey,
             secretAccessKey: Constants.secretAccessKey,
             region:'ap-south-1'
@@ -309,7 +311,7 @@ export default class SpecificChatList extends Component {
         chatSearch.addDocuments(this.state.people);
         let searchResults = chatSearch.search(text);
         console.log(searchResults);
-        this.setState({searchResults: searchResults})
+        this.setState({searchResults: searchResults, searching: true})
     }
 
     getStoredUsers () {
@@ -377,27 +379,38 @@ export default class SpecificChatList extends Component {
         });
     }
 
-    submitSearch = () => {
-        this.search.cancel;
-        this.setState({searchResults: []});
-    }
-
     render() {
-        if (!this.state.showingPeople && this.state.conversations.length > 0) {
+        console.log(this.state);
+        if (!this.state.showingPeople && this.state.searching) {
             return(
                 <View style={styles.layout}>
                     <ScrollView scrollEnabled={false}>
                         <Search onChange={(text)=>this.searchConversations({text})} placeholder={'Find Nucleus users'} />
                         <List containerStyle={{borderColor: Constants.primaryColor}}>
                         {renderSearch(
-                            (this.state.searchResults.length > 0),
+                            (!this.state.searchResults || this.state.searchResults.length > 0),
                             <FlatList
                                 data={this.state.searchResults}
                                 keyExtractor={(data)=>this.peopleKeyExtractor(data)}
                                 renderItem={this.renderUser}
                                 />,
-                                <Text>No people found</Text>
+                                <Text>No matches found</Text>
                             )}
+                        </List>
+                    </ScrollView>
+                </View>
+            );
+        } else if (!this.state.showingPeople && !this.state.searching) {
+            return (
+                <View style={styles.layout}>
+                    <ScrollView scrollEnabled={false}>
+                        <Search onChange={(text) => this.searchConversations({ text })} placeholder={'Find Nucleus users'} />
+                        <List containerStyle={{ borderColor: Constants.primaryColor }}>
+                            <FlatList
+                                data={this.state.conversations}
+                                renderItem={this.renderConversation}
+                                keyExtractor={this.peopleKeyExtractor}
+                            />
                         </List>
                     </ScrollView>
                 </View>
@@ -423,13 +436,17 @@ export default class SpecificChatList extends Component {
                     <Search onChange={(text) => this.searchConversations({ text })} placeholder={'Find Nucleus users'} />
                     <List>
                     {renderSearch(
-                        this.state.searchResults.length > 0,
+                        !this.state.searchResults || this.state.searchResults.length > 0,
                         <FlatList
                             data={this.state.searchResults}
                             keyExtractor={(data)=>this.peopleKeyExtractor(data)}
                             renderItem={this.renderUser}
                         />,
-                        <Text>No people found</Text>
+                        <FlatList
+                            data={this.state.people}
+                            renderItem={this.renderUser}
+                            keyExtractor={this.peopleKeyExtractor}
+                        />
                         )}
                     </List>
                 </View>
