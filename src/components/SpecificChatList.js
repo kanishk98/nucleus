@@ -306,6 +306,11 @@ export default class SpecificChatList extends Component {
 
     searchConversations = ({text}) => {
         // text contains user names
+        if (text == '') {
+            // empty string, reset search
+            this.setState({searching: false});
+            return;
+        }
         const chatSearch = new JsSearch.Search('firebaseId');
         chatSearch.addIndex('username');
         chatSearch.addDocuments(this.state.people);
