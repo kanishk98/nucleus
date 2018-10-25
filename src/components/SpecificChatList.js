@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { Platform, View, ScrollView, FlatList, StyleSheet, AsyncStorage, ImageBackground } from 'react-native';
-import { List, ListItem, SearchBar } from 'react-native-elements';
+import { Text, Platform, View, ScrollView, FlatList, StyleSheet, AsyncStorage, ImageBackground } from 'react-native';
+import { List, ListItem } from 'react-native-elements';
 import Constants from '../Constants';
 import AWS from 'aws-sdk';
 import * as JsSearch from 'js-search';
+import Search from './Search';
 import { renderSearch, renderOnline } from './renderIf';
 import {Auth, API, graphqlOperation} from 'aws-amplify';
 import * as GraphQL from '../graphql';
@@ -386,26 +387,17 @@ export default class SpecificChatList extends Component {
             return(
                 <View style={styles.layout}>
                     <ScrollView scrollEnabled={false}>
-                        <SearchBar
-                            ref={search=>{this.search = search}}
-                            lightTheme
-                            placeholder='Search'
-                            onChangeText={(text)=>this.searchConversations({text})}  
-                            onSubmitEditing={this.submitSearch}
-                        />
-                        <List containerStyle={{borderColor: 'white'}}>
+                        <Search onChange={(text)=>this.searchConversations({text})} placeholder={'Find Nucleus users'} />
+                        <List containerStyle={{borderColor: Constants.primaryColor}}>
                         {renderSearch(
                             (this.state.searchResults.length > 0),
                             <FlatList
                                 data={this.state.searchResults}
                                 keyExtractor={(data)=>this.peopleKeyExtractor(data)}
                                 renderItem={this.renderUser}
-                            />,
-                            <FlatList
-                                data={this.state.conversations}
-                                keyExtractor={(data)=>this.chatKeyExtractor(data)}
-                                renderItem={this.renderConversation}
-                            />)}
+                                />,
+                                <Text>No people found</Text>
+                            )}
                         </List>
                     </ScrollView>
                 </View>
@@ -413,13 +405,7 @@ export default class SpecificChatList extends Component {
         } else if (this.state.people == null) {
             return (
                 <ImageBackground style={styles.initialLayout} source={require('../../assets/background.png')}>
-                    <SearchBar
-                        ref={search=>{this.search = search}}
-                        lightTheme
-                        placeholder='Search'
-                        onChangeText={(text)=>this.searchConversations({text})}  
-                        onSubmitEditing={this.submitSearch}
-                    />
+                    <Search onChange={(text) => this.searchConversations({ text })} placeholder={'Find Nucleus users'} />
                 </ImageBackground>
             );
         } else {
@@ -434,26 +420,16 @@ export default class SpecificChatList extends Component {
             console.log(this.state);
             return (
                 <View style={styles.layout}>
-                    <SearchBar
-                        ref={search=>{this.search = search}}
-                        lightTheme
-                        placeholder='Search'
-                        onChangeText={(text)=>this.searchConversations({text})}  
-                        onSubmitEditing={this.submitSearch}
-                    />
+                    <Search onChange={(text) => this.searchConversations({ text })} placeholder={'Find Nucleus users'} />
                     <List>
                     {renderSearch(
-                        this.state.searchResults > 0,
+                        this.state.searchResults.length > 0,
                         <FlatList
                             data={this.state.searchResults}
                             keyExtractor={(data)=>this.peopleKeyExtractor(data)}
                             renderItem={this.renderUser}
                         />,
-                        <FlatList
-                            data={this.state.people}
-                            renderItem={this.renderUser}
-                            keyExtractor={this.peopleKeyExtractor}
-                        />
+                        <Text>No people found</Text>
                         )}
                     </List>
                 </View>

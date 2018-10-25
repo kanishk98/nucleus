@@ -1,7 +1,6 @@
 import React, { PureComponent } from "react";
 import { Image, TextInput, View, TouchableHighlight, StyleSheet } from "react-native";
-import TouchHighlight from "../component/TouchHighlight";
-import { Color } from "../constants/Color";
+import TouchHighlight from "./TouchHighlight";
 
 export default class Search extends PureComponent {
 
@@ -34,7 +33,7 @@ export default class Search extends PureComponent {
         return (
             <TouchableHighlight onPress={this.onFocus} activeOpacity={1} underlayColor={'white'}>
                 <View style={[styles.search, searchStyles]}>
-                    <Image source={require("../assets/search.png")} style={styles.icon} />
+                    <Image source={require("../../assets/search.png")} style={styles.icon} />
                     <TextInput
                         placeholder={placeholder}
                         style={styles.searchText}
@@ -47,7 +46,7 @@ export default class Search extends PureComponent {
                     />
                     {searchText ?
                         <TouchHighlight onClick={this.clearText} styles={styles.closeContainer}>
-                            <Image source={require("../assets/close.png")} style={styles.closeButton} />
+                            <Image source={require("../../assets/close.png")} style={styles.closeButton} />
                         </TouchHighlight> : null
                     }
                 </View>
@@ -62,7 +61,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 8,
         borderRadius: 4,
         borderWidth: 1,
-        borderColor: Color.BORDER,
+        borderColor: 'blue',
         justifyContent: 'flex-start',
         flexDirection: 'row',
         alignItems: 'center',
