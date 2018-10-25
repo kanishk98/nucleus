@@ -51,6 +51,9 @@ const BottomNavigator = createBottomTabNavigator({
             }
         }
     }),
+    tabBarOptions: {
+        activeTintColor: Constants.primaryColor
+    }
 });
 
 const StackNavigator = createStackNavigator(

@@ -1,6 +1,7 @@
 import React, { PureComponent } from "react";
 import { Image, TextInput, View, TouchableHighlight, StyleSheet } from "react-native";
 import TouchHighlight from "./TouchHighlight";
+import Constants from "../Constants";
 
 export default class Search extends PureComponent {
 
@@ -61,7 +62,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 8,
         borderRadius: 4,
         borderWidth: 1,
-        borderColor: 'blue',
+        borderColor: Constants.primaryColor,
         justifyContent: 'flex-start',
         flexDirection: 'row',
         alignItems: 'center',
