@@ -11,6 +11,7 @@ src/Constants.js
 ios/Index/DataStore/
 ios/build/
 ios/Index/
+ios/Pods
 
 # Webstorm folder
 .idea/
