@@ -20,6 +20,8 @@ import { Button } from 'react-native-elements';
 import NavigationService from './src/components/NavigationService';
 import RandomConnect from './src/components/RandomConnect';
 import firebase from 'react-native-firebase';
+import { AsyncStorage } from 'react-native';
+import { renderSearch } from './src/components/renderIf';
 
 const BottomNavigator = createBottomTabNavigator({
     Connect: {
@@ -65,7 +67,7 @@ const BottomNavigator = createBottomTabNavigator({
     }
 });
 
-const StackNavigator = createStackNavigator(
+const LoggedOutStackNavigator = createStackNavigator(
   {
     Login: {
       screen: LoginScreen,
@@ -103,6 +105,60 @@ const StackNavigator = createStackNavigator(
   }
 );
 
+const LoggedInStackNavigator = createStackNavigator(
+    {
+        Login: {
+            screen: LoginScreen,
+            navigationOptions: {
+                header: null
+            }
+        },
+        Chat: {
+            screen: BottomNavigator,
+            navigationOptions: ({ navigation }) => ({
+                header: null
+            })
+        },
+        Random: {
+            screen: RandomConnect,
+            navigationOptions: {
+                title: "Discover"
+            }
+        },
+        SpecificTextScreen: {
+            screen: SpecificTextScreen,
+            navigationOptions: {
+                title: "Connected"
+            }
+        },
+        NewTrendingScreen: {
+            screen: NewTrendingScreen,
+            navigationOptions: {
+                title: "New anonymous post"
+            }
+        }
+    },
+    {
+        initialRouteName: "Chat"
+    }
+);
+
+function getLoggedIn() {
+    AsyncStorage.getItem(Constants.LoggedIn)
+        .then(res => {
+            if (res == 'T') {
+                // user logged in
+                return true;
+            } else {
+                return false;
+            }
+        })
+        .catch(err => {
+            return false;
+        });
+    return false;
+}
+
 export const connectClient = new AWSAppSyncClient({
     url: AppSync.graphqlEndpoint,
     region: AppSync.region,
@@ -132,11 +188,18 @@ export default class App extends React.Component {
         return (
             <ApolloProvider client={connectClient}>
                 <Rehydrated>
-                    <StackNavigator
+                    {renderSearch(getLoggedIn,
+                    <LoggedInStackNavigator
                         ref={navigatorRef => {
                             NavigationService.setTopLevelNavigator(navigatorRef);
                         }}
-                    />
+                    />,
+                    <LoggedOutStackNavigator
+                        ref={navigatorRef => {
+                            NavigationService.setTopLevelNavigator(navigatorRef);
+                        }}
+                    />,
+                    )}
                 </Rehydrated>
             </ApolloProvider>
         );
