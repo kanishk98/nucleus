@@ -57,7 +57,7 @@ const BottomNavigator = createBottomTabNavigator({
                 // iconName = `fire${focused ? '' : '-outline'}`;
                 return <FontAwesome name={'fire'} size={horizontal ? 30 : 30} color={tintColor} />;
             }
-        }
+        }, 
     }),
     tabBarOptions: {
         activeTintColor: Constants.primaryColor,

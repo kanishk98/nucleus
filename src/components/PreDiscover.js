@@ -5,6 +5,7 @@ import {API, graphqlOperation} from 'aws-amplify';
 import firebase from 'react-native-firebase';
 import { renderProgress } from './renderIf';
 import Constants from '../Constants';
+import MessageContainer from './messageDesign/MessageContainer';
 
 export default class PreDiscover extends React.Component {
     
@@ -251,7 +252,7 @@ export default class PreDiscover extends React.Component {
     }
     
     render() {
-        let {requestId, looking, text} = this.state;
+        /*let {requestId, looking, text} = this.state;
         if (requestId !== null && !looking) {
             return (
                 <ScrollView contentContainerStyle={styles.container} onTouchEnd={this.acceptDiscover}>
@@ -267,7 +268,10 @@ export default class PreDiscover extends React.Component {
                         {renderProgress(this.ProgressBar, null)}
                 </ScrollView>
             );
-        }
+        }*/
+        return (
+            <MessageContainer />
+        );
     }
 
     componentWillUnmount() {
