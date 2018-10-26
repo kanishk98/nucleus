@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { Platform, View, ScrollView, FlatList, StyleSheet, AsyncStorage, ImageBackground } from 'react-native';
-import { List, ListItem, SearchBar } from 'react-native-elements';
+import { Text, Platform, View, ScrollView, FlatList, StyleSheet, AsyncStorage, ImageBackground } from 'react-native';
+import { List, ListItem } from 'react-native-elements';
 import Constants from '../Constants';
 import AWS from 'aws-sdk';
 import * as JsSearch from 'js-search';
-import { renderSearch, renderOnline } from './renderIf';
+import Search from './Search';
+import { renderSearch, renderOnline, renderResults } from './renderIf';
 import {Auth, API, graphqlOperation} from 'aws-amplify';
 import * as GraphQL from '../graphql';
 import firebase from 'react-native-firebase';
@@ -19,10 +20,12 @@ export default class SpecificChatList extends Component {
             showingPeople: false,
             people: [],
             searchResults: [],
+            searching: false,
         };
         user = null;
         itemCount = 0;
         AWS.config.update({
+            dynamoDbCrc32: false,
             accessKeyId: Constants.accessKey,
             secretAccessKey: Constants.secretAccessKey,
             region:'ap-south-1'
@@ -231,7 +234,14 @@ export default class SpecificChatList extends Component {
                 .setData({
                     chat: notification.data.chat,
                 });
-                displayNotification.ios.setBadge(notification.ios.badge);
+                if (Platform.OS == 'ios') {
+                    displayNotification.ios.setBadge(notification.ios.badge);
+                } else {
+                    // android
+                    displayNotification.android.setChannelId('channelId');
+                    displayNotification.android.setOnlyAlertOnce(true);
+                    displayNotification.android.setAutoCancel(true);
+                }
                 firebase.notifications().displayNotification(displayNotification);
             });
             this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen) => {
@@ -296,12 +306,17 @@ export default class SpecificChatList extends Component {
 
     searchConversations = ({text}) => {
         // text contains user names
+        if (text == '') {
+            // empty string, reset search
+            this.setState({searching: false});
+            return;
+        }
         const chatSearch = new JsSearch.Search('firebaseId');
         chatSearch.addIndex('username');
         chatSearch.addDocuments(this.state.people);
         let searchResults = chatSearch.search(text);
         console.log(searchResults);
-        this.setState({searchResults: searchResults})
+        this.setState({searchResults: searchResults, searching: true})
     }
 
     getStoredUsers () {
@@ -369,88 +384,72 @@ export default class SpecificChatList extends Component {
         });
     }
 
-    submitSearch = () => {
-        this.search.cancel;
-        this.setState({searchResults: []});
-    }
-
     render() {
-        if (!this.state.showingPeople && this.state.conversations.length > 0) {
-            return(
-                <View style={styles.layout}>
-                    <ScrollView scrollEnabled={false}>
-                        <SearchBar
-                            ref={search=>{this.search = search}}
-                            lightTheme
-                            placeholder='Search'
-                            onChangeText={(text)=>this.searchConversations({text})}  
-                            onSubmitEditing={this.submitSearch}
-                        />
-                        <List>
-                        {renderSearch(
-                            (this.state.searchResults.length > 0),
-                            <FlatList
-                                data={this.state.searchResults}
-                                keyExtractor={(data)=>this.peopleKeyExtractor(data)}
-                                renderItem={this.renderUser}
-                            />,
-                            <FlatList
-                                data={this.state.conversations}
-                                keyExtractor={(data)=>this.chatKeyExtractor(data)}
-                                renderItem={this.renderConversation}
-                            />)}
-                        </List>
-                    </ScrollView>
-                </View>
-            );
-        } else if (this.state.people == null) {
+        console.log(this.state);
+        if (!this.state.people || this.state.people.length == 0) {
+            // no users in memory
+            this.fetchUsers();
+            this.getStoredUsers();
+            // show image designating no users
             return (
-                <ImageBackground style={styles.initialLayout} source={require('../../assets/background.png')}>
-                    <SearchBar
-                        ref={search=>{this.search = search}}
-                        lightTheme
-                        placeholder='Search for your friends!'
-                        onChangeText={(text)=>this.searchConversations({text})}  
-                        onSubmitEditing={this.submitSearch}
-                    />
-                </ImageBackground>
+                <Text>No users found yet</Text>
             );
         } else {
-            // making initial call for users
-            // future calls delegated to background task
-            console.log('Inside render() else block');
-            if (this.state.people == null || this.state.people.length == 0 || this.state == undefined) {
-                console.log('Getting more users from render function');
-                this.fetchUsers();
-                this.getStoredUsers();
+            if (!this.state.conversations || this.state.conversations.length == 0) {
+                console.log('no conversations in memory, show user list with search bar');
+                return (
+                    <View style={styles.layout}>
+                        <ScrollView scrollEnabled={false}>
+                            <Search onChange={(text) => this.searchConversations({ text })} placeholder={'Find Nucleus users'} />
+                            <List containerStyle={{ borderColor: Constants.primaryColor }}>
+                                {renderSearch(
+                                    (this.state.searching),
+                                    <View style={{flex: 1}} >
+                                    {renderResults((this.state.searchResults.length > 0), 
+                                        <FlatList
+                                            data={this.state.searchResults}
+                                            keyExtractor={(data) => this.peopleKeyExtractor(data)}
+                                            renderItem={this.renderUser} />,
+                                        <Text>No matches found</Text>
+                                    )}
+                                    </View>,
+                                    <FlatList
+                                        data={this.state.people}
+                                        keyExtractor={(data) => this.peopleKeyExtractor(data)}
+                                        renderItem={this.renderUser} />
+                                )}
+                            </List>
+                        </ScrollView>
+                    </View>
+                );
+            } else if (!!this.state.conversations && this.state.conversations.length > 0) {
+                // conversations in memory, show that List with Search bar
+                return (
+                    <View style={styles.layout}>
+                        <ScrollView scrollEnabled={false}>
+                            <Search onChange={(text) => this.searchConversations({ text })} placeholder={'Find Nucleus users'} />
+                            <List containerStyle={{ borderColor: Constants.primaryColor }}>
+                                {renderSearch(
+                                    (this.state.searching),
+                                    <View style={{ flex: 1 }} >
+                                        {renderResults((this.state.searchResults.length > 0),
+                                            <FlatList
+                                                data={this.state.searchResults}
+                                                keyExtractor={(data) => this.peopleKeyExtractor(data)}
+                                                renderItem={this.renderUser} />,
+                                            <Text>No matches found</Text>
+                                        )}
+                                    </View>,
+                                    <FlatList
+                                        data={this.state.conversations}
+                                        keyExtractor={(data) => this.chatKeyExtractor(data)}
+                                        renderItem={this.renderConversation} />
+                                )}
+                            </List>
+                        </ScrollView>
+                    </View>
+                );
             }
-            console.log(this.state);
-            return (
-                <View style={styles.layout}>
-                    <SearchBar
-                        ref={search=>{this.search = search}}
-                        lightTheme
-                        placeholder='#comeconnect, for real.'
-                        onChangeText={(text)=>this.searchConversations({text})}  
-                        onSubmitEditing={this.submitSearch}
-                    />
-                    <List>
-                    {renderSearch(
-                        this.state.searchResults > 0,
-                        <FlatList
-                            data={this.state.searchResults}
-                            keyExtractor={(data)=>this.peopleKeyExtractor(data)}
-                            renderItem={this.renderUser}
-                        />,
-                        <FlatList
-                            data={this.state.people}
-                            renderItem={this.renderUser}
-                            keyExtractor={this.peopleKeyExtractor}
-                        />
-                        )}
-                    </List>
-                </View>
-            );
         }
     }
 }

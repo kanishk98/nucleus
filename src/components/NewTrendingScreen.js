@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Alert } from 'react-native';
 import { FormLabel, FormInput, Button } from 'react-native-elements';
 import Constants from '../Constants';
-
+import { renderSearch } from './renderIf';
 
 export default class NewTrendingScreen extends React.Component {
 
@@ -10,16 +10,28 @@ export default class NewTrendingScreen extends React.Component {
     option1 = null;
     option2 = null;
    
+    constructor(props) {
+        super(props);
+        this.state = {
+            caption: '',
+            option1: '',
+            option2: '',
+        }
+    }
+
     _onSubmitEditingCaption = ({text}) => {
         console.log(text);
+        this.setState({caption: text})
         this.caption = text;
     }
 
     _onSubmitEditingOption1 = ({text}) => {
+        this.setState({option1: text});
         this.option1 = text;
     }
 
     _onSubmitEditingOption2 = ({text}) => {
+        this.setState({option2: text});
         this.option2 = text;
     }
 
@@ -54,19 +66,30 @@ export default class NewTrendingScreen extends React.Component {
     }
 
     render () {
+        console.log(this.state);
         return (
-            <View style={{justifyContent: 'center'}}>
+            <View style={{backgroundColor: 'white', flex: 1}}>
                 <FormLabel>Caption</FormLabel>
-                <FormInput onChangeText={(text)=>this._onSubmitEditingCaption({text})}/>
-                <FormLabel>Option 1</FormLabel>
-                <FormInput onChangeText={(text)=>this._onSubmitEditingOption1({text})}/>
-                <FormLabel>Option 2</FormLabel>
-                <FormInput onChangeText={(text)=>this._onSubmitEditingOption2({text})}/>
-                <Button
-                    style={{paddingTop: 20}}
-                    title={'Post'}
-                    onPress={this._submitPost}
-                />
+                <FormInput inputStyle={{color: 'black', fontWeight: 'bold'}} onChangeText={(text)=>this._onSubmitEditingCaption({text})} underlineColorAndroid={Constants.secondaryColor} placeholder='What are you thinking about?'/>
+                <FormLabel>First response</FormLabel>
+                <FormInput inputStyle={{ color: 'black', fontWeight: 'bold'}} onChangeText={(text)=>this._onSubmitEditingOption1({text})} underlineColorAndroid={Constants.secondaryColor} placeholder='Yes/yeah/yay/Shanjana'/>
+                <FormLabel>Second response</FormLabel>
+                <FormInput inputStyle={{ color: 'black', fontWeight: 'bold'}} onChangeText={(text)=>this._onSubmitEditingOption2({text})} underlineColorAndroid={Constants.secondaryColor} placeholder='No/nah/nay/Sneha'/>
+                {renderSearch((!!this.state.option1 && this.state.option1.length > 0 && !!this.state.option2 && this.state.option2.length > 0 && !!this.state.caption && this.state.caption.length > 0), 
+                    <Button
+                        borderRadius={15}
+                        style={{ paddingTop: 20 }}
+                        backgroundColor={Constants.primaryColor}
+                        title={'Post'}
+                        onPress={this._submitPost}
+                    />, 
+                    <Button
+                        borderRadius={15}
+                        style={{ paddingTop: 20 }}
+                        backgroundColor={'gray'}
+                        title={"Post"}
+                    />
+                )}
             </View>
         );
     }

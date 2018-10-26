@@ -54,7 +54,7 @@ export default class LoginForm extends Component {
                     .then(savedUser => {
                         console.log(savedUser);
                         if (!!savedUser) {
-                            this.props.navigation.navigate('Chat', {user: JSON.parse(savedUser)});
+                            this.props.navigation.navigate('Connect', {user: JSON.parse(savedUser)});
                         } else {
                             // setting user setting to logged out
                             AsyncStorage.setItem(Constants.LoggedIn, 'F')
@@ -118,18 +118,35 @@ export default class LoginForm extends Component {
             return (
             <View style={styles.container}>
                 <Text style={styles.instructions}>
-                    Signing you in as {user.user.email}
+                    {user.user.email}
                 </Text>
             </View>
             );
         }
     }
 
+    verifyMail = (email) => {
+        if (email == 'nucleus.communicator@gmail.com') {
+            return true;
+        }
+        const index = email.indexOf('snu.edu.in');
+        if (index != -1) {
+            // snu mail
+            const char1 = email.charAt(0);
+            const char2 = email.charAt(1);
+            const char3 = email.substring(2, 5);
+            if (char1.toLowerCase() != char1.toUpperCase() && char2.toLowerCase() != char2.toUpperCase() && /^\d+$/.test(char3)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     signIn = async() => {
         try {
             this.setState({progress: true});
             let signedInUser = await GoogleSignin.signIn();
-            if (signedInUser.user.email !== null) {
+            if (signedInUser.user.email !== null && this.verifyMail(signedInUser.user.email)) {
                 console.log('Valid student');
                 console.log(JSON.stringify(signedInUser));
                 this.setState({user: signedInUser, error: null, progress: true, loggedIn: true});
@@ -188,6 +205,7 @@ export default class LoginForm extends Component {
                     });
             } else {
                 console.log('Signing out user');
+                console.log(await GoogleSignin.signOut());   
                 this.configureGoogleSignIn();
                 this.signOut();
             }
@@ -204,14 +222,13 @@ export default class LoginForm extends Component {
         AsyncStorage.setItem(Constants.LoggedIn, 'T')
         .then(res => {
             console.log('User saved as logged in');
-            this.setState({progress: false});
             AsyncStorage.setItem(Constants.UserObject, JSON.stringify(newUser))
             .then(res => {
                 console.log('newUser saved');
             })
             .catch(err => {
                 console.log(err);
-            })
+            });
         })
         .catch(err => {
             console.log(err);
@@ -252,7 +269,7 @@ const styles = StyleSheet.create({
         height: 48
     },
     instructions: {
-       color: 'white',
+       color: Constants.primaryColor,
        marginBottom: 16,
        fontSize: 18,
        fontWeight: 'bold'

@@ -11,6 +11,7 @@ export default class PreDiscover extends React.Component {
     constructor(props) {
         super(props);
         this.state={
+            text: 'Tap to talk',
             looking: false,
             connected: true,
             onlineUsers: [],
@@ -63,7 +64,14 @@ export default class PreDiscover extends React.Component {
                 request: notification.data.request,
                 connectedUser: notification.data.connectedUser,
             });
-            displayNotification.ios.setBadge(notification.ios.badge);
+            if (Platform.OS == 'ios') {
+                displayNotification.ios.setBadge(notification.ios.badge);
+            } else {
+                // android
+                displayNotification.android.setChannelId('channelId');
+                displayNotification.android.setOnlyAlertOnce(true);
+                displayNotification.android.setAutoCancel(true);
+            }
             firebase.notifications().displayNotification(displayNotification);
         });
         this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen) => {
@@ -116,7 +124,6 @@ export default class PreDiscover extends React.Component {
             console.log(onlineUsers[randUser]);
             let connectedUser = onlineUsers[randUser];
             console.log('Connected user: ' + JSON.stringify(connectedUser));
-            debugger
             // TODO: Create conversationId and a new UserConversation
             let chatId = String(Math.floor(new Date().getTime()));
             let newChat = {
@@ -132,17 +139,29 @@ export default class PreDiscover extends React.Component {
                 console.log('Resolved chat: ' + JSON.stringify(res));
                 // waiting for acceptance from another user for 5 seconds
                 setTimeout(this.startDiscover, 5000);
-                this.setState({username: connectedUser.username});
+                const initials = this.getInitials(connectedUser.username);
+                this.setState({username: initials});
                 API.graphql(graphqlOperation(GraphQL.SubscribeToDiscoverChats, {recipient: connectedUser.firebaseId}))
                 .subscribe(res => {
                     console.log(res);
-                    // request for chatting accepted by user
-                    this.props.navigation.navigate('Random', {randomUser: connectedUser, conversationId: chatId, user: this.user});  
+                    if (res.value.data.onCreateNucleusDiscoverChats.author.firebaseId !== this.user.firebaseId) {
+                        console.log('request for chatting accepted by user');
+                        this.props.navigation.navigate('Random', {randomUser: connectedUser, conversationId: chatId, user: this.user});  
+                    }
                 })
             })
             .catch(err => console.log(err));
-            this.sendRequest(user, connectedUser, newChat);
+            // this.sendRequest(user, connectedUser, newChat);
         }
+    }
+
+    getInitials = (name) => {
+        splits = name.split(' ');
+        let r = '';
+        for (let s in splits) {
+            r = r + splits[s].charAt(0);
+        }
+        return r;
     }
 
     // API.graphql(graphqlOperation(GraphQL.GetAllDiscoverUsers, {filter: this.noFilter}))
@@ -177,6 +196,7 @@ export default class PreDiscover extends React.Component {
     }
 
     async componentDidMount() {
+        // TODO: READ SIGNED IN USER FROM STORAGE AND CHANGE THE WHOLE SCREEN ACCORDINGLY
         // querying online users
         API.graphql(graphqlOperation(GraphQL.GetOnlineDiscoverUsers), {
             online: 1
@@ -231,24 +251,17 @@ export default class PreDiscover extends React.Component {
     }
     
     render() {
-        let {requestId, looking} = this.state;
-        let text = 'Pull to talk!';
-        // checking online status of user
-        /*if (this.user.online) {
-            text = text + 'offline';
-        } else {
-            text = text + 'online';
-        }*/
+        let {requestId, looking, text} = this.state;
         if (requestId !== null && !looking) {
             return (
-                <ScrollView contentContainerStyle={styles.container} onScrollEndDrag={this.acceptDiscover}>
+                <ScrollView contentContainerStyle={styles.container} onTouchEnd={this.acceptDiscover}>
                         <Text style={styles.title}>{text}</Text>
                         <Text style={styles.instructions}>Someone got connected to you!</Text>
                 </ScrollView>
             );
         } else {
             return (
-                <ScrollView contentContainerStyle={styles.container} onScrollEndDrag={this.startDiscover}>
+                <ScrollView contentContainerStyle={styles.container} onTouchEnd={this.startDiscover}>
                         <Text style={styles.title}>{text}</Text>
                         <Text style={styles.instructions}>{this.state.username}</Text>
                         {renderProgress(this.ProgressBar, null)}

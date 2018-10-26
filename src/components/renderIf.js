@@ -11,9 +11,19 @@ export function renderProgress(condition, content, progress) {
 
 export function renderSearch(condition, searching, notSearching) {
     if (condition) {
+        console.log('Condition true');
         return searching;
     } else {
+        console.log('Condition false');
         return notSearching;
+    }
+}
+
+export function renderResults(condition, results, noResults) {
+    if (condition) {
+        return results;
+    } else {
+        return noResults;
     }
 }
 

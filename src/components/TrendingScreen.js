@@ -3,12 +3,14 @@ import { Text, StyleSheet, View, FlatList } from 'react-native';
 import { Card, Button } from 'react-native-elements';
 import Constants from '../Constants';
 import NavigationService from './NavigationService';
+import { renderSearch } from './renderIf';
 
 class PollCard extends React.PureComponent {
 
     constructor(props) {
         super(props);
         this.state = this.props;
+        this.state.buttonPressed = false;
     }
 
     updatePost = (button1Value, button2Value) => {
@@ -35,39 +37,42 @@ class PollCard extends React.PureComponent {
     }
 
     onPressButton1 = () => {
-        this.setState({button1Value: this.state.button1Value + 1});
+        this.setState({button1Value: this.state.button1Value + 1, buttonPressed: true});
         this.updatePost(this.state.button1Value + 1, this.state.button2Value);
     }
 
     onPressButton2 = () => {
-        this.setState({button2Value: this.state.button2Value + 1});
+        this.setState({button2Value: this.state.button2Value + 1, buttonPressed: true});
         this.updatePost(this.state.button1Value, this.state.button2Value + 1);
     }
     
     render() {
         const {title, caption, image, button1Title, button2Title, button1Value, button2Value} = this.state;
         return (
-            <Card
-                title={title}>
-                <Text style={{marginBottom: 10, textAlign: 'center'}}>
-                    {caption}
-                </Text>
-                <View style={styles.buttonContainer}>
-                    <Text>{button1Value}</Text>
-                    <Button
-                        style={{flex: 1, justifyContent: 'flex-start', paddingRight: 10}}
-                        textStyle={{textAlign: 'center', color: Constants.primaryColor}}
-                        title={button1Title}
-                        backgroundColor={'white'}
-                        onPress={this.onPressButton1} />
-                    <Button
-                        textStyle={{textAlign: 'center', color: Constants.primaryColor}}
-                        title={button2Title}
-                        backgroundColor={'white'}
-                        style={{flex: 1, justifyContent: 'flex-end', paddingLeft: 10}}
-                        onPress={this.onPressButton2} />
-                    <Text>{button2Value}</Text>
-                </View>
+            <Card containerStyle={{borderRadius: 15}}
+                title={caption}>
+                    {renderSearch(
+                        this.state.buttonPressed,
+                        <View style={styles.buttonContainer}>
+                            <Text style={styles.resultText}>{button1Value + " - " + button1Title}</Text>
+                            <View style={{paddingHorizontal: 30}} />
+                            <Text style={styles.resultText}>{button2Value + " - " + button2Title}</Text>
+                        </View>,
+                        <View style={styles.buttonContainer}>
+                            <Button
+                                style={{ flex: 1, justifyContent: 'flex-start', paddingRight: 10 }}
+                                textStyle={{ textAlign: 'center', color: Constants.primaryColor }}
+                                title={button1Title}
+                                backgroundColor={'white'}
+                                onPress={this.onPressButton1} />
+                            <Button
+                                textStyle={{ textAlign: 'center', color: Constants.primaryColor }}
+                                title={button2Title}
+                                backgroundColor={'white'}
+                                style={{ flex: 1, justifyContent: 'flex-end', paddingLeft: 10 }}
+                                onPress={this.onPressButton2} />
+                        </View>
+                    )}
             </Card>
         );
     }
@@ -139,6 +144,11 @@ export default class Trending extends React.PureComponent {
         );
     }
 
+    _onrefresh = () => {
+        this.setState({refreshing: true});
+        this.getPosts();
+    }
+
     componentWillMount() {
         if (this.state.postList == null || this.state.postList == undefined) {
             this.getPosts();
@@ -154,6 +164,8 @@ export default class Trending extends React.PureComponent {
                 renderItem={this.renderPost}
                 onEndReached={this.getMorePosts}
                 onEndReachedThreshold={0.25}
+                onRefresh={this._onrefresh}
+                refreshing={false}
             />
         );
     }
@@ -164,6 +176,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    resultText: {
     },
     pollButton: {
         borderRadius: 0,

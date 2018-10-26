@@ -16,83 +16,91 @@ import SpecificChatList from './src/components/SpecificChatList';
 import SpecificTextScreen from './src/components/SpecificTextScreen';
 import TrendingScreen, { newTrendingPost } from './src/components/TrendingScreen';
 import NewTrendingScreen from './src/components/NewTrendingScreen';
-import { Button } from 'react-native';
+import { Button } from 'react-native-elements';
 import NavigationService from './src/components/NavigationService';
 import RandomConnect from './src/components/RandomConnect';
+import firebase from 'react-native-firebase';
 
 const BottomNavigator = createBottomTabNavigator({
     Connect: {
-        screen: SpecificChatList, 
-        navigationOptions: {
-            tabBarIcon: <Ionicons name={"ios-chatbubbles"} size={33}/>
-        }
+        screen: createStackNavigator({Connect: {screen: SpecificChatList, navigationOptions: {title: 'Connect'}}})
     },
     Discover: {
-        screen: PreDiscover,
-        navigationOptions: {
-            tabBarIcon: <Entypo name={"network"} size={30}/>
-        }
+        screen: createStackNavigator({ Discover: { screen: PreDiscover, navigationOptions: { title: 'Discover' } } })
     }, 
     Trending: {
-        screen: TrendingScreen, 
-        navigationOptions: {
-            tabBarIcon: <FontAwesome name={"fire"} size={30}/>,
-        }
+        screen: createStackNavigator({
+            Trending: {
+                screen: TrendingScreen, navigationOptions: {
+                    title: 'Trending', headerRight: (
+                        <Button
+                            onPress={newTrendingPost}
+                            title="New poll"
+                            textStyle={{ color: 'black' }}
+                            raised={false}
+                            backgroundColor="white"
+                        />
+                    ), } } })
     }
     }, {
+    navigationOptions: ({navigation}) => ({
+        tabBarIcon: ({ focused, horizontal, tintColor }) => {
+            globalRouteName = navigation.state.routeName; 
+            const { routeName } = navigation.state;
+            let iconName;
+            console.log(routeName);
+            if (routeName === 'Connect') {
+                return <Ionicons name={'ios-chatbubbles'} size={horizontal ? 30 : 30} color={tintColor} />;
+            } else if (routeName === 'Discover') {
+                return <Entypo name={'network'} size={horizontal ? 30 : 30} color={tintColor} />;
+            } else if (routeName == 'Trending') {
+                // iconName = `fire${focused ? '' : '-outline'}`;
+                return <FontAwesome name={'fire'} size={horizontal ? 30 : 30} color={tintColor} />;
+            }
+        }
+    }),
     tabBarOptions: {
-        swipeEnabled: true,
-        showIcon: true,
         activeTintColor: Constants.primaryColor,
-        inactiveTintColor: 'gray',
         showLabel: false,
-    },  
+    }
 });
 
 const StackNavigator = createStackNavigator(
-    {
-       Login: {
-            screen: LoginScreen, 
-            navigationOptions: {
-                header: null
-            }
-        },
-        Chat: {
-            screen: BottomNavigator, 
-            navigationOptions: {
-            title: 'Joint',
-            headerLeft: null,
-            gesturesEnabled: false,
-            headerRight: (
-                <Button
-                  onPress={newTrendingPost}
-                  title="+1"
-                  color="black"
-                />
-            ),
-        }},
-        Random: {
-            screen: RandomConnect, 
-            navigationOptions: {
-                title: 'Discover',
-            }
-        },
-        SpecificTextScreen: {
-            screen: SpecificTextScreen, 
-            navigationOptions: {
-                title: 'Connected',
-            }
-        },
-        NewTrendingScreen: {
-            screen: NewTrendingScreen,
-            navigationOptions: {
-                title: 'New anonymous post',
-            }
-        },
+  {
+    Login: {
+      screen: LoginScreen,
+      navigationOptions: {
+        header: null
+      }
     },
-    {
-        initialRouteName: 'Login'
+    Chat: {
+      screen: BottomNavigator,
+      navigationOptions: ({ navigation }) => ({
+        header: null
+      })
+    },
+    Random: {
+      screen: RandomConnect,
+      navigationOptions: {
+        title: "Discover"
+      }
+    },
+    SpecificTextScreen: {
+      screen: SpecificTextScreen,
+      navigationOptions: {
+        title: "Connected"
+      }
+    },
+    NewTrendingScreen: {
+      screen: NewTrendingScreen,
+      navigationOptions: {
+        title: "New anonymous post"
+      }
     }
+  },
+  {
+    initialRouteName: "Login"
+  }
 );
 
 export const connectClient = new AWSAppSyncClient({
@@ -111,6 +119,15 @@ export const apiConfig = {
 Amplify.configure(apiConfig);
 
 export default class App extends React.Component {
+    
+    componentDidMount() {
+        // setting up Android notifications
+        const channel = new firebase.notifications.Android.Channel('channelId', 'channelId', firebase.notifications.Android.Importance.Max)
+        .setSound('default')
+        .setDescription('Nucleus_default_channel');
+        firebase.notifications().android.createChannel(channel);
+    }
+
     render() {
         return (
             <ApolloProvider client={connectClient}>
