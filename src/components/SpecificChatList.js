@@ -9,6 +9,7 @@ import { renderSearch, renderOnline, renderResults } from './renderIf';
 import {Auth, API, graphqlOperation} from 'aws-amplify';
 import * as GraphQL from '../graphql';
 import firebase from 'react-native-firebase';
+import { StackActions, NavigationActions } from 'react-navigation';
 
 export default class SpecificChatList extends Component {
 
@@ -22,7 +23,6 @@ export default class SpecificChatList extends Component {
             searchResults: [],
             searching: false,
         };
-        user = null;
         itemCount = 0;
         AWS.config.update({
             dynamoDbCrc32: false,
@@ -41,11 +41,6 @@ export default class SpecificChatList extends Component {
             }
         });
         this.search = React.createRef();
-    }
-
-    noFilter = {
-        firebaseId: {ne: this.props.navigation.getParam('user', null).firebaseId},
-        geohash: {ne: 'random_user_geohash'},
     }
 
     showPeople = () => {
@@ -185,8 +180,12 @@ export default class SpecificChatList extends Component {
     peopleKeyExtractor = (item, index) => item.firebaseId;
     
     async componentDidMount() {
-        this.user = this.props.navigation.getParam('user', null);
+        this.user = JSON.parse(await AsyncStorage.getItem(Constants.UserObject));
         console.log(this.user);
+        this.noFilter = {
+            firebaseId: {ne: this.user.firebaseId},
+            geohash: {ne: 'random_user_geohash'},
+        }
         // fetch previously made conversations here
         this.retrieveChats();
         // checking for notification permissions
