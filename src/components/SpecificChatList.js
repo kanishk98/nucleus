@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, Platform, View, ScrollView, FlatList, StyleSheet, AsyncStorage, ImageBackground } from 'react-native';
+import { ProgressBarAndroid, ProgressViewIOS, Dimensions, Platform, View, ScrollView, FlatList, StyleSheet, AsyncStorage, Image } from 'react-native';
 import { List, ListItem } from 'react-native-elements';
 import Constants from '../Constants';
 import AWS from 'aws-sdk';
@@ -42,6 +42,9 @@ export default class SpecificChatList extends Component {
         });
         this.search = React.createRef();
     }
+
+    DEVICE_WIDTH = Dimensions.get('window').width;
+    DEVICE_HEIGHT = Dimensions.get('window').height;
 
     showPeople = () => {
         this.setState({showingPeople: true});
@@ -399,7 +402,15 @@ export default class SpecificChatList extends Component {
             this.getStoredUsers();
             // show image designating no users
             return (
-                <Text>No users found yet</Text>
+                <View>
+                    {
+                        renderResults(
+                            Platform.OS == 'android',
+                            <ProgressBarAndroid />,
+                            <ProgressViewIOS />
+                        ) 
+                    }
+                </View>
             );
         } else {
             if (!this.state.conversations || this.state.conversations.length == 0) {
@@ -417,7 +428,9 @@ export default class SpecificChatList extends Component {
                                             data={this.state.searchResults}
                                             keyExtractor={(data) => this.peopleKeyExtractor(data)}
                                             renderItem={this.renderUser} />,
-                                        <Text>No matches found</Text>
+                                        <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
+                                            <Image style={{width: this.DEVICE_WIDTH/2, height: this.DEVICE_HEIGHT/2}} source={require('../../assets/not_found.png')}/>
+                                        </View>
                                     )}
                                     </View>,
                                     <FlatList
@@ -444,7 +457,9 @@ export default class SpecificChatList extends Component {
                                                 data={this.state.searchResults}
                                                 keyExtractor={(data) => this.peopleKeyExtractor(data)}
                                                 renderItem={this.renderUser} />,
-                                            <Text>No matches found</Text>
+                                            <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
+                                                <Image style={{width: this.DEVICE_WIDTH/2, height: this.DEVICE_HEIGHT/2}} source={require('../../assets/not_found.png')}/>
+                                            </View>
                                         )}
                                     </View>,
                                     <FlatList
