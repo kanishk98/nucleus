@@ -38,13 +38,17 @@ class PollCard extends React.PureComponent {
     }
 
     onPressButton1 = () => {
+        let userList = this.state.userList;
+        userList[this.state.firebaseId] = true;
         this.setState({button1Value: this.state.button1Value + 1, buttonPressed: true});
-        this.updatePost(this.state.button1Value + 1, this.state.button2Value);
+        this.updatePost(this.state.button1Value + 1, this.state.button2Value, userList);
     }
 
     onPressButton2 = () => {
+        let userList = this.state.userList;
+        userList[this.state.firebaseId] = true;
         this.setState({button2Value: this.state.button2Value + 1, buttonPressed: true});
-        this.updatePost(this.state.button1Value, this.state.button2Value + 1);
+        this.updatePost(this.state.button1Value, this.state.button2Value + 1, userList);
     }
     
     render() {
