@@ -154,7 +154,7 @@ export default class PreDiscover extends React.Component {
                 .then(res => {
                     console.log('Resolved chat: ' + JSON.stringify(res));
                     // waiting for acceptance from another user for 5 seconds
-                    setTimeout(this.startDiscover, 5000);
+                    setTimeout(this.startDiscover, 10000);
                     const initials = this.getInitials(connectedUser.username);
                     message = {
                         _id: new Date().getTime(),
@@ -254,7 +254,7 @@ export default class PreDiscover extends React.Component {
                 const newChat = res.value.data.onCreateNucleusDiscoverChats;
                 console.log(newChat);
                 // notifies sender of request of conversation ignore after 5 seconds of subscription receipt
-                setTimeout((newChat) => this.cancelRequest, 5000);
+                setTimeout((newChat) => this.cancelRequest, 10000);
                 let message = {
                     _id: new Date().getTime(),
                     text: 'Someone got connected to you! Long-press this text to accept their request.',
