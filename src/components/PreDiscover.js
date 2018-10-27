@@ -24,6 +24,8 @@ export default class PreDiscover extends React.Component {
             ios: () => ProgressViewIOS,
             android: () => ProgressBarAndroid
         });
+        this.startDiscover = this.startDiscover.bind(this);
+        this.acceptDiscover = this.acceptDiscover.bind(this);
     }
 
     sendRequest = (user, connectedUser, newChat) => {
@@ -100,12 +102,22 @@ export default class PreDiscover extends React.Component {
         }
     }
 
-    startDiscover = () => {
-        this.setState({ text: 'Finding someone for you', progress: true })
+    startDiscover() {
+        let {messages} = this.state;
+        messages.push({
+            _id: 2,
+            text: 'Finding matches for you...',
+            createdAt: new Date(),
+            user: {
+                _id: this.user.firebaseId,
+                name: this.user.username,
+                avatar: this.user.profilePic,
+            },
+        });
+        this.setState({ messages: messages })
         let { onlineUsers } = this.state;
-        let user = this.props.navigation.getParam("user", null);
+        let user = this.user;
         console.log(this.state);
-        // TODO: Make button available (greyed out until component updates) for user to initiate conversation
         if (onlineUsers && onlineUsers.length > 1) {
             let randUser = Math.floor(Math.random() * onlineUsers.length);
             console.log(randUser);
@@ -140,11 +152,22 @@ export default class PreDiscover extends React.Component {
                     // waiting for acceptance from another user for 5 seconds
                     setTimeout(this.startDiscover, 5000);
                     const initials = this.getInitials(connectedUser.username);
-                    this.setState({ username: initials });
+                    messages = this.state.messages;
+                    messages.push({
+                        _id: 3,
+                        text: initials,
+                        createdAt: new Date(),
+                        user: {
+                            _id: this.user.firebaseId,
+                            name: this.user.username,
+                            avatar: this.user.profilePic,
+                        },
+                    });
+                    this.setState({ messages: messages });
                     API.graphql(graphqlOperation(GraphQL.SubscribeToDiscoverChats, { recipient: connectedUser.firebaseId }))
                         .subscribe(res => {
                             console.log(res);
-                            if (res.value.data.onCreateNucleusDiscoverChats.author.firebaseId !== this.user.firebaseId) {
+                            if (res.value.data.onCreateNucleusDiscoverChats.author.firebaseId !== this.user.firebaseId && !res.value.data.deleteNucleusDiscoverChats) {
                                 console.log('request for chatting accepted by user');
                                 this.props.navigation.navigate('Random', { randomUser: connectedUser, conversationId: chatId, user: this.user });
                             }
@@ -217,7 +240,17 @@ export default class PreDiscover extends React.Component {
                 const newChat = res.value.data.onCreateNucleusDiscoverChats;
                 // notifies sender of request of conversation ignore after 5 seconds of subscription receipt
                 setTimeout((newChat) => this.cancelRequest, 5000);
-                this.setState({ requestId: newChat.conversationId, requestChat: newChat, progress: false });
+                let {messages} = this.state;
+                messages.push({messages: [{
+                    _id: 4,
+                    text: 'Someone got connected to you!',
+                    createdAt: new Date(),
+                    user: {
+                        _id: newChat.author.firebaseId,
+                        name: this.getInitials(newChat.author.username)
+                    },
+                }]});
+                this.setState({ messages: messages, requestId: newChat.conversationId, requestChat: newChat, progress: false });
             }
         });
         // subscribing to deleted conversations for removing accept button
@@ -231,7 +264,7 @@ export default class PreDiscover extends React.Component {
             }
         });
         this.setupNotificationListeners();
-        this.messages = [{
+        this.setState({messages: [{
             _id: 1,
             text: 'Long-press this bubble to discover new people!',
             createdAt: new Date(),
@@ -240,7 +273,7 @@ export default class PreDiscover extends React.Component {
                 name: this.user.username,
                 avatar: this.user.profilePic,
             },
-        }];
+        }]});
     }
 
     changeOnlineStatus = () => {
@@ -266,16 +299,18 @@ export default class PreDiscover extends React.Component {
     }
 
     _onLongPress() {
-        console.log('Hello');
-    }
+        console.log('Long pressed');
+        this.startDiscover();
+    };
 
     render() {
+        console.log(this.state);
         return (
             <GiftedChat
-                messages={this.messages}
+                messages={this.state.messages}
                 showUserAvatar={true}
                 renderInputToolbar={this._renderInputToolbar}
-                onLongPress={this._onLongPress}
+                onLongPress={this.startDiscover}
             />
         );
     }
