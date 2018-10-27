@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, Platform, ProgressBarAndroid, ProgressViewIOS, Alert } from 'react-native';
+import { AsyncStorage, StyleSheet, View, Text, Platform, ProgressBarAndroid, ProgressViewIOS, Alert } from 'react-native';
 import { GoogleSignin, GoogleSigninButton } from 'react-native-google-signin';
 import { renderProgress } from './renderIf';
 import { Auth, API, graphqlOperation } from 'aws-amplify';
 import firebase from 'react-native-firebase';
-import { AsyncStorage } from '@aws-amplify/core';
 import * as GraphQL from '../graphql';
 import Constants from '../Constants';
 import { StackActions, NavigationActions } from 'react-navigation';
