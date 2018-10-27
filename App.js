@@ -146,7 +146,8 @@ const LoggedInStackNavigator = createStackNavigator(
 function getLoggedIn() {
     AsyncStorage.getItem(Constants.LoggedIn)
         .then(res => {
-            if (res == 'T') {
+            console.log(res);
+            if (res) {
                 console.log('user logged in');
                 // user logged in
                 return true;

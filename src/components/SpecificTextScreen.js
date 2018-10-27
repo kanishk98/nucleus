@@ -24,7 +24,7 @@ export default class SpecificTextScreen extends React.Component {
         user._id = passedUser.firebaseId;
         user.avatar = passedUser.profilePic;
         user.name = passedUser.username;
-        if (user._id == this.props.navigation.getParam('chat').user1.firebaseId) {
+        if (user._id == this.chat.user1.firebaseId) {
             return {};
         }
         return user;
@@ -160,6 +160,7 @@ export default class SpecificTextScreen extends React.Component {
     }
 
     componentDidMount () {
+        console.log('Fuck this');
         this.chat = this.props.navigation.getParam("chat");
         console.log(this.chat);
         this.recipient = this.convertUser(this.chat.user2);
@@ -169,9 +170,6 @@ export default class SpecificTextScreen extends React.Component {
     }
 
     render() {
-        console.log(this.state);
-        let user = this.convertUser(this.chat.user1);
-        console.log(user);
         return (
             <GiftedChat
                 messages={this.state.messages}
