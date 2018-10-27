@@ -170,6 +170,7 @@ export default class SpecificTextScreen extends React.Component {
     }
 
     render() {
+        console.log(this.state.messages);
         return (
             <GiftedChat
                 messages={this.state.messages}

@@ -103,18 +103,18 @@ export default class PreDiscover extends React.Component {
     }
 
     startDiscover() {
-        let {messages} = this.state;
-        messages.push({
+        let message = {
             _id: 2,
             text: 'Finding matches for you...',
-            createdAt: new Date(),
-            user: {
-                _id: this.user.firebaseId,
-                name: this.user.username,
-                avatar: this.user.profilePic,
-            },
+            createdAt: new Date(Date.UTC(2016, 5, 11, 17, 20, 0)),
+            user: {},
+        };
+        this.setState(previousState => {
+            console.log(previousState);
+            return {
+                messages: GiftedChat.append(previousState.messages, message)
+            };
         });
-        this.setState({ messages: messages })
         let { onlineUsers } = this.state;
         let user = this.user;
         console.log(this.state);
@@ -152,18 +152,18 @@ export default class PreDiscover extends React.Component {
                     // waiting for acceptance from another user for 5 seconds
                     setTimeout(this.startDiscover, 5000);
                     const initials = this.getInitials(connectedUser.username);
-                    messages = this.state.messages;
-                    messages.push({
-                        _id: 3,
+                    message = {
+                        _id: 3, 
                         text: initials,
                         createdAt: new Date(),
-                        user: {
-                            _id: this.user.firebaseId,
-                            name: this.user.username,
-                            avatar: this.user.profilePic,
-                        },
+                        user: {}
+                    };
+                    this.setState(previousState => {
+                        console.log(previousState);
+                        return {
+                            messages: GiftedChat.append(previousState.messages, message)
+                        };
                     });
-                    this.setState({ messages: messages });
                     API.graphql(graphqlOperation(GraphQL.SubscribeToDiscoverChats, { recipient: connectedUser.firebaseId }))
                         .subscribe(res => {
                             console.log(res);
@@ -240,17 +240,22 @@ export default class PreDiscover extends React.Component {
                 const newChat = res.value.data.onCreateNucleusDiscoverChats;
                 // notifies sender of request of conversation ignore after 5 seconds of subscription receipt
                 setTimeout((newChat) => this.cancelRequest, 5000);
-                let {messages} = this.state;
-                messages.push({messages: [{
-                    _id: 4,
+                let message = {
+                    _id: 4, 
                     text: 'Someone got connected to you!',
                     createdAt: new Date(),
                     user: {
                         _id: newChat.author.firebaseId,
                         name: this.getInitials(newChat.author.username)
                     },
-                }]});
-                this.setState({ messages: messages, requestId: newChat.conversationId, requestChat: newChat, progress: false });
+                };
+                this.setState(previousState => {
+                    console.log(previousState);
+                    return {
+                        messages: GiftedChat.append(previousState.messages, message)
+                    };
+                });
+                this.setState({requestId: newChat.conversationId, requestChat: newChat, progress: false });
             }
         });
         // subscribing to deleted conversations for removing accept button
@@ -298,17 +303,11 @@ export default class PreDiscover extends React.Component {
         return null;
     }
 
-    _onLongPress() {
-        console.log('Long pressed');
-        this.startDiscover();
-    };
-
     render() {
         console.log(this.state);
         return (
             <GiftedChat
                 messages={this.state.messages}
-                showUserAvatar={true}
                 renderInputToolbar={this._renderInputToolbar}
                 onLongPress={this.startDiscover}
             />
