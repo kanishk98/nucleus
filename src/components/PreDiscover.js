@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, Dimensions, StyleSheet, ImageBackground, Platform, ScrollView, Animated, Easing} from 'react-native';
+import {Text, Dimensions, StyleSheet, AsyncStorage, Platform, ScrollView, Animated, Easing} from 'react-native';
 import * as GraphQL from '../graphql';
 import {API, graphqlOperation} from 'aws-amplify';
 import firebase from 'react-native-firebase';
@@ -24,7 +24,6 @@ export default class PreDiscover extends React.Component {
             ios: () => ProgressViewIOS,
             android: () => ProgressBarAndroid
         });
-        this.user = this.props.navigation.getParam("user", null);
     }
 
     sendRequest = (user, connectedUser, newChat) => {
@@ -197,7 +196,8 @@ export default class PreDiscover extends React.Component {
     }
 
     async componentDidMount() {
-        // TODO: READ SIGNED IN USER FROM STORAGE AND CHANGE THE WHOLE SCREEN ACCORDINGLY
+        this.user = JSON.parse(await AsyncStorage.getItem(Constants.UserObject));
+        console.log(this.user);
         // querying online users
         API.graphql(graphqlOperation(GraphQL.GetOnlineDiscoverUsers), {
             online: 1
@@ -207,7 +207,7 @@ export default class PreDiscover extends React.Component {
             this.setState({onlineUsers: temp});
         })
         .catch(err => console.log(err));
-        let user = this.props.navigation.getParam("user", null);
+        let user = this.user;
         // subscribing to requested conversations
         this.chatSubscription = API.graphql(
             graphqlOperation(GraphQL.SubscribeToDiscoverChats, {recipient: user.firebaseId})
