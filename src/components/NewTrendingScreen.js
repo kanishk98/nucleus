@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Alert } from 'react-native';
+import { View, Alert, AsyncStorage } from 'react-native';
 import { FormLabel, FormInput, Button } from 'react-native-elements';
 import Constants from '../Constants';
 import { renderSearch } from './renderIf';
@@ -35,8 +35,14 @@ export default class NewTrendingScreen extends React.Component {
         this.option2 = text;
     }
 
-    _submitPost = () => {
+    _submitPost = async () => {
         if (this.caption != null && this.option1 != null && this.option2 != null) {
+            const user = JSON.parse(await (AsyncStorage.getItem(Constants.UserObject)));
+            console.log(user);
+            const firebaseId = user.firebaseId;
+            console.log(firebaseId);
+            const trueUser = {};
+            trueUser[firebaseId] = true;
             fetch('http://' + Constants.postsIp + '/add-poll', {
                 method: 'POST',
                 headers: {
@@ -50,6 +56,7 @@ export default class NewTrendingScreen extends React.Component {
                     button2Title: this.option2,
                     button1Value: 0,
                     button2Value: 0,
+                    userList: tempUser,
                     timestamp: new Date().getTime(),
                 }),
             })

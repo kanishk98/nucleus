@@ -20,7 +20,7 @@ import { Button } from 'react-native-elements';
 import NavigationService from './src/components/NavigationService';
 import RandomConnect from './src/components/RandomConnect';
 import firebase from 'react-native-firebase';
-import { AsyncStorage } from 'react-native';
+import { AsyncStorage, Platform } from 'react-native';
 import { renderSearch } from './src/components/renderIf';
 
 const BottomNavigator = createBottomTabNavigator({
@@ -37,10 +37,10 @@ const BottomNavigator = createBottomTabNavigator({
                     title: 'Trending', headerRight: (
                         <Button
                             onPress={newTrendingPost}
-                            title="New poll"
+                            title="+1"
                             textStyle={{ color: 'black' }}
                             raised={false}
-                            backgroundColor="white"
+                            backgroundColor='rgba(0, 0, 0, 0)'
                         />
                     ), } } })
     }
@@ -96,7 +96,7 @@ const LoggedOutStackNavigator = createStackNavigator(
     NewTrendingScreen: {
       screen: NewTrendingScreen,
       navigationOptions: {
-        title: "New anonymous post"
+        title: "New anonymous poll"
       }
     }
   },
@@ -134,7 +134,7 @@ const LoggedInStackNavigator = createStackNavigator(
         NewTrendingScreen: {
             screen: NewTrendingScreen,
             navigationOptions: {
-                title: "New anonymous post"
+                title: "New anonymous poll"
             }
         }
     },

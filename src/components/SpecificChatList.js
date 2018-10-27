@@ -189,7 +189,7 @@ export default class SpecificChatList extends Component {
         // fetch previously made conversations here
         this.retrieveChats();
         this.noFilter = {
-            firebaseId: { ne: this.props.navigation.getParam('user', null).firebaseId },
+            firebaseId: { ne: this.user.firebaseId },
             geohash: { ne: 'random_user_geohash' },
         }
         // checking for notification permissions
