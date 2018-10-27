@@ -252,23 +252,6 @@ export default class PreDiscover extends React.Component {
     }
     
     render() {
-        /*let {requestId, looking, text} = this.state;
-        if (requestId !== null && !looking) {
-            return (
-                <ScrollView contentContainerStyle={styles.container} onTouchEnd={this.acceptDiscover}>
-                        <Text style={styles.title}>{text}</Text>
-                        <Text style={styles.instructions}>Someone got connected to you!</Text>
-                </ScrollView>
-            );
-        } else {
-            return (
-                <ScrollView contentContainerStyle={styles.container} onTouchEnd={this.startDiscover}>
-                        <Text style={styles.title}>{text}</Text>
-                        <Text style={styles.instructions}>{this.state.username}</Text>
-                        {renderProgress(this.ProgressBar, null)}
-                </ScrollView>
-            );
-        }*/
         return (
             <MessageContainer />
         );

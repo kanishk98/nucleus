@@ -150,7 +150,7 @@ export default class SpecificChatList extends Component {
 
     retrieveChats = () => {
         // getting talkingTo
-        AsyncStorage.getItem(Constants.TalkingTo)
+        /*AsyncStorage.getItem(Constants.TalkingTo)
         .then(res => {
             console.log(res);
             if (res !== null) {
@@ -160,7 +160,7 @@ export default class SpecificChatList extends Component {
         })
         .catch(err => {
             console.log(err);
-        });
+        });*/
         AsyncStorage.getItem(Constants.SpecificChatConversations)
         .then(res => {
             console.log(res);
@@ -178,6 +178,10 @@ export default class SpecificChatList extends Component {
     chatKeyExtractor = (item, index) => item.user2.firebaseId;
 
     peopleKeyExtractor = (item, index) => item.firebaseId;
+
+    componentWillMount() {
+        this.retrieveChats();
+    }
     
     async componentDidMount() {
         this.user = JSON.parse(await AsyncStorage.getItem(Constants.UserObject));
@@ -187,7 +191,7 @@ export default class SpecificChatList extends Component {
             geohash: {ne: 'random_user_geohash'},
         }
         // fetch previously made conversations here
-        this.retrieveChats();
+        //this.retrieveChats();
         this.noFilter = {
             firebaseId: { ne: this.user.firebaseId },
             geohash: { ne: 'random_user_geohash' },
