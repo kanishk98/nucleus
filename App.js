@@ -147,9 +147,11 @@ function getLoggedIn() {
     AsyncStorage.getItem(Constants.LoggedIn)
         .then(res => {
             if (res == 'T') {
+                console.log('user logged in');
                 // user logged in
                 return true;
             } else {
+                console.log('user not logged in');
                 return false;
             }
         })
@@ -185,10 +187,11 @@ export default class App extends React.Component {
     }
 
     render() {
+        console.log(getLoggedIn());
         return (
             <ApolloProvider client={connectClient}>
                 <Rehydrated>
-                    {renderSearch(getLoggedIn,
+                    {renderSearch(getLoggedIn(),
                     <LoggedInStackNavigator
                         ref={navigatorRef => {
                             NavigationService.setTopLevelNavigator(navigatorRef);

@@ -22,7 +22,18 @@ export default class SpecificChatList extends Component {
             searchResults: [],
             searching: false,
         };
-        user = null;
+        this.user = this.props.navigation.getParam('user', () => {
+            AsyncStorage.getItem(Constants.UserObject)
+                .then(res => {
+                    console.log(JSON.parse(res));
+                    return JSON.parse(res);
+                })
+                .catch(err => {
+                    console.log(err);
+                    this.props.navigation.navigate('Login');
+                });
+        });
+        console.log(this.user);
         itemCount = 0;
         AWS.config.update({
             dynamoDbCrc32: false,
@@ -41,11 +52,6 @@ export default class SpecificChatList extends Component {
             }
         });
         this.search = React.createRef();
-    }
-
-    noFilter = {
-        firebaseId: {ne: this.props.navigation.getParam('user', null).firebaseId},
-        geohash: {ne: 'random_user_geohash'},
     }
 
     showPeople = () => {
@@ -185,10 +191,12 @@ export default class SpecificChatList extends Component {
     peopleKeyExtractor = (item, index) => item.firebaseId;
     
     async componentDidMount() {
-        this.user = this.props.navigation.getParam('user', null);
-        console.log(this.user);
         // fetch previously made conversations here
         this.retrieveChats();
+        this.noFilter = {
+            firebaseId: { ne: this.props.navigation.getParam('user', null).firebaseId },
+            geohash: { ne: 'random_user_geohash' },
+        }
         // checking for notification permissions
         let enabled = false;
         if (Platform.OS == 'ios')
