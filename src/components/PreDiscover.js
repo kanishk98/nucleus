@@ -241,10 +241,10 @@ export default class PreDiscover extends React.Component {
         let user = this.user;
         // subscribing to requested conversations
         this.chatSubscription = API.graphql(
-            graphqlOperation(GraphQL.SubscribeToDiscoverChats, { recipient: user.firebaseId })
+            graphqlOperation(GraphQL.SubscribeToDiscoverChats, { recipient: '-9991' })
         ).subscribe({
             next: (res) => {
-                console.log('Subscription for chat received: ' + String(res));
+                console.log('Subscription for chat received: ' + JSON.stringify(res));
                 const newChat = res.value.data.onCreateNucleusDiscoverChats;
                 console.log(newChat);
                 // notifies sender of request of conversation ignore after 5 seconds of subscription receipt
@@ -255,13 +255,13 @@ export default class PreDiscover extends React.Component {
                     createdAt: new Date(),
                     user: {
                         _id: newChat.author.firebaseId,
-                        name: this.getInitials(newChat.author.username)
+                        name: newChat.author.username,
                     },
                 };
                 this.setState(previousState => {
                     console.log(previousState);
                     return {
-                        messages: GiftedChat.append(null, message)
+                        messages: GiftedChat.append(previousState.messages, message)
                     };
                 });
                 this.setState({requestId: newChat.conversationId, requestChat: newChat, progress: false });

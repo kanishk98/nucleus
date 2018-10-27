@@ -179,6 +179,11 @@ Amplify.configure(apiConfig);
 
 export default class App extends React.Component {
     
+    constructor(props) {
+        super(props);
+        firebase.analytics().setAnalyticsCollectionEnabled(true);
+    }
+
     componentDidMount() {
         // setting up Android notifications
         const channel = new firebase.notifications.Android.Channel('channelId', 'channelId', firebase.notifications.Android.Importance.Max)

@@ -9,7 +9,6 @@ import { renderSearch, renderOnline, renderResults } from './renderIf';
 import {Auth, API, graphqlOperation} from 'aws-amplify';
 import * as GraphQL from '../graphql';
 import firebase from 'react-native-firebase';
-import { StackActions, NavigationActions } from 'react-navigation';
 
 export default class SpecificChatList extends Component {
 
@@ -40,6 +39,8 @@ export default class SpecificChatList extends Component {
                 this.itemCount = data.ItemCount;
             }
         });
+        firebase.initializeApp({debug: true});
+        firebase.analytics().logEvent('specific_chat_constructor');
         this.search = React.createRef();
     }
 

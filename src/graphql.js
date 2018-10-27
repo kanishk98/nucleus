@@ -110,6 +110,7 @@ export const GetDiscoverMessages = gql`query getNucleusDiscoverMessages($input: 
 export const SubscribeToDiscoverMessages = `subscription SubscribeToDiscoverMessages($conversationId: String!) {
     onCreateNucleusDiscoverMessages(conversationId: $conversationId) {
         messageId
+        conversationId
         content
         timestamp
     }
@@ -121,7 +122,10 @@ export const SubscribeToDiscoverChats = `subscription SubscribeToDiscoverChats($
         author {
             firebaseId
             geohash
+            username
+            fcmToken
         }
+        recipient
     }
 }`
 
