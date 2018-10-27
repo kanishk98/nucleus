@@ -246,6 +246,7 @@ export default class PreDiscover extends React.Component {
             next: (res) => {
                 console.log('Subscription for chat received: ' + String(res));
                 const newChat = res.value.data.onCreateNucleusDiscoverChats;
+                console.log(newChat);
                 // notifies sender of request of conversation ignore after 5 seconds of subscription receipt
                 setTimeout((newChat) => this.cancelRequest, 5000);
                 let message = {
@@ -260,7 +261,7 @@ export default class PreDiscover extends React.Component {
                 this.setState(previousState => {
                     console.log(previousState);
                     return {
-                        messages: GiftedChat.append(previousState.messages, message)
+                        messages: GiftedChat.append(null, message)
                     };
                 });
                 this.setState({requestId: newChat.conversationId, requestChat: newChat, progress: false });
@@ -315,6 +316,16 @@ export default class PreDiscover extends React.Component {
 
     render() {
         console.log(this.state);
+        let {requestId, looking} = this.state;
+        if (requestId !== null && !looking) {
+            return (
+                <GiftedChat
+                    messages={this.state.messages}
+                    renderInputToolbar={this._renderInputToolbar}
+                    onLongPress={this.acceptDiscover}
+                />
+            );
+        }
         return (
             <GiftedChat
                 messages={this.state.messages}

@@ -189,23 +189,30 @@ export default class App extends React.Component {
 
     render() {
         console.log(getLoggedIn());
-        return (
-            <ApolloProvider client={connectClient}>
-                <Rehydrated>
-                    {renderSearch(getLoggedIn(),
-                    <LoggedInStackNavigator
-                        ref={navigatorRef => {
-                            NavigationService.setTopLevelNavigator(navigatorRef);
-                        }}
-                    />,
-                    <LoggedOutStackNavigator
-                        ref={navigatorRef => {
-                            NavigationService.setTopLevelNavigator(navigatorRef);
-                        }}
-                    />,
-                    )}
-                </Rehydrated>
-            </ApolloProvider>
-        );
+        if (getLoggedIn()) {
+            return (
+                <ApolloProvider client={connectClient}>
+                    <Rehydrated>
+                        <LoggedInStackNavigator
+                            ref={navigatorRef => {
+                                NavigationService.setTopLevelNavigator(navigatorRef);
+                            }}
+                        />
+                    </Rehydrated>
+                </ApolloProvider>
+            );
+        } else {
+            return (
+                <ApolloProvider client={connectClient}>
+                    <Rehydrated>
+                        <LoggedOutStackNavigator
+                            ref={navigatorRef => {
+                                NavigationService.setTopLevelNavigator(navigatorRef);
+                            }}
+                        />
+                    </Rehydrated>
+                </ApolloProvider>
+            );
+        }
     }
 }
