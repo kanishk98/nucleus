@@ -34,7 +34,7 @@ const BottomNavigator = createBottomTabNavigator({
         screen: createStackNavigator({
             Trending: {
                 screen: TrendingScreen, navigationOptions: {
-                    title: 'Trending', headerRight: (
+                    title: 'Polls', headerRight: (
                         <Button
                             onPress={newTrendingPost}
                             title="+1"
