@@ -175,7 +175,9 @@ export default class PreDiscover extends React.Component {
                     API.graphql(graphqlOperation(GraphQL.SubscribeToDiscoverChats, { recipient: connectedUser.firebaseId }))
                         .subscribe(res => {
                             console.log(res);
-                            if (res.value.data.onCreateNucleusDiscoverChats.author.firebaseId !== this.user.firebaseId && !res.value.data.deleteNucleusDiscoverChats) {
+                            console.log(res.value.data.onCreateNucleusDiscoverChats.author.firebaseId);
+                            console.log(this.user.firebaseId);
+                            if (res.value.data.onCreateNucleusDiscoverChats.author.firebaseId != connectedUser.firebaseId && !res.value.data.deleteNucleusDiscoverChats) {
                                 console.log('request for chatting accepted by user');
                                 this.props.navigation.navigate('Random', { randomUser: connectedUser, conversationId: chatId, user: this.user });
                             }
@@ -203,7 +205,11 @@ export default class PreDiscover extends React.Component {
         delete this.state.requestChat.__typename;
         delete this.state.requestChat.author.__typename;
         console.log(this.state.requestChat);
-        API.graphql(graphqlOperation(GraphQL.CreateDiscoverChat, { input: this.state.requestChat }))
+        let chat = this.state.requestChat;
+        let author = chat.author;
+        chat.author = this.user;
+        chat.recipient = author;
+        API.graphql(graphqlOperation(GraphQL.CreateDiscoverChat, { input: chat }))
             .then(res => {
                 console.log(res);
                 // chatting resolved, moving on to another screen
@@ -251,7 +257,7 @@ export default class PreDiscover extends React.Component {
                 setTimeout((newChat) => this.cancelRequest, 5000);
                 let message = {
                     _id: new Date().getTime(),
-                    text: 'Someone got connected to you!',
+                    text: 'Someone got connected to you! Long-press this text to accept their request.',
                     createdAt: new Date(),
                     user: {
                         _id: newChat.author.firebaseId,
