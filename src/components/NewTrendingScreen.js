@@ -56,7 +56,7 @@ export default class NewTrendingScreen extends React.Component {
                     button2Title: this.option2,
                     button1Value: 0,
                     button2Value: 0,
-                    userList: tempUser,
+                    userList: trueUser,
                     timestamp: new Date().getTime(),
                 }),
             })

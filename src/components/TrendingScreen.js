@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, StyleSheet, View, FlatList } from 'react-native';
+import { Text, StyleSheet, View, FlatList, AsyncStorage } from 'react-native';
 import { Card, Button } from 'react-native-elements';
 import Constants from '../Constants';
 import NavigationService from './NavigationService';
@@ -13,7 +13,7 @@ class PollCard extends React.PureComponent {
         this.state.buttonPressed = false;
     }
 
-    updatePost = (button1Value, button2Value) => {
+    updatePost = (button1Value, button2Value, userList) => {
         console.log('BUTTON1VAL: ' + this.state.button1Value);
         console.log('BUTTON2VAL: ' + this.state.button2Value);
         fetch('http://' + Constants.postsIp + '/update-post',  {
@@ -30,6 +30,7 @@ class PollCard extends React.PureComponent {
                 button2Title: this.props.button2Title,
                 button1Value: button1Value,
                 button2Value: button2Value,
+                userList: userList,
             }),
         })
         .then(res => console.log(res))
@@ -47,12 +48,12 @@ class PollCard extends React.PureComponent {
     }
     
     render() {
-        const {title, caption, image, button1Title, button2Title, button1Value, button2Value} = this.state;
+        const {title, caption, image, button1Title, button2Title, button1Value, button2Value, userList, firebaseId} = this.state;
         return (
             <Card containerStyle={{borderRadius: 15}}
                 title={caption}>
                     {renderSearch(
-                        this.state.buttonPressed,
+                        this.state.buttonPressed || (!!userList && !!userList[firebaseId]),
                         <View style={styles.buttonContainer}>
                             <Text style={styles.resultText}>{button1Value + " - " + button1Title}</Text>
                             <View style={{paddingHorizontal: 30}} />
@@ -140,6 +141,8 @@ export default class Trending extends React.PureComponent {
                 button2Title={item.button2Title}
                 button1Value={item.button1Value || 0}
                 button2Value={item.button2Value || 0}
+                userList={item.userList || {}}
+                firebaseId={this.user.firebaseId}
             />
         );
     }
@@ -153,6 +156,10 @@ export default class Trending extends React.PureComponent {
         if (this.state.postList == null || this.state.postList == undefined) {
             this.getPosts();
         }
+    }
+
+    async componentDidMount() {
+        this.user = JSON.parse(await(AsyncStorage.getItem(Constants.UserObject)));
     }
 
     render() {
