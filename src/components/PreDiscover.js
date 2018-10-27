@@ -104,9 +104,9 @@ export default class PreDiscover extends React.Component {
 
     startDiscover() {
         let message = {
-            _id: 2,
+            _id: new Date().getTime(),
             text: 'Finding matches for you...',
-            createdAt: new Date(Date.UTC(2016, 5, 11, 17, 20, 0)),
+            createdAt: new Date(),
             user: {},
         };
         this.setState(previousState => {
@@ -153,7 +153,7 @@ export default class PreDiscover extends React.Component {
                     setTimeout(this.startDiscover, 5000);
                     const initials = this.getInitials(connectedUser.username);
                     message = {
-                        _id: 3, 
+                        _id: new Date().getTime(),
                         text: initials,
                         createdAt: new Date(),
                         user: {}
@@ -241,7 +241,7 @@ export default class PreDiscover extends React.Component {
                 // notifies sender of request of conversation ignore after 5 seconds of subscription receipt
                 setTimeout((newChat) => this.cancelRequest, 5000);
                 let message = {
-                    _id: 4, 
+                    _id: new Date().getTime(),
                     text: 'Someone got connected to you!',
                     createdAt: new Date(),
                     user: {
@@ -269,8 +269,8 @@ export default class PreDiscover extends React.Component {
             }
         });
         this.setupNotificationListeners();
-        this.setState({messages: [{
-            _id: 1,
+        let message = {
+            _id: new Date().getTime(),
             text: 'Long-press this bubble to discover new people!',
             createdAt: new Date(),
             user: {
@@ -278,7 +278,13 @@ export default class PreDiscover extends React.Component {
                 name: this.user.username,
                 avatar: this.user.profilePic,
             },
-        }]});
+        };
+        this.setState(previousState => {
+            console.log(previousState);
+            return {
+                messages: GiftedChat.append(previousState.messages, message)
+            };
+        });
     }
 
     changeOnlineStatus = () => {
