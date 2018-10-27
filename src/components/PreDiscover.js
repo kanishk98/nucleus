@@ -107,7 +107,11 @@ export default class PreDiscover extends React.Component {
             _id: new Date().getTime(),
             text: 'Finding matches for you...',
             createdAt: new Date(),
-            user: {},
+            user: {
+                _id: this.user.firebaseId,
+                name: this.user.username,
+                avatar: this.user.profilePic,
+            },
         };
         this.setState(previousState => {
             console.log(previousState);
@@ -156,7 +160,11 @@ export default class PreDiscover extends React.Component {
                         _id: new Date().getTime(),
                         text: initials,
                         createdAt: new Date(),
-                        user: {}
+                        user: {
+                            _id: this.user.firebaseId,
+                            name: this.user.username,
+                            avatar: this.user.profilePic,
+                        },
                     };
                     this.setState(previousState => {
                         console.log(previousState);
@@ -273,11 +281,7 @@ export default class PreDiscover extends React.Component {
             _id: new Date().getTime(),
             text: 'Long-press this bubble to discover new people!',
             createdAt: new Date(),
-            user: {
-                _id: this.user.firebaseId,
-                name: this.user.username,
-                avatar: this.user.profilePic,
-            },
+            user: {},
         };
         this.setState(previousState => {
             console.log(previousState);
