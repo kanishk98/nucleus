@@ -241,7 +241,7 @@ export default class PreDiscover extends React.Component {
         let user = this.user;
         // subscribing to requested conversations
         this.chatSubscription = API.graphql(
-            graphqlOperation(GraphQL.SubscribeToDiscoverChats, { recipient: '-9991' })
+            graphqlOperation(GraphQL.SubscribeToDiscoverChats, { recipient: user.firebaseId })
         ).subscribe({
             next: (res) => {
                 console.log('Subscription for chat received: ' + JSON.stringify(res));
