@@ -37,8 +37,8 @@ export default class Search extends PureComponent {
                     <Image source={require("../../assets/search.png")} style={styles.icon} />
                     <TextInput
                         placeholder={placeholder}
-                        style={styles.searchText}
                         placeholderColor={'rgba(47, 54, 63, 0.5)'}
+                        style={styles.searchText}
                         onFocus={this.onFocus}
                         ref={(input) => this.searchInput = input}
                         onChangeText={this.onChange}
@@ -76,7 +76,6 @@ const styles = StyleSheet.create({
         flex: 1,
         color: 'rgb(47, 54, 63)',
         fontSize: 16,
-        lineHeight: 22
     },
     closeButton: {
         width: 18,
