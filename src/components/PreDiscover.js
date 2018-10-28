@@ -25,6 +25,7 @@ export default class PreDiscover extends React.Component {
             ios: () => ProgressViewIOS,
             android: () => ProgressBarAndroid
         });
+        this.componentUnmounted = false;
         this.startDiscover = this.startDiscover.bind(this);
         this.acceptDiscover = this.acceptDiscover.bind(this);
     }
@@ -50,6 +51,7 @@ export default class PreDiscover extends React.Component {
     }
 
     openChat = (randomChat, connectedUser) => {
+        this.componentUnmounted = true;
         this.props.navigation.navigate('Random', { randomUser: connectedUser, conversationId: randomChat.conversationId, user: this.user });
     }
 
@@ -104,95 +106,90 @@ export default class PreDiscover extends React.Component {
     }
 
     startDiscover() {
-        let message = {
-            _id: new Date().getTime(),
-            text: 'Finding matches for you...',
-            createdAt: new Date(),
-            user: {
-                _id: this.user.firebaseId,
-                name: this.user.username,
-                avatar: this.user.profilePic,
-            },
-        };
-        this.setState(previousState => {
-            console.log(previousState);
-            return {
-                messages: GiftedChat.append(previousState.messages, message)
+        if (!this.componentUnmounted) {
+            let message = {
+                _id: new Date().getTime(),
+                text: 'Finding you a match...',
+                createdAt: new Date(),
+                user: {
+                    _id: this.user.firebaseId,
+                    name: this.user.username,
+                    avatar: this.user.profilePic,
+                },
             };
-        });
-        let { onlineUsers } = this.state;
-        let user = this.user;
-        console.log(this.state);
-        if (onlineUsers && onlineUsers.length > 1) {
-            let randUser = Math.floor(Math.random() * onlineUsers.length);
-            console.log(randUser);
-            if (onlineUsers[randUser].firebaseId === user.firebaseId) {
-                randUser = randUser + 1;
-                try {
-                    if (onlineUsers[randUser] == null) {
-                        console.log("Undefined user, switching back");
+            this.setState(previousState => {
+                console.log(previousState);
+                return {
+                    messages: GiftedChat.append(previousState.messages, message)
+                };
+            });
+            let { onlineUsers } = this.state;
+            let user = this.user;
+            console.log(this.state);
+            if (onlineUsers && onlineUsers.length > 1) {
+                let randUser = Math.floor(Math.random() * onlineUsers.length);
+                console.log(randUser);
+                if (onlineUsers[randUser].firebaseId === user.firebaseId) {
+                    randUser = randUser + 1;
+                    try {
+                        if (onlineUsers[randUser] == null) {
+                            console.log("Undefined user, switching back");
+                            randUser = randUser - 2;
+                        }
+                    } catch (error) {
+                        console.log(error);
                         randUser = randUser - 2;
                     }
-                } catch (error) {
-                    console.log(error);
-                    randUser = randUser - 2;
                 }
-            }
-            console.log(onlineUsers[randUser]);
-            let connectedUser = onlineUsers[randUser];
-            console.log('Connected user: ' + JSON.stringify(connectedUser));
-            // TODO: Create conversationId and a new UserConversation
-            let chatId = String(Math.floor(new Date().getTime()));
-            let newChat = {
-                conversationId: chatId,
-                author: user,
-                recipient: connectedUser.firebaseId,
-                messageId: [new Date().getUTCMilliseconds().toString()]
-            };
-            console.log(newChat);
-            console.log('Initiating chat: ' + chatId);
-            API.graphql(graphqlOperation(GraphQL.CreateDiscoverChat, { input: newChat }))
-                .then(res => {
-                    console.log('Resolved chat: ' + JSON.stringify(res));
-                    // waiting for acceptance from another user for 5 seconds
-                    setTimeout(this.startDiscover, 5000);
-                    const initials = this.getInitials(connectedUser.username);
-                    message = {
-                        _id: new Date().getTime(),
-                        text: initials,
-                        createdAt: new Date(),
-                        user: {
-                            _id: this.user.firebaseId,
-                            name: this.user.username,
-                            avatar: this.user.profilePic,
-                        },
-                    };
-                    this.setState(previousState => {
-                        console.log(previousState);
-                        return {
-                            messages: GiftedChat.append(previousState.messages, message)
+                console.log(onlineUsers[randUser]);
+                let connectedUser = onlineUsers[randUser];
+                console.log('Connected user: ' + JSON.stringify(connectedUser));
+                // TODO: Create conversationId and a new UserConversation
+                let chatId = String(Math.floor(new Date().getTime()));
+                let newChat = {
+                    conversationId: chatId,
+                    author: user,
+                    recipient: connectedUser.firebaseId,
+                    messageId: [new Date().getUTCMilliseconds().toString()]
+                };
+                console.log(newChat);
+                console.log('Initiating chat: ' + chatId);
+                API.graphql(graphqlOperation(GraphQL.CreateDiscoverChat, { input: newChat }))
+                    .then(res => {
+                        console.log('Resolved chat: ' + JSON.stringify(res));
+                        // waiting for acceptance from another user for 5 seconds
+                        setTimeout(this.startDiscover, 5000);
+                        const initials = this.getInitials(connectedUser.username);
+                        message = {
+                            _id: new Date().getTime(),
+                            text: initials,
+                            createdAt: new Date(),
+                            user: {
+                                _id: this.user.firebaseId,
+                                name: this.user.username,
+                                avatar: this.user.profilePic,
+                            },
                         };
-                    });
-                    API.graphql(graphqlOperation(GraphQL.SubscribeToUpdatedChats, { conversationId: chatId }))
-                        .subscribe(res => {
-                            console.log(res);
-                            console.log(this.user.firebaseId);
-                            if (!res.value.data.deleteNucleusDiscoverChats) {
-                                console.log('request for chatting accepted by user');
-                                /*this.props.navigation.dispatch(StackActions.reset({
-                                    index: 1,
-                                    key: 'Random',
-                                    actions: [
-                                        NavigationActions.navigate('Random', { randomUser: connectedUser, conversationId: chatId, user: this.user }),
-                                        NavigationActions.navigate({ routeName: 'Chat', params: {user: this.user } })
-                                    ]
-                                }));*/
-                                this.props.navigation.navigate('Random', { randomUser: connectedUser, conversationId: chatId, user: this.user });
-                            }
-                        })
-                })
-                .catch(err => console.log(err));
-            // this.sendRequest(user, connectedUser, newChat);
+                        this.setState(previousState => {
+                            console.log(previousState);
+                            return {
+                                messages: GiftedChat.append(previousState.messages, message)
+                            };
+                        });
+                        API.graphql(graphqlOperation(GraphQL.SubscribeToUpdatedChats, { conversationId: chatId }))
+                            .subscribe(res => {
+                                console.log(res);
+                                console.log(this.user.firebaseId);
+                                if (!res.value.data.deleteNucleusDiscoverChats) {
+                                    console.log('request for chatting accepted by user');
+                                    this.componentUnmounted = true;
+                                    this.props.navigation.navigate('Random', { randomUser: connectedUser, conversationId: chatId, user: this.user });
+                                }
+                            })
+                    })
+                    .catch(err => console.log(err));
+                // this.sendRequest(user, connectedUser, newChat);
+            }
         }
     }
 
@@ -228,6 +225,7 @@ export default class PreDiscover extends React.Component {
             console.log(res);
             // chatting resolved, moving on to another screen
             let { author, conversationId } = this.state.requestChat;
+            this.componentUnmounted = true;
             this.props.navigation.navigate('Random', { randomUser: author, conversationId: conversationId, user: this.user });
         })
         .catch(err => {
