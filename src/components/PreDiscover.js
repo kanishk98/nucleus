@@ -147,7 +147,7 @@ export default class PreDiscover extends React.Component {
                 conversationId: chatId,
                 author: user,
                 recipient: connectedUser.firebaseId,
-                messageId: new Date().getUTCMilliseconds().toString()
+                messageId: [new Date().getUTCMilliseconds().toString()]
             };
             console.log(newChat);
             console.log('Initiating chat: ' + chatId);
@@ -176,18 +176,18 @@ export default class PreDiscover extends React.Component {
                     API.graphql(graphqlOperation(GraphQL.SubscribeToUpdatedChats, { conversationId: chatId }))
                         .subscribe(res => {
                             console.log(res);
-                            // console.log(res.value.data.onU.author.firebaseId);
                             console.log(this.user.firebaseId);
                             if (!res.value.data.deleteNucleusDiscoverChats) {
                                 console.log('request for chatting accepted by user');
-                                this.props.navigation.dispatch(StackActions.reset({
+                                /*this.props.navigation.dispatch(StackActions.reset({
                                     index: 1,
                                     key: 'Random',
                                     actions: [
                                         NavigationActions.navigate('Random', { randomUser: connectedUser, conversationId: chatId, user: this.user }),
                                         NavigationActions.navigate({ routeName: 'Chat', params: {user: this.user } })
                                     ]
-                                }));
+                                }));*/
+                                this.props.navigation.navigate('Random', { randomUser: connectedUser, conversationId: chatId, user: this.user });
                             }
                         })
                 })
@@ -215,7 +215,7 @@ export default class PreDiscover extends React.Component {
         console.log(this.state.requestChat);
         let chat = {
             conversationId: this.state.requestChat.conversationId,
-            recipient: this.user.firebaseId,
+            recipient: this.state.requestChat.recipient,
             author: this.state.requestChat.author,
             messageId: this.state.requestId.messageId
         }
