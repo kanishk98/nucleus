@@ -206,41 +206,33 @@ export default class PreDiscover extends React.Component {
     // .then(res => {
 
     acceptDiscover = () => {
-        // creating redundant mutation for activation of subscription on other side
-        delete this.state.requestChat.__typename;
-        delete this.state.requestChat.author.__typename;
-        console.log(this.state.requestChat);
-        let chat = {
-            conversationId: this.state.requestChat.conversationId,
-            recipient: this.state.requestChat.recipient,
-            author: this.state.requestChat.author,
-            messageId: this.state.requestId.messageId
-        }
-        console.log(chat);
-        /*let author = chat.author;
-        chat.author = this.user;
-        chat.recipient = author;*/
-        API.graphql(graphqlOperation(GraphQL.UpdateDiscoverChat, {input: chat}))
-        .then(res => {
-            console.log(res);
-            // chatting resolved, moving on to another screen
-            let { author, conversationId } = this.state.requestChat;
-            this.componentUnmounted = true;
-            this.props.navigation.navigate('Random', { randomUser: author, conversationId: conversationId, user: this.user });
-        })
-        .catch(err => {
-            console.log(err);
-        });
-        /*API.graphql(graphqlOperation(GraphQL.CreateDiscoverChat, { input: chat }))
+        if (!this.componentUnmounted) {
+            // creating redundant mutation for activation of subscription on other side
+            delete this.state.requestChat.__typename;
+            delete this.state.requestChat.author.__typename;
+            console.log(this.state.requestChat);
+            let chat = {
+                conversationId: this.state.requestChat.conversationId,
+                recipient: this.state.requestChat.recipient,
+                author: this.state.requestChat.author,
+                messageId: this.state.requestId.messageId
+            }
+            console.log(chat);
+            /*let author = chat.author;
+            chat.author = this.user;
+            chat.recipient = author;*/
+            API.graphql(graphqlOperation(GraphQL.UpdateDiscoverChat, {input: chat}))
             .then(res => {
                 console.log(res);
                 // chatting resolved, moving on to another screen
                 let { author, conversationId } = this.state.requestChat;
+                this.componentUnmounted = true;
                 this.props.navigation.navigate('Random', { randomUser: author, conversationId: conversationId, user: this.user });
             })
             .catch(err => {
                 console.log(err);
-            });*/
+            });
+        }
     }
 
     cancelRequest = (chat) => {
@@ -274,23 +266,25 @@ export default class PreDiscover extends React.Component {
                 const newChat = res.value.data.onCreateNucleusDiscoverChats;
                 console.log(newChat);
                 // notifies sender of request of conversation ignore after 5 seconds of subscription receipt
-                setTimeout((newChat) => this.cancelRequest, 5000);
-                let message = {
-                    _id: new Date().getTime(),
-                    text: 'Someone got connected to you! Long-press this text to accept their request.',
-                    createdAt: new Date(),
-                    user: {
-                        _id: newChat.author.firebaseId,
-                        name: newChat.author.username,
-                    },
-                };
-                this.setState(previousState => {
-                    console.log(previousState);
-                    return {
-                        messages: GiftedChat.append(previousState.messages, message)
+                if (!this.componentUnmounted) {
+                    setTimeout((newChat) => this.cancelRequest, 5000);
+                    let message = {
+                        _id: new Date().getTime(),
+                        text: 'Someone got connected to you! Long-press this text to accept their request.',
+                        createdAt: new Date(),
+                        user: {
+                            _id: newChat.author.firebaseId,
+                            name: newChat.author.username,
+                        },
                     };
-                });
-                this.setState({requestId: newChat.conversationId, requestChat: newChat, progress: false });
+                    this.setState(previousState => {
+                        console.log(previousState);
+                        return {
+                            messages: GiftedChat.append(previousState.messages, message)
+                        };
+                    });
+                    this.setState({requestId: newChat.conversationId, requestChat: newChat, progress: false });
+                }
             }
         });
         // subscribing to deleted conversations for removing accept button

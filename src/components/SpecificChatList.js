@@ -39,7 +39,6 @@ export default class SpecificChatList extends Component {
                 this.itemCount = data.ItemCount;
             }
         });
-        firebase.initializeApp({debug: true});
         firebase.analytics().logEvent('specific_chat_constructor');
         this.search = React.createRef();
     }
