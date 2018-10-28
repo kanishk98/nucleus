@@ -21,7 +21,8 @@ import NavigationService from './src/components/NavigationService';
 import RandomConnect from './src/components/RandomConnect';
 import firebase from 'react-native-firebase';
 import { AsyncStorage, Platform } from 'react-native';
-import { renderSearch } from './src/components/renderIf';
+import { alertDelete } from './src/components/RandomConnect';
+import { HeaderBackButton } from 'react-navigation';
 
 const BottomNavigator = createBottomTabNavigator({
     Connect: {
@@ -84,7 +85,12 @@ const LoggedOutStackNavigator = createStackNavigator(
     Random: {
       screen: RandomConnect,
       navigationOptions: {
-        title: "Discover"
+        title: "Unknown",
+        headerLeft: (
+            <HeaderBackButton
+              onPress={alertDelete}
+            />
+        ),
       }
     },
     SpecificTextScreen: {

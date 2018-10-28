@@ -21,6 +21,7 @@ export default class PreDiscover extends React.Component {
             notificationsAllowed: false,
             progress: false,
             discoverStopped: false,
+            navigating: false,
         };
         this.ProgressBar = Platform.select({
             ios: () => ProgressViewIOS,
@@ -54,7 +55,7 @@ export default class PreDiscover extends React.Component {
     }
 
     openChat = (randomChat, connectedUser) => {
-        this.componentUnmounted = true;
+        this.setState({discoverStopped: true});
         this.props.navigation.navigate('Random', { randomUser: connectedUser, conversationId: randomChat.conversationId, user: this.user });
     }
 
@@ -130,6 +131,9 @@ export default class PreDiscover extends React.Component {
     }
 
     ignoreFlagAndStartDiscover() {
+        if (this.state.navigating) {
+            this.setState({navigating: false});
+        }
         this.setState({ discoverStopped: false });
         this.forced = true;
         this.startDiscover();
@@ -215,6 +219,7 @@ export default class PreDiscover extends React.Component {
                                 if (!res.value.data.deleteNucleusDiscoverChats) {
                                     console.log('request for chatting accepted by user');
                                     clearTimeout(this.startDiscover);
+                                    this.setState({discoverStopped: true});
                                     this.props.navigation.navigate('Random', { randomUser: connectedUser, conversationId: chatId, user: this.user });
                                 }
                             })
@@ -256,33 +261,33 @@ export default class PreDiscover extends React.Component {
     // .then(res => {
 
     acceptDiscover = () => {
-        if (!this.componentUnmounted) {
-            // creating redundant mutation for activation of subscription on other side
-            delete this.state.requestChat.__typename;
-            delete this.state.requestChat.author.__typename;
-            console.log(this.state.requestChat);
-            let chat = {
-                conversationId: this.state.requestChat.conversationId,
-                recipient: this.state.requestChat.recipient,
-                author: this.state.requestChat.author,
-                messageId: this.state.requestId.messageId
-            }
-            console.log(chat);
-            /*let author = chat.author;
-            chat.author = this.user;
-            chat.recipient = author;*/
-            API.graphql(graphqlOperation(GraphQL.UpdateDiscoverChat, { input: chat }))
-                .then(res => {
-                    console.log(res);
-                    // chatting resolved, moving on to another screen
-                    let { author, conversationId } = this.state.requestChat;
-                    this.componentUnmounted = true;
-                    this.props.navigation.navigate('Random', { randomUser: author, conversationId: conversationId, user: this.user });
-                })
-                .catch(err => {
-                    console.log(err);
-                });
+        // creating redundant mutation for activation of subscription on other side
+        delete this.state.requestChat.__typename;
+        delete this.state.requestChat.author.__typename;
+        console.log(this.state.requestChat);
+        let chat = {
+            conversationId: this.state.requestChat.conversationId,
+            recipient: this.state.requestChat.recipient,
+            author: this.state.requestChat.author,
+            messageId: this.state.requestId.messageId
         }
+        console.log(chat);
+        API.graphql(graphqlOperation(GraphQL.UpdateDiscoverChat, { input: chat }))
+            .then(res => {
+                console.log(res);
+                // chatting resolved, moving on to another screen
+                let { author, conversationId } = this.state.requestChat;
+                this.setState(previousState => {
+                    return {
+                        messages: GiftedChat.removeMessage(previousState.messages, previousState.messages, 'Someone got connected to you! Long-press this text to accept their request.')
+                    }
+                })
+                this.setState({discoverStopped: true, requestId: null, navigating: true});
+                this.props.navigation.navigate('Random', { randomUser: author, conversationId: conversationId, user: this.user });
+            })
+            .catch(err => {
+                console.log(err);
+            });
     }
 
     cancelRequest = (chat) => {
@@ -305,7 +310,25 @@ export default class PreDiscover extends React.Component {
                 let temp = res.data.getOnlineNucleusDiscoverUsers;
                 this.setState({ onlineUsers: temp });
             })
-            .catch(err => console.log(err));
+            .catch(err => {
+                console.log(err);
+                let errorMessage = {
+                    _id: new Date().getTime(),
+                    text: 'Our servers are sweating! Lots of students online. You may have issues connecting.',
+                    createdAt: new Date(),
+                    user: {
+                        _id: this.user.firebaseId,
+                        name: this.user.username,
+                        avatar: this.user.profilePic,
+                    },
+                };
+                this.setState(previousState => {
+                    console.log(previousState);
+                    return {
+                        messages: GiftedChat.append(previousState.messages, errorMessage)
+                    };
+                });
+            });
         let user = this.user;
         // subscribing to requested conversations
         this.chatSubscription = API.graphql(
@@ -383,32 +406,51 @@ export default class PreDiscover extends React.Component {
     _renderInputToolbar = () => {
         if (!this.state.discoverStopped) {
             return (
-                <Button
-                    onPress={this.stopDiscover}
-                    raised={true}
-                    backgroundColor={'gray'}
-                    title='Pause Discovering people'
-                />)
-        }
-        else {
+                <View style={{ flex: 1 }}>
+                    <Button
+                        onPress={this.stopDiscover}
+                        raised={false}
+                        backgroundColor={'rgba(0, 0, 0, 0)'}
+                        title='Stop Discovering people'
+                    />
+                </View>)
+        } else {
             return (
-                <Button
-                    onPress={this.ignoreFlagAndStartDiscover}
-                    raised={true}
-                    backgroundColor={Constants.primaryColor}
-                    title='Resume Discovering people'
-                />
-            )
+                <View style={{ flex: 1 }}>
+                    <Button
+                        onPress={this.ignoreFlagAndStartDiscover}
+                        raised={false}
+                        backgroundColor={Constants.primaryColor}
+                        title='Start Discovering people'
+                    />
+                </View>
+            );
         }
     }
 
     render() {
         console.log(this.state);
-        let { requestId, looking } = this.state;
-        if (requestId !== null && !looking) {
+        let { requestId, looking, navigating } = this.state;
+        let message = {
+            _id: new Date().getTime(),
+            text: 'Long-press this bubble to discover new people!',
+            createdAt: new Date(),
+            user: {},
+        };
+        if (navigating) {
+            //coming back to Chat after accepting Discover
+            return (
+                <GiftedChat
+                    messages={[message]}
+                    renderInputToolbar={this._renderInputToolbar}
+                    onLongPress={this.ignoreFlagAndStartDiscover}
+                />
+            );
+        } else if (requestId !== null && !looking) {
             return (
                 <GiftedChat
                     messages={this.state.messages}
+                    renderInputToolbar={this._renderInputToolbar}
                     onLongPress={this.acceptDiscover}
                 />
             );

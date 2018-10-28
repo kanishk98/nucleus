@@ -50,7 +50,7 @@ export const CreateDiscoverChat = `mutation CreateNucleusDiscoverChats($input: C
 }`;
 
 
-export const DeleteDiscoverChat = `mutation DeleteDiscoverChats($input: CreateNucleusDiscoverChatsInput!) {
+export const DeleteDiscoverChat = `mutation DeleteDiscoverChats($input: DeleteNucleusDiscoverChatsInput!) {
     deleteNucleusDiscoverChats(input: $input) {
         conversationId
     }
@@ -143,10 +143,6 @@ export const SubscribeToDiscoverChats = `subscription SubscribeToDiscoverChats($
 export const SubscribeToChatDeletion = `subscription SubscribeToChatDeletion($conversationId: String) {
     onDeleteNucleusDiscoverChats(conversationId: $conversationId) {
         conversationId
-        author {
-            firebaseId
-            geohash
-        }
     }
 }`
 
