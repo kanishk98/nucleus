@@ -94,6 +94,7 @@ export default class Trending extends React.PureComponent {
         super(props);
         this.state={
             currentPage: 1,
+            newTrendingSet: false,
         };
     }
 
@@ -166,7 +167,18 @@ export default class Trending extends React.PureComponent {
         this.user = JSON.parse(await(AsyncStorage.getItem(Constants.UserObject)));
     }
 
+    setNewTrending() {
+        this.setState({newTrendingSet: true});
+    }
+
     render() {
+        const newTrending = this.props.navigation.getParam('newTrending');
+        console.log(newTrending);
+        if (!!newTrending && !this.state.newTrendingSet) {
+            console.log('refreshing polls');
+            this.setNewTrending();
+            this.getPosts();
+        }
         const {postList} = this.state;
         return (
             <FlatList

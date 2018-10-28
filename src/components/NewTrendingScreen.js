@@ -61,11 +61,12 @@ export default class NewTrendingScreen extends React.Component {
                 }),
             })
             .then(res => {
-                Alert.alert('Post created', 'Yay! Your post was submitted.');
+                // Alert.alert('Post created', 'Yay! Your post was submitted.');
+                this.props.navigation.navigate('Trending', {newTrending: true});
             })
             .catch(err => {
                 console.log(err);
-                Alert.alert('Oops', 'Something went wrong. Please check your network.');
+                Alert.alert('Oops', 'Something went wrong. Please check your network connection.');
             });
         } else {
             Alert.alert('Missing fields', 'Please make sure to fill all fields before creating a post');
