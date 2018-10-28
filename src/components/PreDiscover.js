@@ -6,6 +6,7 @@ import firebase from 'react-native-firebase';
 import { renderProgress } from './renderIf';
 import Constants from '../Constants';
 import { GiftedChat } from 'react-native-gifted-chat';
+import { NavigationActions, StackActions } from 'react-navigation';
 
 export default class PreDiscover extends React.Component {
 
@@ -154,7 +155,7 @@ export default class PreDiscover extends React.Component {
                 .then(res => {
                     console.log('Resolved chat: ' + JSON.stringify(res));
                     // waiting for acceptance from another user for 5 seconds
-                    setTimeout(this.startDiscover, 10000);
+                    setTimeout(this.startDiscover, 5000);
                     const initials = this.getInitials(connectedUser.username);
                     message = {
                         _id: new Date().getTime(),
@@ -172,14 +173,21 @@ export default class PreDiscover extends React.Component {
                             messages: GiftedChat.append(previousState.messages, message)
                         };
                     });
-                    API.graphql(graphqlOperation(GraphQL.SubscribeToDiscoverChats, { recipient: connectedUser.firebaseId }))
+                    API.graphql(graphqlOperation(GraphQL.SubscribeToUpdatedChats, { conversationId: chatId }))
                         .subscribe(res => {
                             console.log(res);
-                            console.log(res.value.data.onCreateNucleusDiscoverChats.author.firebaseId);
+                            // console.log(res.value.data.onU.author.firebaseId);
                             console.log(this.user.firebaseId);
-                            if (res.value.data.onCreateNucleusDiscoverChats.author.firebaseId != connectedUser.firebaseId && !res.value.data.deleteNucleusDiscoverChats) {
+                            if (!res.value.data.deleteNucleusDiscoverChats) {
                                 console.log('request for chatting accepted by user');
-                                this.props.navigation.navigate('Random', { randomUser: connectedUser, conversationId: chatId, user: this.user });
+                                this.props.navigation.dispatch(StackActions.reset({
+                                    index: 1,
+                                    key: 'Random',
+                                    actions: [
+                                        NavigationActions.navigate('Random', { randomUser: connectedUser, conversationId: chatId, user: this.user }),
+                                        NavigationActions.navigate({ routeName: 'Chat', params: {user: this.user } })
+                                    ]
+                                }));
                             }
                         })
                 })
@@ -205,11 +213,27 @@ export default class PreDiscover extends React.Component {
         delete this.state.requestChat.__typename;
         delete this.state.requestChat.author.__typename;
         console.log(this.state.requestChat);
-        let chat = this.state.requestChat;
-        let author = chat.author;
+        let chat = {
+            conversationId: this.state.requestChat.conversationId,
+            recipient: this.user.firebaseId,
+            author: this.state.requestChat.author,
+            messageId: this.state.requestId.messageId
+        }
+        console.log(chat);
+        /*let author = chat.author;
         chat.author = this.user;
-        chat.recipient = author;
-        API.graphql(graphqlOperation(GraphQL.CreateDiscoverChat, { input: chat }))
+        chat.recipient = author;*/
+        API.graphql(graphqlOperation(GraphQL.UpdateDiscoverChat, {input: chat}))
+        .then(res => {
+            console.log(res);
+            // chatting resolved, moving on to another screen
+            let { author, conversationId } = this.state.requestChat;
+            this.props.navigation.navigate('Random', { randomUser: author, conversationId: conversationId, user: this.user });
+        })
+        .catch(err => {
+            console.log(err);
+        });
+        /*API.graphql(graphqlOperation(GraphQL.CreateDiscoverChat, { input: chat }))
             .then(res => {
                 console.log(res);
                 // chatting resolved, moving on to another screen
@@ -218,9 +242,7 @@ export default class PreDiscover extends React.Component {
             })
             .catch(err => {
                 console.log(err);
-                let { author, conversationId } = this.state.requestChat;
-                this.props.navigation.navigate('Random', { randomUser: author, conversationId: conversationId, user: this.user });
-            });
+            });*/
     }
 
     cancelRequest = (chat) => {
@@ -254,7 +276,7 @@ export default class PreDiscover extends React.Component {
                 const newChat = res.value.data.onCreateNucleusDiscoverChats;
                 console.log(newChat);
                 // notifies sender of request of conversation ignore after 5 seconds of subscription receipt
-                setTimeout((newChat) => this.cancelRequest, 10000);
+                setTimeout((newChat) => this.cancelRequest, 5000);
                 let message = {
                     _id: new Date().getTime(),
                     text: 'Someone got connected to you! Long-press this text to accept their request.',

@@ -384,7 +384,15 @@ input UpdateNucleusConnectTextsInput {
 }
 
 input UpdateNucleusDiscoverChatsInput {
+  author: CreateNucleusDiscoverUsersInput
+  content: String
   conversationId: String!
+  createdAt: String
+  isRead: Boolean
+  isReceived: Boolean
+  isSent: Boolean
+  messageId: [String]
+  recipient: String
 }
 
 input UpdateNucleusDiscoverConversationsInput {

@@ -68,10 +68,12 @@ export const CreateDiscoverMessage = `mutation CreateNucleusDiscoverMessage($inp
         conversationId
         author {
             firebaseId
+            geohash
             username
         }
         recipient {
             firebaseId
+            geohash
             username
         }
         messageId
@@ -109,13 +111,14 @@ export const GetDiscoverMessages = gql`query getNucleusDiscoverMessages($input: 
 
 export const SubscribeToDiscoverMessages = `subscription SubscribeToDiscoverMessages($conversationId: String!) {
     onCreateNucleusDiscoverMessages(conversationId: $conversationId) {
-        conversationId
         author {
             firebaseId
+            geohash
             username
         }
         recipient {
             firebaseId
+            geohash
             username
         }
         messageId
@@ -182,5 +185,26 @@ export const UpdateDiscoverUser = `mutation UpdateDiscoverUsers($input: UpdateNu
     updateNucleusDiscoverUsers(input: $input) {
         online
         fcmToken
+    }
+}`
+
+export const UpdateDiscoverChat = `mutation UpdateNucleusDiscoverChats($input: UpdateNucleusDiscoverChatsInput!) {
+    updateNucleusDiscoverChats(input: $input) {
+        conversationId
+        author {
+            firebaseId
+            geohash
+        }
+        recipient
+    }
+}`
+
+export const SubscribeToUpdatedChats = `subscription SubscribeToUpdateChats($conversationId: String!) {
+    onUpdateNucleusDiscoverChats(conversationId: $conversationId) {
+        author {
+            firebaseId
+            geohash
+        }
+        recipient
     }
 }`
