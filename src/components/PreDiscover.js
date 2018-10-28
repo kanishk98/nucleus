@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, Dimensions, StyleSheet, AsyncStorage, Platform, ScrollView, Animated, Easing } from 'react-native';
+import { View, Text, Dimensions, StyleSheet, AsyncStorage, Platform, ScrollView, Animated, Easing } from 'react-native';
 import * as GraphQL from '../graphql';
 import { API, graphqlOperation } from 'aws-amplify';
 import firebase from 'react-native-firebase';
@@ -331,7 +331,9 @@ export default class PreDiscover extends React.Component {
     }
 
     _renderInputToolbar = () => {
-        return null;
+        return (
+            <View style={{backgroundColor: 'rgba(0, 0, 0, 0'}} />
+        );
     }
 
     render() {
