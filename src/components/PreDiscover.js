@@ -1,16 +1,12 @@
 import React from 'react';
-<<<<<<< HEAD
-import { View, Dimensions, StyleSheet, AsyncStorage, Platform, ScrollView, Animated, Easing } from 'react-native';
-=======
 import { View, Text, Dimensions, StyleSheet, AsyncStorage, Platform, ScrollView, Animated, Easing } from 'react-native';
->>>>>>> e7b594001b41798ce1008629579eb7b14345e9ec
 import * as GraphQL from '../graphql';
 import { API, graphqlOperation } from 'aws-amplify';
 import firebase from 'react-native-firebase';
 import { renderProgress } from './renderIf';
 import Constants from '../Constants';
 import { GiftedChat } from 'react-native-gifted-chat';
-import { NavigationActions, StackActions } from 'react-navigation';
+import { Button } from 'react-native-elements';
 
 export default class PreDiscover extends React.Component {
 
@@ -24,14 +20,17 @@ export default class PreDiscover extends React.Component {
             requestId: null,
             notificationsAllowed: false,
             progress: false,
+            discoverStopped: false,
         };
         this.ProgressBar = Platform.select({
             ios: () => ProgressViewIOS,
             android: () => ProgressBarAndroid
         });
         this.componentUnmounted = false;
+        this.ignoreFlagAndStartDiscover = this.ignoreFlagAndStartDiscover.bind(this);
         this.startDiscover = this.startDiscover.bind(this);
         this.acceptDiscover = this.acceptDiscover.bind(this);
+        this.stopDiscover = this.stopDiscover.bind(this);
     }
 
     sendRequest = (user, connectedUser, newChat) => {
@@ -109,8 +108,37 @@ export default class PreDiscover extends React.Component {
         }
     }
 
+    stopDiscover() {
+        console.log('stopping discover');
+        this.setState({ discoverStopped: true });
+        let stoppedMessage = {
+            _id: new Date().getTime(),
+            text: 'No longer looking for people to chat with.',
+            createdAt: new Date(),
+            user: {
+                _id: this.user.firebaseId,
+                name: this.user.username,
+                avatar: this.user.profilePic,
+            },
+        };
+        this.setState(previousState => {
+            console.log(previousState);
+            return {
+                messages: GiftedChat.append(previousState.messages, stoppedMessage)
+            };
+        });
+    }
+
+    ignoreFlagAndStartDiscover() {
+        this.setState({ discoverStopped: false });
+        this.forced = true;
+        this.startDiscover();
+    }
+
     startDiscover() {
-        if (!this.componentUnmounted) {
+        console.log('starting discover');
+        if (!this.state.discoverStopped || this.forced) {
+            this.forced = false;
             let message = {
                 _id: new Date().getTime(),
                 text: 'Finding you a match...',
@@ -166,7 +194,7 @@ export default class PreDiscover extends React.Component {
                         const initials = this.getInitials(connectedUser.username);
                         message = {
                             _id: new Date().getTime(),
-                            text: initials,
+                            text: 'Waiting for ' + initials + ' to accept request',
                             createdAt: new Date(),
                             user: {
                                 _id: this.user.firebaseId,
@@ -186,12 +214,30 @@ export default class PreDiscover extends React.Component {
                                 console.log(this.user.firebaseId);
                                 if (!res.value.data.deleteNucleusDiscoverChats) {
                                     console.log('request for chatting accepted by user');
-                                    this.componentUnmounted = true;
+                                    clearTimeout(this.startDiscover);
                                     this.props.navigation.navigate('Random', { randomUser: connectedUser, conversationId: chatId, user: this.user });
                                 }
                             })
                     })
-                    .catch(err => console.log(err));
+                    .catch(err => {
+                        console.log(err);
+                        let errorMessage = {
+                            _id: new Date().getTime(),
+                            text: 'Our servers are sweating! Lots of people talking. Try again in a minute.',
+                            createdAt: new Date(),
+                            user: {
+                                _id: this.user.firebaseId,
+                                name: this.user.username,
+                                avatar: this.user.profilePic,
+                            },
+                        };
+                        this.setState(previousState => {
+                            console.log(previousState);
+                            return {
+                                messages: GiftedChat.append(previousState.messages, errorMessage)
+                            };
+                        });
+                    });
                 // this.sendRequest(user, connectedUser, newChat);
             }
         }
@@ -225,17 +271,17 @@ export default class PreDiscover extends React.Component {
             /*let author = chat.author;
             chat.author = this.user;
             chat.recipient = author;*/
-            API.graphql(graphqlOperation(GraphQL.UpdateDiscoverChat, {input: chat}))
-            .then(res => {
-                console.log(res);
-                // chatting resolved, moving on to another screen
-                let { author, conversationId } = this.state.requestChat;
-                this.componentUnmounted = true;
-                this.props.navigation.navigate('Random', { randomUser: author, conversationId: conversationId, user: this.user });
-            })
-            .catch(err => {
-                console.log(err);
-            });
+            API.graphql(graphqlOperation(GraphQL.UpdateDiscoverChat, { input: chat }))
+                .then(res => {
+                    console.log(res);
+                    // chatting resolved, moving on to another screen
+                    let { author, conversationId } = this.state.requestChat;
+                    this.componentUnmounted = true;
+                    this.props.navigation.navigate('Random', { randomUser: author, conversationId: conversationId, user: this.user });
+                })
+                .catch(err => {
+                    console.log(err);
+                });
         }
     }
 
@@ -287,7 +333,7 @@ export default class PreDiscover extends React.Component {
                             messages: GiftedChat.append(previousState.messages, message)
                         };
                     });
-                    this.setState({requestId: newChat.conversationId, requestChat: newChat, progress: false });
+                    this.setState({ requestId: newChat.conversationId, requestChat: newChat, progress: false });
                 }
             }
         });
@@ -335,16 +381,30 @@ export default class PreDiscover extends React.Component {
     }
 
     _renderInputToolbar = () => {
-        return (
-            <View
-                style={{backgroundColor: Constants.primaryColor}}
-            />
-        )
+        if (!this.state.discoverStopped) {
+            return (
+                <Button
+                    onPress={this.stopDiscover}
+                    raised={true}
+                    backgroundColor={'gray'}
+                    title='Pause Discovering people'
+                />)
+        }
+        else {
+            return (
+                <Button
+                    onPress={this.ignoreFlagAndStartDiscover}
+                    raised={true}
+                    backgroundColor={Constants.primaryColor}
+                    title='Resume Discovering people'
+                />
+            )
+        }
     }
 
     render() {
         console.log(this.state);
-        let {requestId, looking} = this.state;
+        let { requestId, looking } = this.state;
         if (requestId !== null && !looking) {
             return (
                 <GiftedChat
@@ -357,7 +417,7 @@ export default class PreDiscover extends React.Component {
             <GiftedChat
                 messages={this.state.messages}
                 renderInputToolbar={this._renderInputToolbar}
-                onLongPress={this.startDiscover}
+                onLongPress={this.ignoreFlagAndStartDiscover}
             />
         );
     }
