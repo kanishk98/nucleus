@@ -1,5 +1,9 @@
 import React from 'react';
+<<<<<<< HEAD
 import { View, Dimensions, StyleSheet, AsyncStorage, Platform, ScrollView, Animated, Easing } from 'react-native';
+=======
+import { View, Text, Dimensions, StyleSheet, AsyncStorage, Platform, ScrollView, Animated, Easing } from 'react-native';
+>>>>>>> e7b594001b41798ce1008629579eb7b14345e9ec
 import * as GraphQL from '../graphql';
 import { API, graphqlOperation } from 'aws-amplify';
 import firebase from 'react-native-firebase';
