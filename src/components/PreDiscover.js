@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, Dimensions, StyleSheet, AsyncStorage, Platform, ScrollView, Animated, Easing } from 'react-native';
+import { View, Dimensions, StyleSheet, AsyncStorage, Platform, ScrollView, Animated, Easing } from 'react-native';
 import * as GraphQL from '../graphql';
 import { API, graphqlOperation } from 'aws-amplify';
 import firebase from 'react-native-firebase';
@@ -331,7 +331,11 @@ export default class PreDiscover extends React.Component {
     }
 
     _renderInputToolbar = () => {
-        return null;
+        return (
+            <View
+                style={{backgroundColor: Constants.primaryColor}}
+            />
+        )
     }
 
     render() {
@@ -341,7 +345,6 @@ export default class PreDiscover extends React.Component {
             return (
                 <GiftedChat
                     messages={this.state.messages}
-                    renderInputToolbar={this._renderInputToolbar}
                     onLongPress={this.acceptDiscover}
                 />
             );

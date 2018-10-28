@@ -178,6 +178,7 @@ export default class Trending extends React.PureComponent {
             console.log('refreshing polls');
             this.setNewTrending();
             this.getPosts();
+            this.newTrendingSet = false;
         }
         const {postList} = this.state;
         return (

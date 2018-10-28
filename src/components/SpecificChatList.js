@@ -139,6 +139,7 @@ export default class SpecificChatList extends Component {
         conversations.sort(function(x,y){ return x == item ? -1 : y == item ? 1 : 0; });
         // save newly sorted list
         console.log('Sorted conversations: ' + JSON.stringify(conversations));
+        this.setState({conversations: conversations});
         await AsyncStorage.setItem('CHATS', JSON.stringify(conversations));
         this.props.navigation.navigate('SpecificTextScreen', {chat: chat, newChat: false});
     }
