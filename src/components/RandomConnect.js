@@ -64,7 +64,7 @@ convertMessage(message) {
       author: this.user,
       recipient: this.randomUser,
       content: message[0].text,
-      timestamp: new Date().toDateString()
+      timestamp: message[0].createdAt,
     }
     console.log(newMessage);
     API.graphql(graphqlOperation(GraphQL.CreateDiscoverMessage, {input: newMessage}))
