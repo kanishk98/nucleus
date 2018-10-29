@@ -192,13 +192,13 @@ export default class SpecificChatList extends Component {
 
     peopleKeyExtractor = (item, index) => item.firebaseId;
 
-    componentWillMount() {
+    async componentWillMount() {
         this.retrieveChats();
+        this.user = JSON.parse(await AsyncStorage.getItem(Constants.UserObject));
+        console.log(this.user);
     }
     
     async componentDidMount() {
-        this.user = JSON.parse(await AsyncStorage.getItem(Constants.UserObject));
-        console.log(this.user);
         this.noFilter = {
             firebaseId: {ne: this.user.firebaseId},
             geohash: {ne: 'random_user_geohash'},
@@ -219,7 +219,7 @@ export default class SpecificChatList extends Component {
                     'Are you sure?',
                     "You won't receive any notifications when your friends try to reach you.",
                     [
-                      {text: 'Allow', onPress: () => {
+                      {text: 'Allow', onPress: async() => {
                         await firebase.messaging().requestPermission();
                       }},
                       {text: 'Disable', onPress: () => {enabled = false}},
@@ -251,7 +251,7 @@ export default class SpecificChatList extends Component {
                 // handle error appropriately
             });
             // setting up notification listeners
-            this.notificationListener = firebase.notifications().onNotification((notification) => {
+            this.notificationListener = firebase.notifications().onNotification(async(notification) => {
                 // Process your notification as required
                 console.log(notification);
                 const displayNotification = new firebase.notifications.Notification()
@@ -269,7 +269,7 @@ export default class SpecificChatList extends Component {
                 }
                 firebase.notifications().displayNotification(displayNotification);
             });
-            this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen) => {
+            this.notificationOpenedListener = firebase.notifications().onNotificationOpened(async(notificationOpen) => {
                 if (enabled) {
                     // Get the action triggered by the notification being opened
                     const action = notificationOpen.action;
@@ -285,7 +285,7 @@ export default class SpecificChatList extends Component {
                 }
             });
             const notificationOpen = await firebase.notifications().getInitialNotification();
-            if (notificationOpen && await firebase.messaging().hasPermission) {
+            if (notificationOpen && enabled) {
                 // App was opened by a notification when closed
                 // Get the action triggered by the notification being opened
                 const action = notificationOpen.action;

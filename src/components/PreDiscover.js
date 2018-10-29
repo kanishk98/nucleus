@@ -194,7 +194,7 @@ export default class PreDiscover extends React.Component {
                     .then(res => {
                         console.log('Resolved chat: ' + JSON.stringify(res));
                         // waiting for acceptance from another user for 5 seconds
-                        setTimeout(this.startDiscover, 5000);
+                        setTimeout(this.startDiscover, 10000);
                         const initials = this.getInitials(connectedUser.username);
                         message = {
                             _id: new Date().getTime(),
@@ -314,7 +314,7 @@ export default class PreDiscover extends React.Component {
                 console.log(err);
                 let errorMessage = {
                     _id: new Date().getTime(),
-                    text: 'Our servers are sweating! Lots of students online. You may have issues connecting.',
+                    text: 'You may have issues connecting. Check your network connection.',
                     createdAt: new Date(),
                     user: {
                         _id: this.user.firebaseId,
@@ -340,7 +340,7 @@ export default class PreDiscover extends React.Component {
                 console.log(newChat);
                 // notifies sender of request of conversation ignore after 5 seconds of subscription receipt
                 if (!this.componentUnmounted) {
-                    setTimeout((newChat) => this.cancelRequest, 5000);
+                    setTimeout((newChat) => this.cancelRequest, 10000);
                     let message = {
                         _id: new Date().getTime(),
                         text: 'Someone got connected to you! Long-press this text to accept their request.',
