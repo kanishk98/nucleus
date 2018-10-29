@@ -301,26 +301,31 @@ export default class SpecificChatList extends Component {
 
     renderConversation = ({item}) => {
         console.log(item);
-        return (
-        <ListItem 
-            onPress={this.openChat.bind(this, item)}
-            roundAvatar
-            avatar={{uri: item.user2.profilePic}}
-            title={item.user2.username}
-            subtitle={renderOnline(item.user2.online)}
-        />);
+        if (item.user2.firebaseId != this.user.firebaseId) {
+            return (
+            <ListItem 
+                onPress={this.openChat.bind(this, item)}
+                roundAvatar
+                avatar={{uri: item.user2.profilePic}}
+                title={item.user2.username}
+            />);
+        } else {
+            return null;
+        }
     };
 
     renderUser = ({item}) => {
         console.log(item);
-        return (
-        <ListItem
-            onPress={this.newChat.bind(this, item)}
-            roundAvatar
-            avatar={{uri: item.profilePic}}
-            title={item.username}
-            subtitle={renderOnline(item.online)}
-        />);
+        if (item.firebaseId != this.user.firebaseId) {
+            return (
+            <ListItem
+                onPress={this.newChat.bind(this, item)}
+                roundAvatar
+                avatar={{uri: item.profilePic}}
+                title={item.username}
+                subtitle={renderOnline(item.online)}
+            />);
+        }
     };
 
     searchConversations = ({text}) => {
