@@ -6,8 +6,6 @@
  */
 
 #import "AppDelegate.h"
-#import "../../node_modules/react-native-code-push/ios/CodePush/CodePush.h"
-
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 

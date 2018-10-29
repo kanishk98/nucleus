@@ -187,7 +187,6 @@ export default class App extends React.Component {
     
     constructor(props) {
         super(props);
-        firebase.analytics().setAnalyticsCollectionEnabled(true);
     }
 
     componentDidMount() {

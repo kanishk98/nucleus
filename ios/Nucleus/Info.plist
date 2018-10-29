@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<<<<<<< HEAD
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
@@ -94,99 +93,3 @@
 	<false/>
 </dict>
 </plist>
-=======
-  <dict>
-    <key>CFBundleDevelopmentRegion</key>
-    <string>en</string>
-    <key>CFBundleDisplayName</key>
-    <string>Nucleus</string>
-    <key>CFBundleExecutable</key>
-    <string>$(EXECUTABLE_NAME)</string>
-    <key>CFBundleIdentifier</key>
-    <string>com.nucleus</string>
-    <key>CFBundleInfoDictionaryVersion</key>
-    <string>6.0</string>
-    <key>CFBundleName</key>
-    <string>$(PRODUCT_NAME)</string>
-    <key>CFBundlePackageType</key>
-    <string>APPL</string>
-    <key>CFBundleShortVersionString</key>
-    <string>1.0</string>
-    <key>CFBundleSignature</key>
-    <string>????</string>
-    <key>CFBundleURLTypes</key>
-    <array>
-      <dict>
-        <key>CFBundleTypeRole</key>
-        <string>Editor</string>
-        <key>CFBundleURLName</key>
-        <string>com.googleusercontent.apps.959712818464-m47fvrkih0aj9m2v9mkj2ijmukg3ndor</string>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>com.googleusercontent.apps.959712818464-m47fvrkih0aj9m2v9mkj2ijmukg3ndor</string>
-        </array>
-      </dict>
-      <dict>
-        <key>CFBundleTypeRole</key>
-        <string>Editor</string>
-        <key>CFBundleURLName</key>
-        <string>com.nucleus</string>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>com.nucleus</string>
-        </array>
-      </dict>
-    </array>
-    <key>CFBundleVersion</key>
-    <string>1</string>
-    <key>LSRequiresIPhoneOS</key>
-    <true/>
-    <key>NSAppTransportSecurity</key>
-    <dict>
-      <key>NSExceptionDomains</key>
-      <dict>
-        <key>localhost</key>
-        <dict>
-          <key>NSExceptionAllowsInsecureHTTPLoads</key>
-          <true/>
-        </dict>
-      </dict>
-    </dict>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string/>
-    <key>UILaunchStoryboardName</key>
-    <string>LaunchScreen</string>
-    <key>UIRequiredDeviceCapabilities</key>
-    <array>
-      <string>armv7</string>
-    </array>
-    <key>UISupportedInterfaceOrientations</key>
-    <array>
-      <string>UIInterfaceOrientationPortrait</string>
-      <string>UIInterfaceOrientationLandscapeLeft</string>
-      <string>UIInterfaceOrientationLandscapeRight</string>
-    </array>
-    <key>UIViewControllerBasedStatusBarAppearance</key>
-    <false/>
-    <key>UIAppFonts</key>
-    <array>
-      <string>Entypo.ttf</string>
-      <string>EvilIcons.ttf</string>
-      <string>Feather.ttf</string>
-      <string>FontAwesome.ttf</string>
-      <string>FontAwesome5_Brands.ttf</string>
-      <string>FontAwesome5_Regular.ttf</string>
-      <string>FontAwesome5_Solid.ttf</string>
-      <string>Foundation.ttf</string>
-      <string>Ionicons.ttf</string>
-      <string>MaterialCommunityIcons.ttf</string>
-      <string>MaterialIcons.ttf</string>
-      <string>Octicons.ttf</string>
-      <string>SimpleLineIcons.ttf</string>
-      <string>Zocial.ttf</string>
-    </array>
-    <key>CodePushDeploymentKey</key>
-    <string>ba7b322c-fb17-464e-b6be-13c5ce1d11f7</string>
-  </dict>
-</plist>
->>>>>>> b77ed318be2b6f2c49f1f81aabc46aad86f62abb
