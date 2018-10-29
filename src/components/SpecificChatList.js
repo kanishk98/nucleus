@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ProgressBarAndroid, ProgressViewIOS, Dimensions, Platform, View, ScrollView, FlatList, StyleSheet, AsyncStorage, Image } from 'react-native';
+import { Alert, ProgressBarAndroid, ProgressViewIOS, Dimensions, Platform, View, ScrollView, FlatList, StyleSheet, AsyncStorage, Image } from 'react-native';
 import { List, ListItem } from 'react-native-elements';
 import Constants from '../Constants';
 import AWS from 'aws-sdk';
@@ -212,19 +212,26 @@ export default class SpecificChatList extends Component {
         }
         // checking for notification permissions
         let enabled = false;
-        if (Platform.OS == 'ios')
-            enabled = await firebase.messaging().hasPermission();
-        if(!enabled || Platform.OS == 'android') {
+        enabled = await firebase.messaging().hasPermission();
+        if(!enabled) {
             try {
                 console.log('Awaiting Firebase request for permission');
-                if (Platform.OS == 'ios')
-                    await firebase.messaging().requestPermission();
-                // User has authorised
-                enabled = true;
+                Alert.alert(
+                    'Are you sure?',
+                    "You won't receive any notifications when your friends try to reach you.",
+                    [
+                      {text: 'Allow', onPress: () => {
+                        await firebase.messaging().requestPermission();
+                      }},
+                      {text: 'Disable', onPress: () => {enabled = false}},
+                    ],
+                    { cancelable: false }
+                );
             } catch (error) {
                 // User has rejected permissions
             }
         }
+        enabled = await firebase.messaging().hasPermission();
         if (enabled) {
             this.fcmToken = firebase.messaging().getToken()
             .then(res => {
@@ -264,20 +271,22 @@ export default class SpecificChatList extends Component {
                 firebase.notifications().displayNotification(displayNotification);
             });
             this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen) => {
-                // Get the action triggered by the notification being opened
-                const action = notificationOpen.action;
-                console.log(action);
-                // Get information about the notification that was opened
-                const notification = notificationOpen.notification;
-                console.log(notification);
-                const chat = notification.data.chat;
-                if (!!chat) {
-                    const chat = JSON.parse(notification.data.chat);
-                    this.openNotificationChat(chat);
+                if (enabled) {
+                    // Get the action triggered by the notification being opened
+                    const action = notificationOpen.action;
+                    console.log(action);
+                    // Get information about the notification that was opened
+                    const notification = notificationOpen.notification;
+                    console.log(notification);
+                    const chat = notification.data.chat;
+                    if (!!chat) {
+                        const chat = JSON.parse(notification.data.chat);
+                        this.openNotificationChat(chat);
+                    }
                 }
             });
             const notificationOpen = await firebase.notifications().getInitialNotification();
-            if (notificationOpen) {
+            if (notificationOpen && await firebase.messaging().hasPermission) {
                 // App was opened by a notification when closed
                 // Get the action triggered by the notification being opened
                 const action = notificationOpen.action;
