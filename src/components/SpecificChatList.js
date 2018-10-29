@@ -125,6 +125,16 @@ export default class SpecificChatList extends Component {
         }
     }
 
+    openNotificationChat = (item) => {
+        console.log(item);
+        const chat = {
+            conversationId: item.conversationId,
+            user1: this.user, 
+            user2: item.user2,
+        }
+        this.props.navigation.navigate('SpecificTextScreen', {chat: chat, newChat: false});
+    }
+
     // item here is a conversation
     openChat = async(item) => {
         console.log('Item: ' + JSON.stringify(item));
@@ -250,8 +260,6 @@ export default class SpecificChatList extends Component {
                 } else {
                     // android
                     displayNotification.android.setChannelId('channelId');
-                    displayNotification.android.setOnlyAlertOnce(true);
-                    displayNotification.android.setAutoCancel(true);
                 }
                 firebase.notifications().displayNotification(displayNotification);
             });
@@ -263,9 +271,9 @@ export default class SpecificChatList extends Component {
                 const notification = notificationOpen.notification;
                 console.log(notification);
                 const chat = notification.data.chat;
-                if (chat != undefined) {
+                if (!!chat) {
                     const chat = JSON.parse(notification.data.chat);
-                    this.openChat(chat);
+                    this.openNotificationChat(chat);
                 }
             });
             const notificationOpen = await firebase.notifications().getInitialNotification();
@@ -280,7 +288,7 @@ export default class SpecificChatList extends Component {
                 const chat = notification.data.chat;
                 if (!!chat && chat != 'null') {
                     const chat = JSON.parse(notification.data.chat);
-                    this.openChat(chat);
+                    this.openNotificationChat(chat);
                 }
             }
         }

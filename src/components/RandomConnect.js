@@ -4,6 +4,7 @@ import SpecificTextScreen from "./SpecificTextScreen";
 import * as GraphQL from "../graphql";
 import { API, graphqlOperation } from "../../node_modules/aws-amplify";
 import { GiftedChat } from 'react-native-gifted-chat';
+import Constants from '../Constants';
 
 export const alertDelete = async () => {
   const conversationId = await AsyncStorage.getItem('discoverConversationId');
@@ -29,6 +30,24 @@ export default class RandomConnect extends React.Component {
     this.randomUser = this.props.navigation.getParam('randomUser');
     this.subscribeToDiscoverMessages();
     this.subscribeToDeletedChat();
+  }
+
+  sendNotification() {
+    fetch(Constants.discoverNotificationsUrl, {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+          'key': Constants.googleAuthKey,
+      },
+      body: JSON.stringify({
+          content: message[0].text,
+          author: this.chat.user1.username,
+          token: this.chat.user2.fcmToken,
+          chat: this.chat,
+      })
+  })
+  .then(res => console.log(res))
+  .catch(err => console.log(err));
   }
 
   subscribeToDiscoverMessages() {

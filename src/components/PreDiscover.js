@@ -56,7 +56,7 @@ export default class PreDiscover extends React.Component {
 
     openChat = (randomChat, connectedUser) => {
         this.setState({discoverStopped: true});
-        this.props.navigation.navigate('Random', { randomUser: connectedUser, conversationId: randomChat.conversationId, user: this.user });
+        this.props.navigation.navigate('Random', { randomUser: connectedUser, conversationId: randomChat.conversationId, user: this.user, fcmToken: connectedUser.fcmToken });
     }
 
     setupNotificationListeners = async () => {
@@ -220,7 +220,7 @@ export default class PreDiscover extends React.Component {
                                     console.log('request for chatting accepted by user');
                                     clearTimeout(this.startDiscover);
                                     this.setState({discoverStopped: true});
-                                    this.props.navigation.navigate('Random', { randomUser: connectedUser, conversationId: chatId, user: this.user });
+                                    this.props.navigation.navigate('Random', { randomUser: connectedUser, conversationId: chatId, user: this.user, fcmToken: connectedUser.fcmToken });
                                 }
                             })
                     })
@@ -228,7 +228,7 @@ export default class PreDiscover extends React.Component {
                         console.log(err);
                         let errorMessage = {
                             _id: new Date().getTime(),
-                            text: 'Our servers are sweating! Lots of people talking. Try again in a minute.',
+                            text: "Student data over? We can't connect you.",
                             createdAt: new Date(),
                             user: {
                                 _id: this.user.firebaseId,
@@ -283,7 +283,7 @@ export default class PreDiscover extends React.Component {
                     }
                 })
                 this.setState({discoverStopped: true, requestId: null, navigating: true});
-                this.props.navigation.navigate('Random', { randomUser: author, conversationId: conversationId, user: this.user });
+                this.props.navigation.navigate('Random', { randomUser: author, conversationId: conversationId, user: this.user, fcmToken: this.state });
             })
             .catch(err => {
                 console.log(err);
