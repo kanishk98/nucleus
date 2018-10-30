@@ -9,6 +9,7 @@ import { renderSearch, renderOnline, renderResults } from './renderIf';
 import {Auth, API, graphqlOperation} from 'aws-amplify';
 import * as GraphQL from '../graphql';
 import firebase from 'react-native-firebase';
+import LoginScreen from './LoginScreen';
 
 export default class SpecificChatList extends Component {
 
@@ -29,7 +30,7 @@ export default class SpecificChatList extends Component {
             secretAccessKey: Constants.secretAccessKey,
             region:'ap-south-1'
         });
-        const dynamoDB = new AWS.DynamoDB();
+        /*const dynamoDB = new AWS.DynamoDB();
         const table = {TableName: "Nucleus.DiscoverUsers"};
         dynamoDB.describeTable(table, function(err, data) {
             if (err) {
@@ -38,7 +39,7 @@ export default class SpecificChatList extends Component {
                 console.log(data);
                 this.itemCount = data.ItemCount;
             }
-        });
+        });*/
         this.search = React.createRef();
     }
 
@@ -291,7 +292,6 @@ export default class SpecificChatList extends Component {
                 roundAvatar
                 avatar={{uri: item.profilePic}}
                 title={item.username}
-                subtitle={renderOnline(item.online)}
             />);
         }
     };
@@ -384,14 +384,11 @@ export default class SpecificChatList extends Component {
             this.getStoredUsers();
             // show image designating no users
             return (
-                <View>
-                    {
-                        renderResults(
-                            Platform.OS == 'android',
-                            <ProgressBarAndroid />,
-                            <ProgressViewIOS />
-                        ) 
-                    }
+                <View style = {styles.logoContainer}>
+                    <Image
+                        source={require('../../assets/logo.png')}
+                        style={styles.logo}
+                    />
                 </View>
             );
         } else {
@@ -476,6 +473,16 @@ const styles = StyleSheet.create({
         flex: 1, 
         alignItems: 'center',
         justifyContent: 'center'
+    },
+    logoContainer: {
+        backgroundColor: 'white',
+        justifyContent: 'center',
+        flex: 1,
+        alignItems: 'center'
+    },
+    logo: {
+        height: 200,
+        width: 200
     },
     title: {
         color: 'black',

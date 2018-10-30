@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { AsyncStorage, StyleSheet, View, Text, Platform, ProgressBarAndroid, ProgressViewIOS, Alert } from 'react-native';
 import { GoogleSignin, GoogleSigninButton } from 'react-native-google-signin';
 import { renderProgress } from './renderIf';
+import AWS from 'aws-sdk';
 import { Auth, API, graphqlOperation } from 'aws-amplify';
 import firebase from 'react-native-firebase';
 import * as GraphQL from '../graphql';
@@ -20,28 +21,49 @@ export default class LoginForm extends Component {
         };
     }
 
-    fetchUsers(firebaseId) {
+    async fetchUsers(firebaseId) {
         const noFilter = {
             firebaseId: { ne: firebaseId },
             geohash: { ne: 'random_user_geohash' },
         }
-        API.graphql(graphqlOperation(GraphQL.GetAllDiscoverUsers, { filter: noFilter }))
-            .then(res => {
-                const users = res.data.listNucleusDiscoverUsers.items;
-                AsyncStorage.setItem(Constants.UserList, JSON.stringify(users))
-                    .then(asyncStorageResult => {
-                        console.log(asyncStorageResult);
-                    })
-                    .catch(asyncStorageError => {
-                        console.log(asyncStorageError);
-                    });
-                if (res.data.listNucleusDiscoverUsers.nextToken != null) {
-                    // start background operation to fetch more data
-                }
-            })
-            .catch(err => {
-                console.log(err);
-            });
+        const oldNoUsers = Number(await AsyncStorage.getItem(Constants.NoUsers));
+        // querying table to get ItemCount
+        AWS.config.update({
+            dynamoDbCrc32: false,
+            accessKeyId: Constants.accessKey,
+            secretAccessKey: Constants.secretAccessKey,
+            region: 'ap-south-1'
+        });
+        const dynamoDB = new AWS.DynamoDB();
+        const table = { TableName: "Nucleus.DiscoverUsers" };
+        dynamoDB.describeTable(table, function (err, data) {
+            if (err) {
+                console.log(err, err.stack);
+            } else {
+                console.log(data);
+                this.itemCount = data.ItemCount;
+            }
+        });
+        if (this.itemCount > oldNoUsers) {
+            API.graphql(graphqlOperation(GraphQL.GetAllDiscoverUsers, { filter: noFilter }))
+                .then(async(res) => {
+                    const users = res.data.listNucleusDiscoverUsers.items;
+                    AsyncStorage.setItem(Constants.UserList, JSON.stringify(users))
+                        .then(asyncStorageResult => {
+                            console.log(asyncStorageResult);
+                        })
+                        .catch(asyncStorageError => {
+                            console.log(asyncStorageError);
+                        });
+                    await AsyncStorage.setItem(Constants.NoUsers, users.length.toString());
+                    if (res.data.listNucleusDiscoverUsers.nextToken != null) {
+                        // start background operation to fetch more data
+                    }
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+        }
     }
 
     componentWillMount() {
@@ -58,7 +80,7 @@ export default class LoginForm extends Component {
                                     this.props.navigation.dispatch(StackActions.reset({
                                         index: 0,
                                         actions: [
-                                            NavigationActions.navigate({ routeName: 'Chat', params: {user: JSON.parse(savedUser)}}),
+                                            NavigationActions.navigate({ routeName: 'Chat', params: { user: JSON.parse(savedUser) } }),
                                         ]
                                     }));
                                 } else {
@@ -243,7 +265,7 @@ export default class LoginForm extends Component {
         // popping LoginScreen from navigation stack
         this.props.navigation.dispatch(StackActions.reset({
             index: 0,
-            actions: [NavigationActions.navigate({ routeName: 'Chat', params: {user: newUser } })]
+            actions: [NavigationActions.navigate({ routeName: 'Chat', params: { user: newUser } })]
         }))
         this.props.navigation.navigate('Chat', { user: newUser });
     }
