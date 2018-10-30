@@ -95,9 +95,6 @@ const LoggedOutStackNavigator = createStackNavigator(
     },
     SpecificTextScreen: {
       screen: SpecificTextScreen,
-      navigationOptions: {
-        title: "Connected"
-      }
     },
     NewTrendingScreen: {
       screen: NewTrendingScreen,
@@ -133,9 +130,6 @@ const LoggedInStackNavigator = createStackNavigator(
         },
         SpecificTextScreen: {
             screen: SpecificTextScreen,
-            navigationOptions: {
-                title: "Connected"
-            }
         },
         NewTrendingScreen: {
             screen: NewTrendingScreen,

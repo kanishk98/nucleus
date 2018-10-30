@@ -11,6 +11,12 @@ import { Button } from 'react-native-elements';
 
 export default class SpecificTextScreen extends React.Component {
 
+    static navigationOptions = ({navigation}) => {
+        return {
+            title: navigation.getParam('title'),
+        }
+    }
+
     static noFilter = {
         conversationId: {ne: 'null'}
     }
@@ -212,11 +218,11 @@ export default class SpecificTextScreen extends React.Component {
     }
 
     componentDidMount () {
-        console.log('Fuck this');
         this.chat = this.props.navigation.getParam("chat");
         console.log(this.chat);
         this.recipient = this.convertUser(this.chat.user2);
         this.user = this.chat.user1;
+        this.props.navigation.setParams({title: this.user.username});
         this.subscribeToConnectMessages();
         this.fetchMessages();
     }
