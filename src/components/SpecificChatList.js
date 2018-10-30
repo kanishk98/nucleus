@@ -152,6 +152,8 @@ export default class SpecificChatList extends Component {
         this.setState({conversations: conversations});
         await AsyncStorage.setItem('CHATS', JSON.stringify(conversations));
         this.props.navigation.navigate('SpecificTextScreen', {chat: chat, newChat: false});
+        this.retrieveChats();
+        console.log('retrieved chats');
     }
 
     deleteAllChats = async() => {

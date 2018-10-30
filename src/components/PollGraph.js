@@ -22,13 +22,11 @@ export default class PollGraph extends React.PureComponent {
 
     onMeasureLayout = (event) => {
         let width = event.nativeEvent.layout.width;
-        console.log(width);
         if (this.props.total != 0) {
             width = width * (this.props.value / this.props.total);
         } else {
             width = 0;
         }
-        console.log(width);
         this.setState({ width: width });
     }
 
