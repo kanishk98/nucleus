@@ -15,7 +15,7 @@ export default class PollGraph extends React.PureComponent {
         let label = (this.props.value / this.props.total) * 100.0;
         return (
             <Text style={styles.text}>
-                {this.props.label}
+                {this.props.value + (this.props.value == 1?' vote for ':' votes for ') + this.props.label}
             </Text>
         );
     }
@@ -63,8 +63,8 @@ export default class PollGraph extends React.PureComponent {
                         justifyContent: 'center',
                         width: width,
                         borderWidth: 2,
-                        borderColor: 'red',
-                        backgroundColor: 'white',
+                        borderColor: Constants.secondaryColor,
+                        backgroundColor: Constants.secondaryColor,
                         borderRadius: 5,
                         height: 30,
                         paddingLeft: 10,
