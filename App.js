@@ -143,23 +143,13 @@ const LoggedInStackNavigator = createStackNavigator(
     }
 );
 
-function getLoggedIn() {
-    AsyncStorage.getItem(Constants.LoggedIn)
-        .then(res => {
-            console.log(res);
-            if (res) {
-                console.log('user logged in');
-                // user logged in
-                return true;
-            } else {
-                console.log('user not logged in');
-                return false;
-            }
-        })
-        .catch(err => {
-            return false;
-        });
-    return false;
+const getLoggedIn = async() => {
+    const result = (await(AsyncStorage.getItem(Constants.LoggedIn)));
+    if (result === 'T') {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 export const connectClient = new AWSAppSyncClient({
@@ -192,31 +182,16 @@ export default class App extends React.Component {
     }
 
     render() {
-        console.log(getLoggedIn());
-        if (getLoggedIn()) {
-            return (
-                <ApolloProvider client={connectClient}>
-                    <Rehydrated>
-                        <LoggedInStackNavigator
-                            ref={navigatorRef => {
-                                NavigationService.setTopLevelNavigator(navigatorRef);
-                            }}
-                        />
-                    </Rehydrated>
-                </ApolloProvider>
-            );
-        } else {
-            return (
-                <ApolloProvider client={connectClient}>
-                    <Rehydrated>
-                        <LoggedOutStackNavigator
-                            ref={navigatorRef => {
-                                NavigationService.setTopLevelNavigator(navigatorRef);
-                            }}
-                        />
-                    </Rehydrated>
-                </ApolloProvider>
-            );
-        }
+        return (
+            <ApolloProvider client={connectClient}>
+                <Rehydrated>
+                    <LoggedOutStackNavigator
+                        ref={navigatorRef => {
+                            NavigationService.setTopLevelNavigator(navigatorRef);
+                        }}
+                    />
+                </Rehydrated>
+            </ApolloProvider>
+        );
     }
 }
