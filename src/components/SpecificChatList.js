@@ -277,6 +277,7 @@ export default class SpecificChatList extends Component {
                 roundAvatar
                 avatar={{uri: item.user2.profilePic}}
                 title={item.user2.username}
+                titleStyle={{fontWeight: 'bold'}}
             />);
         } else {
             return null;
@@ -383,14 +384,15 @@ export default class SpecificChatList extends Component {
             // this.fetchUsers();
             this.getStoredUsers();
             // show image designating no users
-            return (
+            /*return (
                 <View style = {styles.logoContainer}>
                     <Image
                         source={require('../../assets/logo.png')}
                         style={styles.logo}
                     />
                 </View>
-            );
+            );*/
+            return null;
         } else {
             if (!this.state.conversations || this.state.conversations.length == 0) {
                 console.log('no conversations in memory, show user list with search bar');

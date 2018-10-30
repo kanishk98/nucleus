@@ -222,7 +222,7 @@ export default class SpecificTextScreen extends React.Component {
         console.log(this.chat);
         this.recipient = this.convertUser(this.chat.user2);
         this.user = this.chat.user1;
-        this.props.navigation.setParams({title: this.user.username});
+        this.props.navigation.setParams({title: this.chat.user2.username});
         this.subscribeToConnectMessages();
         this.fetchMessages();
     }
