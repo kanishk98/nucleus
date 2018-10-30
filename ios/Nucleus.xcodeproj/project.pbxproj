@@ -467,7 +467,6 @@
 			files = (
 				976337BC21873028006CEE12 /* FirebaseMessaging.framework in Frameworks */,
 				976337BA21873021006CEE12 /* FirebaseAuth.framework in Frameworks */,
-				976337B821873019006CEE12 /* FirebaseCore.framework in Frameworks */,
 				977664932187275100ED95BE /* libReact.a in Frameworks */,
 				974F7D69217E63AB00D018AB /* libjschelpers.a in Frameworks */,
 				974F7D68217E63A300D018AB /* libcxxreact.a in Frameworks */,
@@ -488,6 +487,7 @@
 				832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */,
 				00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */,
 				139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */,
+				976337B821873019006CEE12 /* FirebaseCore.framework in Frameworks */,
 				EE42D710F21242F38FE29C64 /* libRNGoogleSignin.a in Frameworks */,
 				979238F42135266900C4827F /* GoogleAuthUtilities.framework in Frameworks */,
 				A996EDBCEB83493DA9767CFA /* AddressBook.framework in Frameworks */,
@@ -1651,6 +1651,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = B52C116AFD8AAB5B57D20938 /* Pods-Nucleus.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Nucleus/Nucleus.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
@@ -1686,6 +1687,7 @@
 					"-lc++",
 				);
 				PRODUCT_NAME = Nucleus;
+				USER_HEADER_SEARCH_PATHS = "";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -1694,6 +1696,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 0E31446725344A53457A10FA /* Pods-Nucleus.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Nucleus/Nucleus.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
@@ -1728,6 +1731,7 @@
 					"-lc++",
 				);
 				PRODUCT_NAME = Nucleus;
+				USER_HEADER_SEARCH_PATHS = "";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
