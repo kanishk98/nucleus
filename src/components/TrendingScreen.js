@@ -5,6 +5,7 @@ import Constants from '../Constants';
 import NavigationService from './NavigationService';
 import { renderSearch } from './renderIf';
 import PollButton from './PollButton';
+import PollGraph from './PollGraph';
 
 class PollCard extends React.PureComponent {
 
@@ -60,9 +61,9 @@ class PollCard extends React.PureComponent {
                     {renderSearch(
                         this.state.buttonPressed || (!!userList && !!userList[firebaseId]),
                         <View>
-                            <Text style={styles.resultText}>{button1Value + " - " + button1Title}</Text>
+                            <PollGraph label={button1Title} value={button1Value} total={button1Value + button2Value} />
                             <View style={{paddingHorizontal: 30}} />
-                            <Text style={styles.resultText}>{button2Value + " - " + button2Title}</Text>
+                            <PollGraph label={button2Title} value={button2Value} total={button2Value + button1Value} />
                         </View>,
                         <View>
                             <PollButton
