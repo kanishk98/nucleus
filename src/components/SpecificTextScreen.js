@@ -45,6 +45,7 @@ export default class SpecificTextScreen extends React.Component {
         this.state = {
             messages: [],
             lastEvaluatedKey: null,
+            loading: true,
         }
     }
 
@@ -73,6 +74,8 @@ export default class SpecificTextScreen extends React.Component {
                     let m = data.Items;
                     if (data.LastEvaluatedKey) {
                         this.setState({lastEvaluatedKey: LastEvaluatedKey});
+                    } else {
+                        this.setState({lastEvaluatedKey: null})
                     }
                     messages = [];
                     console.log(m);
@@ -126,6 +129,7 @@ export default class SpecificTextScreen extends React.Component {
                 this.setState(previousState => {
                     console.log(previousState);
                     return {
+                        loading: false,
                         messages: GiftedChat.append(previousState.messages, messages)
                     };
                 });
@@ -228,12 +232,20 @@ export default class SpecificTextScreen extends React.Component {
                     onLoadEarlier={this.fetchMoreMessages}
                 />
             );
+        } else if (this.state.loading) {
+            return (
+                <GiftedChat
+                    messages={this.state.messages}
+                    onSend={(message)=>this.onSendHandler({message})}
+                    loadEarlier={true}
+                    isLoadingEarlier={true}
+                />
+            );
         } else {
             return (
                 <GiftedChat
                     messages={this.state.messages}
                     onSend={(message)=>this.onSendHandler({message})}
-                    isLoadingEarlier={true}
                 />
             );
         }
