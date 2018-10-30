@@ -53,6 +53,7 @@ export default class LoginForm extends Component {
                         AsyncStorage.getItem(Constants.UserObject)
                             .then(savedUser => {
                                 console.log(savedUser);
+                                this.fetchUsers();
                                 if (!!savedUser) {
                                     this.props.navigation.dispatch(StackActions.reset({
                                         index: 0,

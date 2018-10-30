@@ -68,7 +68,7 @@ const BottomNavigator = createBottomTabNavigator({
     }
 });
 
-const LoggedOutStackNavigator = createStackNavigator(
+const StackNavigator = createStackNavigator(
   {
     Login: {
       screen: LoginScreen,
@@ -108,50 +108,6 @@ const LoggedOutStackNavigator = createStackNavigator(
   }
 );
 
-const LoggedInStackNavigator = createStackNavigator(
-    {
-        Login: {
-            screen: LoginScreen,
-            navigationOptions: {
-                header: null
-            }
-        },
-        Chat: {
-            screen: BottomNavigator,
-            navigationOptions: ({ navigation }) => ({
-                header: null
-            })
-        },
-        Random: {
-            screen: RandomConnect,
-            navigationOptions: {
-                title: "Discover"
-            }
-        },
-        SpecificTextScreen: {
-            screen: SpecificTextScreen,
-        },
-        NewTrendingScreen: {
-            screen: NewTrendingScreen,
-            navigationOptions: {
-                title: "New anonymous poll"
-            }
-        }
-    },
-    {
-        initialRouteName: "Chat"
-    }
-);
-
-const getLoggedIn = async() => {
-    const result = (await(AsyncStorage.getItem(Constants.LoggedIn)));
-    if (result === 'T') {
-        return true;
-    } else {
-        return false;
-    }
-}
-
 export const connectClient = new AWSAppSyncClient({
     url: AppSync.graphqlEndpoint,
     region: AppSync.region,
@@ -185,7 +141,7 @@ export default class App extends React.Component {
         return (
             <ApolloProvider client={connectClient}>
                 <Rehydrated>
-                    <LoggedOutStackNavigator
+                    <StackNavigator
                         ref={navigatorRef => {
                             NavigationService.setTopLevelNavigator(navigatorRef);
                         }}

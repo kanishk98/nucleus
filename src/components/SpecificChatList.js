@@ -161,31 +161,8 @@ export default class SpecificChatList extends Component {
         }
     }
 
-    retrieveChats = () => {
-        // getting talkingTo
-        /*AsyncStorage.getItem(Constants.TalkingTo)
-        .then(res => {
-            console.log(res);
-            if (res !== null) {
-                // been talking to people
-                this.setState({talkingTo: JSON.parse(res)});
-            }
-        })
-        .catch(err => {
-            console.log(err);
-        });*/
-        AsyncStorage.getItem(Constants.SpecificChatConversations)
-        .then(res => {
-            console.log(res);
-            if (res !== null) {
-                // conversations exist
-                console.log('Conversations exist');
-                this.setState({conversations: JSON.parse(res)});
-            }
-        })
-        .catch(err => {
-            console.log(err);
-        });
+    retrieveChats = async() => {
+        this.setState({conversations: JSON.parse(await(AsyncStorage.getItem(Constants.SpecificChatConversations)))});
     }
 
     chatKeyExtractor = (item, index) => item.user2.firebaseId;
@@ -193,21 +170,15 @@ export default class SpecificChatList extends Component {
     peopleKeyExtractor = (item, index) => item.firebaseId;
 
     async componentWillMount() {
-        this.retrieveChats();
         this.user = JSON.parse(await AsyncStorage.getItem(Constants.UserObject));
         console.log(this.user);
+        this.retrieveChats();
     }
     
     async componentDidMount() {
         this.noFilter = {
             firebaseId: {ne: JSON.parse(await AsyncStorage.getItem(Constants.UserObject)).firebaseId},
             geohash: {ne: 'random_user_geohash'},
-        }
-        // fetch previously made conversations here
-        //this.retrieveChats();
-        this.noFilter = {
-            firebaseId: { ne: this.user.firebaseId },
-            geohash: { ne: 'random_user_geohash' },
         }
         // checking for notification permissions
         let enabled = false;
@@ -409,7 +380,7 @@ export default class SpecificChatList extends Component {
         console.log(this.state);
         if (!this.state.people || this.state.people.length == 0) {
             // no users in memory
-            this.fetchUsers();
+            // this.fetchUsers();
             this.getStoredUsers();
             // show image designating no users
             return (
