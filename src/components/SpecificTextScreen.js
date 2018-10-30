@@ -44,6 +44,51 @@ export default class SpecificTextScreen extends React.Component {
         super(props);
         this.state = {
             messages: [],
+            lastEvaluatedKey: null,
+        }
+    }
+
+    fetchMoreMessages = () => {
+        const dynamoDB = new AWS.DynamoDB.DocumentClient();
+        let { lastEvaluatedKey } = this.state;
+        if (!!lastEvaluatedKey) {
+            const params = {
+                TableName : "Nucleus.ConnectTexts",
+                KeyConditionExpression: "#conversationId = :id",
+                ExpressionAttributeNames:{
+                    "#conversationId": "conversationId"
+                },
+                ExpressionAttributeValues: {
+                    ":id": this.chat.conversationId
+                }, 
+                Limit: 15,
+            };
+            params.ExclusiveStartKey = lastEvaluatedKey;
+            let messages = null;
+            dynamoDB.query(params, function (err, data) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log(data);
+                    let m = data.Items;
+                    if (data.LastEvaluatedKey) {
+                        this.setState({lastEvaluatedKey: LastEvaluatedKey});
+                    }
+                    messages = [];
+                    console.log(m);
+                    for (let message in m) {
+                        console.log(message);
+                        console.log(m[message].author);
+                        messages.push(this.convertMessage(m[message]));
+                    }
+                    this.setState(previousState => {
+                        console.log(previousState);
+                        return {
+                            messages: GiftedChat.prepend(previousState.messages, messages)
+                        };
+                    });
+                }
+            }.bind(this));
         }
     }
     
@@ -58,7 +103,7 @@ export default class SpecificTextScreen extends React.Component {
             ExpressionAttributeValues: {
                 ":id": this.chat.conversationId
             }, 
-            Limit: 30,
+            Limit: 15,
         };
         console.log('Querying data');
         let messages = null;
@@ -68,6 +113,9 @@ export default class SpecificTextScreen extends React.Component {
             } else {
                 console.log(data);
                 let m = data.Items;
+                if (data.LastEvaluatedKey) {
+                    this.setState({lastEvaluatedKey: data.LastEvaluatedKey});
+                }
                 messages = [];
                 console.log(m);
                 for (let message in m) {
@@ -171,13 +219,24 @@ export default class SpecificTextScreen extends React.Component {
 
     render() {
         console.log(this.state.messages);
-        return (
-            <GiftedChat
-                messages={this.state.messages}
-                onSend={(message)=>this.onSendHandler({message})}
-                loadEarlier={true}
-            />
-        );
+        if (this.state.lastEvaluatedKey) {
+            return (
+                <GiftedChat
+                    messages={this.state.messages}
+                    onSend={(message)=>this.onSendHandler({message})}
+                    loadEarlier={true}
+                    onLoadEarlier={this.fetchMoreMessages}
+                />
+            );
+        } else {
+            return (
+                <GiftedChat
+                    messages={this.state.messages}
+                    onSend={(message)=>this.onSendHandler({message})}
+                    isLoadingEarlier={true}
+                />
+            );
+        }
     }
 } 
 
