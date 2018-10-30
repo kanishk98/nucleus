@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, StyleSheet, View, FlatList, AsyncStorage, ImageBackground, Dimensions } from 'react-native';
+import { NetInfo, StyleSheet, View, FlatList, AsyncStorage, ImageBackground, Dimensions } from 'react-native';
 import { Card, Button } from 'react-native-elements';
 import Constants from '../Constants';
 import NavigationService from './NavigationService';
@@ -92,6 +92,7 @@ export default class Trending extends React.PureComponent {
         super(props);
         this.state={
             currentPage: 1,
+            networkStatus: 'wifi',
         };
         this.newTrendingSet = false;
     }
@@ -161,8 +162,23 @@ export default class Trending extends React.PureComponent {
         }
     }
 
+    handleConnectivityChange(connectionInfo) {
+        console.log('First change, type: ' + connectionInfo.type + ', effectiveType: ' + connectionInfo.effectiveType);
+        this.setState({networkStatus: connectionInfo.type});
+      }
+
+    componentWillUnmount() {
+        NetInfo.removeEventListener(
+            'connectionChange',
+            handleFirstConnectivityChange
+        );
+    }
+
     async componentDidMount() {
         this.user = JSON.parse(await(AsyncStorage.getItem(Constants.UserObject)));
+        NetInfo.getConnectionInfo().then((connectionInfo) => {
+            console.log('Initial, type: ' + connectionInfo.type + ', effectiveType: ' + connectionInfo.effectiveType);
+        });
     }
 
     setNewTrending() {
@@ -178,7 +194,16 @@ export default class Trending extends React.PureComponent {
             this.getPosts();
             this.newTrendingSet = false;
         }
-        const {postList} = this.state;
+        const {postList, networkStatus} = this.state;
+        if (networkStatus == 'none') {
+            return (
+                <Card
+                    containerStyle={{backgroundColor: 'red'}}
+                    title={'You broke the Internet.'}
+                    titleStyle={{fontWeight: 'bold', color: 'white'}} 
+                />
+            );
+        }
         return (
             <ImageBackground source={require('../../assets/background.png')} style={styles.backgroundStyle}>
                 <FlatList
