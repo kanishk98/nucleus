@@ -1,9 +1,10 @@
 import React from 'react';
-import { Text, StyleSheet, View, FlatList, AsyncStorage } from 'react-native';
+import { Text, StyleSheet, View, FlatList, AsyncStorage, ImageBackground, Dimensions } from 'react-native';
 import { Card, Button } from 'react-native-elements';
 import Constants from '../Constants';
 import NavigationService from './NavigationService';
 import { renderSearch } from './renderIf';
+import PollButton from './PollButton';
 
 class PollCard extends React.PureComponent {
 
@@ -58,24 +59,20 @@ class PollCard extends React.PureComponent {
                 title={caption}>
                     {renderSearch(
                         this.state.buttonPressed || (!!userList && !!userList[firebaseId]),
-                        <View style={styles.buttonContainer}>
+                        <View>
                             <Text style={styles.resultText}>{button1Value + " - " + button1Title}</Text>
                             <View style={{paddingHorizontal: 30}} />
                             <Text style={styles.resultText}>{button2Value + " - " + button2Title}</Text>
                         </View>,
-                        <View style={styles.buttonContainer}>
-                            <Button
-                                style={{ flex: 1, justifyContent: 'flex-start', paddingRight: 10 }}
-                                textStyle={{ textAlign: 'center', color: Constants.primaryColor }}
-                                title={button1Title}
-                                backgroundColor={'white'}
-                                onPress={this.onPressButton1} />
-                            <Button
-                                textStyle={{ textAlign: 'center', color: Constants.primaryColor }}
-                                title={button2Title}
-                                backgroundColor={'white'}
-                                style={{ flex: 1, justifyContent: 'flex-end', paddingLeft: 10 }}
-                                onPress={this.onPressButton2} />
+                        <View>
+                            <PollButton
+                                label={button1Title}
+                                onPress={this.onPressButton1}
+                            />
+                            <PollButton
+                                label={button2Title}
+                                onPress={this.onPressButton2}
+                            />
                         </View>
                     )}
             </Card>
@@ -182,24 +179,35 @@ export default class Trending extends React.PureComponent {
         }
         const {postList} = this.state;
         return (
-            <FlatList
-                data={postList}
-                keyExtractor={this.postKeyExtractor}
-                renderItem={this.renderPost}
-                onEndReached={this.getMorePosts}
-                onEndReachedThreshold={0.25}
-                onRefresh={this._onrefresh}
-                refreshing={false}
-            />
+            <ImageBackground source={require('../../assets/background.png')} style={styles.backgroundStyle}>
+                <FlatList
+                    data={postList}
+                    keyExtractor={this.postKeyExtractor}
+                    renderItem={this.renderPost}
+                    onEndReached={this.getMorePosts}
+                    onEndReachedThreshold={0.25}
+                    onRefresh={this._onrefresh}
+                    refreshing={false}
+                />
+            </ImageBackground>
         );
     }
 }
+
+const DEVICE_HEIGHT = Dimensions.get('window').height;
+const DEVICE_WIDTH = Dimensions.get('window').width;
 
 const styles = StyleSheet.create({
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    backgroundStyle: {
+        flex: 1,
+        width: DEVICE_WIDTH,
+        height: DEVICE_HEIGHT, 
+        backgroundColor: 'transparent'
     },
     resultText: {
     },

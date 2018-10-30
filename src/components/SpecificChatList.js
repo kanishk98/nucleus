@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, ProgressBarAndroid, ProgressViewIOS, Dimensions, Platform, View, ScrollView, FlatList, StyleSheet, AsyncStorage, Image } from 'react-native';
+import { ActivityIndicator, ProgressBarAndroid, ProgressViewIOS, Dimensions, Platform, View, ScrollView, FlatList, StyleSheet, AsyncStorage, Image } from 'react-native';
 import { List, ListItem } from 'react-native-elements';
 import Constants from '../Constants';
 import AWS from 'aws-sdk';
@@ -293,6 +293,7 @@ export default class SpecificChatList extends Component {
                 roundAvatar
                 avatar={{uri: item.profilePic}}
                 title={item.username}
+                titleStyle={{fontWeight: 'bold'}}
             />);
         }
     };
@@ -384,15 +385,11 @@ export default class SpecificChatList extends Component {
             // this.fetchUsers();
             this.getStoredUsers();
             // show image designating no users
-            /*return (
-                <View style = {styles.logoContainer}>
-                    <Image
-                        source={require('../../assets/logo.png')}
-                        style={styles.logo}
-                    />
+            return (
+                <View style={styles.logoContainer}>
+                    <ActivityIndicator />
                 </View>
-            );*/
-            return null;
+            )
         } else {
             if (!this.state.conversations || this.state.conversations.length == 0) {
                 console.log('no conversations in memory, show user list with search bar');
