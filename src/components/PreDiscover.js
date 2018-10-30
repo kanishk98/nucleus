@@ -410,7 +410,7 @@ export default class PreDiscover extends React.Component {
                     <Button
                         onPress={this.stopDiscover}
                         raised={false}
-                        backgroundColor={'rgba(0, 0, 0, 0)'}
+                        backgroundColor={'#b2b2b2'}
                         title='Stop Discovering people'
                     />
                 </View>)

@@ -47,7 +47,7 @@ export default class SpecificTextScreen extends React.Component {
         }
     }
     
-    fetchMoreMessages = () => {
+    fetchMessages = () => {
         const dynamoDB = new AWS.DynamoDB.DocumentClient();
         const params = {
             TableName : "Nucleus.ConnectTexts",
@@ -58,7 +58,7 @@ export default class SpecificTextScreen extends React.Component {
             ExpressionAttributeValues: {
                 ":id": this.chat.conversationId
             }, 
-            Limit: 100,
+            Limit: 30,
         };
         console.log('Querying data');
         let messages = null;
@@ -166,7 +166,7 @@ export default class SpecificTextScreen extends React.Component {
         this.recipient = this.convertUser(this.chat.user2);
         this.user = this.chat.user1;
         this.subscribeToConnectMessages();
-        this.fetchMoreMessages();
+        this.fetchMessages();
     }
 
     render() {
@@ -175,6 +175,7 @@ export default class SpecificTextScreen extends React.Component {
             <GiftedChat
                 messages={this.state.messages}
                 onSend={(message)=>this.onSendHandler({message})}
+                loadEarlier={true}
             />
         );
     }

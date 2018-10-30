@@ -200,7 +200,7 @@ export default class SpecificChatList extends Component {
     
     async componentDidMount() {
         this.noFilter = {
-            firebaseId: {ne: this.user.firebaseId},
+            firebaseId: {ne: JSON.parse(await AsyncStorage.getItem(Constants.UserObject)).firebaseId},
             geohash: {ne: 'random_user_geohash'},
         }
         // fetch previously made conversations here
@@ -215,22 +215,11 @@ export default class SpecificChatList extends Component {
         if(!enabled) {
             try {
                 console.log('Awaiting Firebase request for permission');
-                Alert.alert(
-                    'Are you sure?',
-                    "You won't receive any notifications when your friends try to reach you.",
-                    [
-                      {text: 'Allow', onPress: async() => {
-                        await firebase.messaging().requestPermission();
-                      }},
-                      {text: 'Disable', onPress: () => {enabled = false}},
-                    ],
-                    { cancelable: false }
-                );
+                await firebase.messaging().requestPermission();
             } catch (error) {
-                // User has rejected permissions
+                enabled = false;
             }
         }
-        enabled = await firebase.messaging().hasPermission();
         if (enabled) {
             this.fcmToken = firebase.messaging().getToken()
             .then(res => {

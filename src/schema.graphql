@@ -335,7 +335,6 @@ input TableNucleusConnectMessagesFilterInput {
 
 input TableNucleusConnectTextsFilterInput {
   conversationId: TableStringFilterInput
-  messageId: TableStringFilterInput
 }
 
 input TableNucleusDiscoverChatsFilterInput {
