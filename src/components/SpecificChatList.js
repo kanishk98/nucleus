@@ -103,6 +103,10 @@ export default class SpecificChatList extends Component {
                     user1: this.user,
                     user2: item,
                 }
+                if (!conversations) {
+                    // conversations is null, happens on Android
+                    conversations = [];
+                }
                 conversations.push(chat);
                 AsyncStorage.setItem(Constants.SpecificChatConversations, JSON.stringify(conversations))
                 .then(res => {
@@ -288,6 +292,10 @@ export default class SpecificChatList extends Component {
 
     renderUser = ({item}) => {
         console.log(item);
+        if (!this.user) {
+            // happens on first install login
+            this.user = this.props.navigation.getParam('user');
+        }
         if (item.firebaseId != this.user.firebaseId) {
             return (
             <ListItem
@@ -413,10 +421,9 @@ export default class SpecificChatList extends Component {
                                         </View>
                                     )}
                                     </View>,
-                                    <FlatList
-                                        data={this.state.people}
-                                        keyExtractor={(data) => this.peopleKeyExtractor(data)}
-                                        renderItem={this.renderUser} />
+                                    <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+                                        <Image style={{ width: this.DEVICE_WIDTH / 2, height: this.DEVICE_HEIGHT / 2 }} source={require('../../assets/not_found.png')} />
+                                    </View>
                                 )}
                             </List>
                         </ScrollView>

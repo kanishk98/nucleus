@@ -79,8 +79,10 @@ export default class LoginForm extends Component {
                                 if (!!savedUser) {
                                     this.props.navigation.dispatch(StackActions.reset({
                                         index: 0,
+                                        key: 'Chat',
                                         actions: [
-                                            NavigationActions.navigate({ routeName: 'Chat', params: { user: JSON.parse(savedUser) } }),
+                                            NavigationActions.setParams({user: JSON.parse(savedUser)}),
+                                            NavigationActions.navigate({ routeName: 'Chat'}),
                                         ]
                                     }));
                                 } else {
@@ -265,9 +267,12 @@ export default class LoginForm extends Component {
         // popping LoginScreen from navigation stack
         this.props.navigation.dispatch(StackActions.reset({
             index: 0,
-            actions: [NavigationActions.navigate({ routeName: 'Chat', params: { user: newUser } })]
-        }))
-        this.props.navigation.navigate('Chat', { user: newUser });
+            key: 'Chat',
+            actions: [
+                NavigationActions.setParams({user: newUser}),
+                NavigationActions.navigate({ routeName: 'Chat'})]
+        }));
+        this.props.navigation.navigate("Chat", { user: newUser });
     }
 
     async signOut() {

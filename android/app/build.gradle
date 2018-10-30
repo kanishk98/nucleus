@@ -78,6 +78,7 @@ project.ext.react = [
     resourcesDirRelease: "src/release/res"
 ]
 
+
 apply from: "../../node_modules/react-native/react.gradle"
 
 /**
