@@ -46,7 +46,7 @@ export default class LoginForm extends Component {
         });
         if (this.itemCount > oldNoUsers) {
             API.graphql(graphqlOperation(GraphQL.GetAllDiscoverUsers, { filter: noFilter }))
-                .then(async(res) => {
+                .then(async (res) => {
                     const users = res.data.listNucleusDiscoverUsers.items;
                     AsyncStorage.setItem(Constants.UserList, JSON.stringify(users))
                         .then(asyncStorageResult => {
@@ -77,18 +77,18 @@ export default class LoginForm extends Component {
                                 console.log(savedUser);
                                 this.fetchUsers();
                                 if (!!savedUser) {
-                                    this.props.navigation.navigate('Chat', {}, 
-                                    {
-                                        type: 'Navigate',
-                                        routeName: 'Connect',
-                                        params: { user: JSON.parse(savedUser) }
-                                    });
+                                    this.props.navigation.navigate('Chat', {},
+                                        {
+                                            type: 'Navigate',
+                                            routeName: 'Connect',
+                                            params: { user: JSON.parse(savedUser) }
+                                        });
                                     this.props.navigation.dispatch(StackActions.reset({
                                         index: 0,
                                         key: 'Chat',
                                         actions: [
-                                            NavigationActions.setParams({user: JSON.parse(savedUser)}),
-                                            NavigationActions.navigate({ routeName: 'Chat'}),
+                                            NavigationActions.setParams({ user: JSON.parse(savedUser) }),
+                                            NavigationActions.navigate({ routeName: 'Chat' }),
                                         ]
                                     }));
                                 } else {
@@ -272,13 +272,22 @@ export default class LoginForm extends Component {
             });
         this.fetchUsers(newUser.firebaseId);
         // popping LoginScreen from navigation stack
-        this.props.navigation.navigate("Chat", { user: newUser });
+        this.props.navigation.navigate('Chat', {},
+            {
+                type: 'Navigate',
+                routeName: 'Connect',
+                action: {
+                    type: 'Navigate',
+                    routeName: 'Connect',
+                    params: {user: newUser}
+                }
+            });
         this.props.navigation.dispatch(StackActions.reset({
             index: 0,
             key: 'Chat',
             actions: [
-                NavigationActions.setParams({user: newUser}),
-                NavigationActions.navigate({ routeName: 'Chat'})]
+                NavigationActions.setParams({ user: newUser }),
+                NavigationActions.navigate({ routeName: 'Chat' })]
         }));
     }
 

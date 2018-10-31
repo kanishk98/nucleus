@@ -180,12 +180,7 @@ export default class SpecificChatList extends Component {
     peopleKeyExtractor = (item, index) => item.firebaseId;
 
     componentWillMount() {
-        AsyncStorage.getItem(Constants.UserObject)
-        .then(res => {
-            console.log(res);
-            this.user = JSON.parse(res);
-        })
-        .catch(err => console.log(err));
+        this.user = this.props.navigation.getParam('user');
         this.setState({user: this.user});
         this.retrieveChats();
     }
@@ -399,8 +394,17 @@ export default class SpecificChatList extends Component {
         });
     }
 
+    async getUser() {
+        let user = JSON.parse(await AsyncStorage.getItem(Constants.UserObject));
+        this.setState({user: user});
+    }
+
     render() {
         console.log(this.state);
+        if (!this.state.user) {
+            this.getUser();
+            return <ActivityIndicator />
+        }
         if (!this.state.people || this.state.people.length == 0) {
             // no users in memory
             // this.fetchUsers();
