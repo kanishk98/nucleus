@@ -406,17 +406,17 @@ export default class PreDiscover extends React.Component {
     _renderInputToolbar = () => {
         if (!this.state.discoverStopped) {
             return (
-                <View style={{ flex: 1 }}>
+                <View style={{width: DEVICE_WIDTH, backgroundColor: "#b2b2b2"}}>
                     <Button
                         onPress={this.stopDiscover}
-                        raised={true}
+                        raised={false}
                         backgroundColor={'#b2b2b2'}
                         title='Stop Discovering people'
                     />
                 </View>)
         } else {
             return (
-                <View style={{ flex: 1 }}>
+                <View style={{width: DEVICE_WIDTH, backgroundColor: Constants.primaryColor}}>
                     <Button
                         onPress={this.ignoreFlagAndStartDiscover}
                         raised={false}
