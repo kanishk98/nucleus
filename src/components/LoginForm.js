@@ -77,15 +77,13 @@ export default class LoginForm extends Component {
                                 console.log(savedUser);
                                 this.fetchUsers();
                                 if (!!savedUser) {
-                                    this.props.navigation.navigate('Chat', {user: JSON.parse(savedUser)});
                                     this.props.navigation.dispatch(StackActions.reset({
                                         index: 0,
-                                        key: 'Chat',
                                         actions: [
-                                            NavigationActions.setParams({ user: JSON.parse(savedUser) }),
-                                            NavigationActions.navigate({ routeName: 'Chat' }),
+                                            NavigationActions.navigate({ routeName: 'Chat', params: {user: JSON.parse(savedUser)}}),
                                         ]
                                     }));
+                                    this.props.navigation.navigate('Chat', {user: JSON.parse(savedUser)});
                                 } else {
                                     // setting user setting to logged out
                                     AsyncStorage.setItem(Constants.LoggedIn, 'F')
@@ -267,14 +265,12 @@ export default class LoginForm extends Component {
             });
         this.fetchUsers(newUser.firebaseId);
         // popping LoginScreen from navigation stack
-        this.props.navigation.navigate('Chat', {user: newUser});
         this.props.navigation.dispatch(StackActions.reset({
             index: 0,
-            key: 'Chat',
             actions: [
-                NavigationActions.setParams({ user: newUser }),
-                NavigationActions.navigate({ routeName: 'Chat' })]
+                NavigationActions.navigate({ routeName: 'Chat', params: { user: newUser }})]
         }));
+        this.props.navigation.navigate('Chat', {user: newUser});
     }
 
     async signOut() {
