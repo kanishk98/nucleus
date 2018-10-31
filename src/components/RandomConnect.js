@@ -1,5 +1,5 @@
 import React from "react";
-import { Alert, StyleSheet, Dimensions, AsyncStorage } from "react-native";
+import { Alert, BackHandler, StyleSheet, Dimensions, AsyncStorage } from "react-native";
 import SpecificTextScreen from "./SpecificTextScreen";
 import * as GraphQL from "../graphql";
 import { API, graphqlOperation } from "../../node_modules/aws-amplify";
@@ -24,7 +24,7 @@ export default class RandomConnect extends React.Component {
     this.state = {
       messages: [],
       typedMessage: '',
-      modalClicked: false, 
+      modalClicked: false,
     };
     this._didExitChatSubscription = props.navigation.addListener('didExit', payload =>
       BackHandler.addEventListener('hardwareBackPress', this.onBackButtonPressAndroid)
@@ -48,13 +48,16 @@ export default class RandomConnect extends React.Component {
     });
   }
 
+  componentWillUnmount() {
+    this._didExitChatSubscription && this._didExitChatSubscription.remove();
+  }
+
   onBackButtonPressAndroid = () => {
     if (!this.state.modalClicked) {
       this._alertDelete();
       return true;
-    } else {
-      return false;
-    }
+    } 
+    return false;
   }
 
   sendNotification() {
