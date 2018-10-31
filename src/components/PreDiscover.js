@@ -154,8 +154,6 @@ export default class PreDiscover extends React.Component {
             };
             this.setState(previousState => {
                 console.log(previousState);
-                let messages = previousState.messages;
-                messages.splice(messages.length - 1, 1);
                 return {
                     messages: GiftedChat.append(previousState, message)
                 };
@@ -212,8 +210,6 @@ export default class PreDiscover extends React.Component {
                         };
                         this.setState(previousState => {
                             console.log(previousState);
-                            let messages = previousState.messages;
-                            messages.splice(messages.length - 1, 1);
                             return {
                                 messages: GiftedChat.append(previousState.messages, message)
                             };
@@ -359,7 +355,6 @@ export default class PreDiscover extends React.Component {
                     this.setState(previousState => {
                         console.log(previousState);
                         let messages = previousState.messages;
-                        messages.splice(messages.length - 1, 1);
                         return {
                             messages: GiftedChat.append(previousState.messages, message)
                         };
