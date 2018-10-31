@@ -449,9 +449,10 @@ export default class SpecificChatList extends Component {
                                         </View>
                                     )}
                                     </View>,
-                                    <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-                                        <Image style={{ width: this.DEVICE_WIDTH / 2, height: this.DEVICE_HEIGHT / 2 }} source={require('../../assets/not_found.png')} />
-                                    </View>
+                                    <FlatList
+                                    data={this.state.people}
+                                    keyExtractor={(data) => this.peopleKeyExtractor(data)}
+                                    renderItem={this.renderUser} />
                                 )}
                             </List>
                         </ScrollView>
