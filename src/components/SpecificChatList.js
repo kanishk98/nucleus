@@ -83,6 +83,9 @@ export default class SpecificChatList extends Component {
 
     // item here is a user
     newChat (item) {
+        if (!this.user) {
+            this.user = this.state.user;
+        }
         if (!!item) {
             let chat = null;
             let newChat = true;
@@ -176,9 +179,14 @@ export default class SpecificChatList extends Component {
 
     peopleKeyExtractor = (item, index) => item.firebaseId;
 
-    async componentWillMount() {
-        this.user = JSON.parse(await AsyncStorage.getItem(Constants.UserObject));
-        console.log(this.user);
+    componentWillMount() {
+        AsyncStorage.getItem(Constants.UserObject)
+        .then(res => {
+            console.log(res);
+            this.user = JSON.parse(res);
+        })
+        .catch(err => console.log(err));
+        this.setState({user: this.user});
         this.retrieveChats();
     }
     
@@ -188,6 +196,9 @@ export default class SpecificChatList extends Component {
             geohash: {ne: 'random_user_geohash'},
         }
         // checking for notification permissions
+        if (!this.user) {
+            this.user = this.state.user;
+        }
         let enabled = false;
         enabled = await firebase.messaging().hasPermission();
         if(!enabled) {
@@ -276,6 +287,9 @@ export default class SpecificChatList extends Component {
 
     renderConversation = ({item}) => {
         console.log(item);
+        if (!this.user) {
+            this.user = this.state.user;
+        }
         if (item.user2.firebaseId != this.user.firebaseId) {
             return (
             <ListItem 
@@ -291,21 +305,18 @@ export default class SpecificChatList extends Component {
     };
 
     renderUser = ({item}) => {
-        console.log(item);
         if (!this.user) {
-            // happens on first install login
-            this.user = this.props.navigation.getParam('user');
+            this.user = this.state.user;
         }
-        if (item.firebaseId != this.user.firebaseId) {
-            return (
+        return (
             <ListItem
                 onPress={this.newChat.bind(this, item)}
                 roundAvatar
                 avatar={{uri: item.profilePic}}
                 title={item.username}
                 titleStyle={{fontWeight: 'bold'}}
-            />);
-        }
+            />
+        );
     };
 
     searchConversations = ({text}) => {
