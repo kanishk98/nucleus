@@ -13,7 +13,7 @@ export default class SpecificTextScreen extends React.Component {
 
     static navigationOptions = ({navigation}) => {
         return {
-            title: navigation.getParam('title'),
+            title: navigation.state.params.title,
         }
     }
 

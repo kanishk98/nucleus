@@ -86,6 +86,7 @@ const StackNavigator = createStackNavigator(
       screen: RandomConnect,
       navigationOptions: {
         title: "Unknown",
+        gesturesEnabled: false,
         headerLeft: (
             <HeaderBackButton
               onPress={alertDelete}
