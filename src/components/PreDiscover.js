@@ -20,7 +20,7 @@ export default class PreDiscover extends React.Component {
             requestId: null,
             notificationsAllowed: false,
             progress: false,
-            discoverStopped: false,
+            discoverStopped: true,
             navigating: false,
         };
         this.ProgressBar = Platform.select({

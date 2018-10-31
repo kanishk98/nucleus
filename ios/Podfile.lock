@@ -1,6 +1,4 @@
 PODS:
-  - boost-for-react-native (1.63.0)
-  - DoubleConversion (1.1.5)
   - Firebase/AdMob (5.9.0):
     - Firebase/Core
     - Google-Mobile-Ads-SDK (~> 7.33)
@@ -43,11 +41,6 @@ PODS:
     - FirebaseInstanceID (~> 3.0)
     - GoogleUtilities/Reachability (~> 5.2)
     - Protobuf (~> 3.1)
-  - Folly (2016.10.31.00):
-    - boost-for-react-native
-    - DoubleConversion
-    - glog
-  - glog (0.3.4)
   - Google-Mobile-Ads-SDK (7.35.1)
   - GoogleAppMeasurement (5.2.0):
     - GoogleUtilities/AppDelegateSwizzler (~> 5.2)
@@ -103,42 +96,24 @@ PODS:
     - React/Core (= 0.56.1)
   - React/Core (0.56.1):
     - yoga (= 0.56.1.React)
-  - React/CxxBridge (0.56.1):
-    - Folly (= 2016.10.31.00)
-    - React/Core
-    - React/cxxreact
-  - React/cxxreact (0.56.1):
-    - boost-for-react-native (= 1.63.0)
-    - Folly (= 2016.10.31.00)
-    - React/jschelpers
-    - React/jsinspector
-  - React/jschelpers (0.56.1):
-    - Folly (= 2016.10.31.00)
-    - React/PrivateDatabase
-  - React/jsinspector (0.56.1)
-  - React/PrivateDatabase (0.56.1)
   - RNVectorIcons (5.0.0):
     - React
   - yoga (0.56.1.React)
 
 DEPENDENCIES:
-  - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - Firebase/AdMob (~> 5.9.0)
   - Firebase/Analytics (~> 5.9.0)
   - Firebase/Auth (~> 5.9.0)
   - Firebase/Core (~> 5.9.0)
   - Firebase/Messaging (~> 5.9.0)
-  - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
-  - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - GoogleAppMeasurement (~> 5.2.0)
   - GoogleSignIn
-  - React/CxxBridge (from `../node_modules/react-native`)
+  - React (from `../node_modules/react-native`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
-    - boost-for-react-native
     - Firebase
     - FirebaseAnalytics
     - FirebaseAuth
@@ -157,12 +132,6 @@ SPEC REPOS:
     - Protobuf
 
 EXTERNAL SOURCES:
-  DoubleConversion:
-    :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
-  Folly:
-    :podspec: "../node_modules/react-native/third-party-podspecs/Folly.podspec"
-  glog:
-    :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
   React:
     :path: "../node_modules/react-native"
   RNVectorIcons:
@@ -171,8 +140,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
-  DoubleConversion: a9706f16e388b53ff12cca34473428ee29746a26
   Firebase: 383fa29aca93e371cab776b48a5c66544d3c2003
   FirebaseAnalytics: 831f1f127f4a75698e9875a87bf7e2668730d953
   FirebaseAuth: 504b198ceb3472dca5c65bb95544ea44cfc9439e
@@ -180,8 +147,6 @@ SPEC CHECKSUMS:
   FirebaseCore: 2a84b6b325792a4319ef71ee18819dcba08d2fd7
   FirebaseInstanceID: e2fa4cb35ef5558c200f7f0ad8a53e212215f93e
   FirebaseMessaging: d6feeb06218d2675b4149b0ada925a6b707a74cf
-  Folly: c89ac2d5c6ab169cd7397ef27485c44f35f742c7
-  glog: b3b0330915eccea41c5cc9731a77cf564a9be5ea
   Google-Mobile-Ads-SDK: 151d5e87b4a0ae6d7d07e2cd8d55d1b41ea2e61e
   GoogleAppMeasurement: 2b3a023a61239c8d002e6e4fcf4abce8eddce0e0
   GoogleSignIn: 11183592dc63e105475c7305a325045ff95e02b7
@@ -195,6 +160,6 @@ SPEC CHECKSUMS:
   RNVectorIcons: c0dbfbf6068fefa240c37b0f71bd03b45dddac44
   yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
 
-PODFILE CHECKSUM: 9e237eb25beeda596116d934ab1616ae5536e21d
+PODFILE CHECKSUM: 08bef7e7ef0659c545d9340f265e9421dfeb9374
 
 COCOAPODS: 1.5.3
