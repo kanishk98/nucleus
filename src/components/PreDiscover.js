@@ -141,11 +141,10 @@ export default class PreDiscover extends React.Component {
 
     startDiscover() {
         console.log('starting discover');
-        if (!this.state.discoverStopped || this.forced) {
-            this.forced = false;
+        if (!this.state.discoverStopped) {
             let message = {
                 _id: new Date().getTime(),
-                text: 'Finding you a match...',
+                text: 'Finding you a match every 10 seconds...',
                 createdAt: new Date(),
                 user: {
                     _id: this.user.firebaseId,
@@ -155,10 +154,15 @@ export default class PreDiscover extends React.Component {
             };
             this.setState(previousState => {
                 console.log(previousState);
+                let messages = previousState.messages;
+                messages.splice(messages.length - 1, 1);
                 return {
-                    messages: GiftedChat.append(previousState.messages, message)
+                    messages: GiftedChat.append(previousState, message)
                 };
             });
+        } 
+        if (!this.state.discoverStopped || this.forced) {
+            this.forced = false;
             let { onlineUsers } = this.state;
             let user = this.user;
             console.log(this.state);
@@ -208,6 +212,8 @@ export default class PreDiscover extends React.Component {
                         };
                         this.setState(previousState => {
                             console.log(previousState);
+                            let messages = previousState.messages;
+                            messages.splice(messages.length - 1, 1);
                             return {
                                 messages: GiftedChat.append(previousState.messages, message)
                             };
@@ -352,6 +358,8 @@ export default class PreDiscover extends React.Component {
                     };
                     this.setState(previousState => {
                         console.log(previousState);
+                        let messages = previousState.messages;
+                        messages.splice(messages.length - 1, 1);
                         return {
                             messages: GiftedChat.append(previousState.messages, message)
                         };
@@ -373,7 +381,7 @@ export default class PreDiscover extends React.Component {
         this.setupNotificationListeners();
         let message = {
             _id: new Date().getTime(),
-            text: 'Long-press this bubble to discover new people!',
+            text: 'Long-press this text to discover new people!',
             createdAt: new Date(),
             user: {},
         };
