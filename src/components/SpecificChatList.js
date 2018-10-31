@@ -450,9 +450,9 @@ export default class SpecificChatList extends Component {
                                     )}
                                     </View>,
                                     <FlatList
-                                        data={this.state.people}
-                                        keyExtractor={(data) => this.peopleKeyExtractor(data)}
-                                        renderItem={this.renderUser} />
+                                    data={this.state.people}
+                                    keyExtractor={(data) => this.peopleKeyExtractor(data)}
+                                    renderItem={this.renderUser} />
                                 )}
                             </List>
                         </ScrollView>
