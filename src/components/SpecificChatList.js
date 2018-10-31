@@ -121,11 +121,23 @@ export default class SpecificChatList extends Component {
                 // new chat, performing mutation
                 
             } else {
+                if (!conversations) {
+                    conversations = [];
+                }
                 const idSearch = new JsSearch.Search('conversationId');
                 idSearch.addIndex(['user2', 'firebaseId']);
                 idSearch.addDocuments(conversations);
                 chat = idSearch.search(item.firebaseId)[0];
                 console.log(chat);
+                if (!chat) {
+                    // happens when user re-clicks on new chat in Search view
+                    let chatId = SpecificChatList.generateConversationId(this.user.firebaseId, item.firebaseId);
+                    chat = {
+                        conversationId: chatId, 
+                        user1: this.user,
+                        user2: item,
+                    }
+                }
                 newChat = false;
             }
             this.props.navigation.navigate('SpecificTextScreen', {chat: chat, newChat: newChat});
@@ -397,6 +409,7 @@ export default class SpecificChatList extends Component {
     async getUser() {
         let user = JSON.parse(await AsyncStorage.getItem(Constants.UserObject));
         this.setState({user: user});
+        this.user = this.state.user;
     }
 
     render() {
