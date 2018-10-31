@@ -116,6 +116,7 @@ const styles = StyleSheet.create({
     text: {
         backgroundColor: 'transparent',
         color: 'black',
+        fontWeight: 'bold',
         fontSize: 14,
     },
 })

@@ -236,6 +236,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent'
     },
     resultText: {
+        fontWeight: 'bold',
     },
     pollButton: {
         borderRadius: 0,
