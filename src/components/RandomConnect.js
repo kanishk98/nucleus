@@ -24,12 +24,37 @@ export default class RandomConnect extends React.Component {
     this.state = {
       messages: [],
       typedMessage: '',
+      modalClicked: false, 
     };
+    this._didExitChatSubscription = props.navigation.addListener('didExit', payload =>
+      BackHandler.addEventListener('hardwareBackPress', this.onBackButtonPressAndroid)
+    );
     this.conversationId = this.props.navigation.getParam('conversationId');
     this.user = this.props.navigation.getParam('user');
     this.randomUser = this.props.navigation.getParam('randomUser');
     this.subscribeToDiscoverMessages();
     this.subscribeToDeletedChat();
+  }
+
+  _alertDelete = async () => {
+    const conversationId = await AsyncStorage.getItem('discoverConversationId');
+    console.log(conversationId);
+    API.graphql(graphqlOperation(GraphQL.DeleteDiscoverChat, {input: {conversationId: conversationId}}))
+    .then(res => {
+      console.log(res);
+    })
+    .catch(err => {
+      console.log(err);
+    });
+  }
+
+  onBackButtonPressAndroid = () => {
+    if (!this.state.modalClicked) {
+      this._alertDelete();
+      return true;
+    } else {
+      return false;
+    }
   }
 
   sendNotification() {
@@ -76,7 +101,10 @@ export default class RandomConnect extends React.Component {
           'Chat closed',
           'This happens when one of you goes offline.',
           [
-            {text: 'OK', onPress: () => this.props.navigation.navigate('Chat')},
+            {text: 'OK', onPress: () => {
+              this.setState({modalClicked: true});
+              this.props.navigation.navigate('Chat');
+            }},
           ],
           { cancelable: false }
         );
