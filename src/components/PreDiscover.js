@@ -277,9 +277,11 @@ export default class PreDiscover extends React.Component {
                 console.log(res);
                 // chatting resolved, moving on to another screen
                 let { author, conversationId } = this.state.requestChat;
+                let messages = this.state.messages;
+                messages.splice(-1, 1);
                 this.setState(previousState => {
                     return {
-                        messages: GiftedChat.removeMessage(previousState.messages, previousState.messages, 'Someone got connected to you! Long-press this text to accept their request.')
+                        messages: messages,
                     }
                 })
                 this.setState({discoverStopped: true, requestId: null, navigating: true});

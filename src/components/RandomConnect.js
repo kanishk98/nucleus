@@ -26,9 +26,7 @@ export default class RandomConnect extends React.Component {
       typedMessage: '',
       modalClicked: false,
     };
-    this._didExitChatSubscription = props.navigation.addListener('didExit', payload =>
-      BackHandler.addEventListener('hardwareBackPress', this.onBackButtonPressAndroid)
-    );
+    BackHandler.addEventListener('hardwareBackPress', this.onBackButtonPressAndroid);
     this.conversationId = this.props.navigation.getParam('conversationId');
     this.user = this.props.navigation.getParam('user');
     this.randomUser = this.props.navigation.getParam('randomUser');
@@ -49,7 +47,7 @@ export default class RandomConnect extends React.Component {
   }
 
   componentWillUnmount() {
-    this._didExitChatSubscription && this._didExitChatSubscription.remove();
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
   }
 
   onBackButtonPressAndroid = () => {
