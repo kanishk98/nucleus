@@ -211,7 +211,7 @@ export default class Trending extends React.PureComponent {
                     keyExtractor={this.postKeyExtractor}
                     renderItem={this.renderPost}
                     onEndReached={this.getMorePosts}
-                    onEndReachedThreshold={0.25}
+                    onEndReachedThreshold={0.75}
                     onRefresh={this._onrefresh}
                     refreshing={false}
                 />

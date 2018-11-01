@@ -38,7 +38,7 @@ const BottomNavigator = createBottomTabNavigator({
                     title: 'Polls', headerRight: (
                         <Button
                             onPress={newTrendingPost}
-                            title="+1"
+                            title="New poll"
                             textStyle={{ color: 'black' }}
                             raised={false}
                             backgroundColor='rgba(0, 0, 0, 0)'
