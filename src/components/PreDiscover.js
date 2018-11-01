@@ -55,7 +55,7 @@ export default class PreDiscover extends React.Component {
     }
 
     openChat = (randomChat, connectedUser) => {
-        this.setState({discoverStopped: true});
+        this.setState({ discoverStopped: true });
         this.props.navigation.navigate('Random', { randomUser: connectedUser, conversationId: randomChat.conversationId, user: this.user, fcmToken: connectedUser.fcmToken });
     }
 
@@ -63,25 +63,25 @@ export default class PreDiscover extends React.Component {
         this.notificationListener = firebase.notifications().onNotification((notification) => {
             // Process your notification as required
             console.log(notification);
-            const displayNotification = new firebase.notifications.Notification()
-                .setNotificationId(notification.notificationId)
-                .setTitle(notification.title)
-                .setBody(notification.body)
-                .setData({
-                    random: notification.data.random,
-                    randomChat: notification.data.chat,
-                    request: notification.data.request,
-                    connectedUser: notification.data.connectedUser,
-                });
-            if (Platform.OS == 'ios') {
-                displayNotification.ios.setBadge(notification.ios.badge);
-            } else {
-                // android
-                displayNotification.android.setChannelId('channelId');
-                displayNotification.android.setOnlyAlertOnce(true);
-                displayNotification.android.setAutoCancel(true);
+            if (notification._title === 'Unknown') {
+                const displayNotification = new firebase.notifications.Notification()
+                    .setNotificationId(notification.notificationId)
+                    .setTitle(notification.title)
+                    .setBody(notification.body)
+                    .setData({
+                        random: notification.data.random,
+                        randomChat: notification.data.chat,
+                        request: notification.data.request,
+                        connectedUser: notification.data.connectedUser,
+                    });
+                if (Platform.OS == 'ios') {
+                    displayNotification.ios.setBadge(notification.ios.badge);
+                } else {
+                    // android
+                    displayNotification.android.setChannelId('channelId');
+                }
+                firebase.notifications().displayNotification(displayNotification);
             }
-            firebase.notifications().displayNotification(displayNotification);
         });
         this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen) => {
             // Get the action triggered by the notification being opened
@@ -90,21 +90,26 @@ export default class PreDiscover extends React.Component {
             // Get information about the notification that was opened
             const notification = notificationOpen.notification;
             console.log(notification);
-            const randomChat = JSON.parse(notification.data.randomChat);
-            const connectedUser = JSON.parse(notification.data.connectedUser);
-            this.openChat(randomChat, connectedUser);
+            if (notification._title === 'Unknown') {
+                const randomChat = JSON.parse(notification._data.randomChat);
+                const connectedUser = JSON.parse(notification._data.connectedUser);
+                this.openChat(randomChat, connectedUser);
+            }
         });
         const notificationOpen = await firebase.notifications().getInitialNotification();
         if (notificationOpen) {
+            console.log(notificationOpen);
             // Get the action triggered by the notification being opened
             const action = notificationOpen.action;
             console.log(action);
             // Get information about the notification that was opened
             const notification = notificationOpen.notification;
             console.log(notification);
-            if (!!random) {
-                const randomChat = JSON.parse(notification.data.randomChat);
-                this.openChat(randomChat);
+            if (notification._title === 'Unknown') {
+                if (!!random) {
+                    const randomChat = JSON.parse(notification._data.randomChat);
+                    this.openChat(randomChat);
+                }
             }
         }
     }
@@ -132,7 +137,7 @@ export default class PreDiscover extends React.Component {
 
     ignoreFlagAndStartDiscover() {
         if (this.state.navigating) {
-            this.setState({navigating: false});
+            this.setState({ navigating: false });
         }
         this.setState({ discoverStopped: false });
         this.forced = true;
@@ -219,7 +224,7 @@ export default class PreDiscover extends React.Component {
                                 if (!res.value.data.deleteNucleusDiscoverChats) {
                                     console.log('request for chatting accepted by user');
                                     clearTimeout(this.startDiscover);
-                                    this.setState({discoverStopped: true});
+                                    this.setState({ discoverStopped: true });
                                     this.props.navigation.navigate('Random', { randomUser: connectedUser, conversationId: chatId, user: this.user, fcmToken: connectedUser.fcmToken });
                                 }
                             })
@@ -284,7 +289,7 @@ export default class PreDiscover extends React.Component {
                         messages: messages,
                     }
                 })
-                this.setState({discoverStopped: true, requestId: null, navigating: true});
+                this.setState({ discoverStopped: true, requestId: null, navigating: true });
                 this.props.navigation.navigate('Random', { randomUser: author, conversationId: conversationId, user: this.user, fcmToken: this.state });
             })
             .catch(err => {
@@ -408,7 +413,7 @@ export default class PreDiscover extends React.Component {
     _renderInputToolbar = () => {
         if (!this.state.discoverStopped) {
             return (
-                <View style={{width: DEVICE_WIDTH, backgroundColor: "#b2b2b2"}}>
+                <View style={{ width: DEVICE_WIDTH, backgroundColor: "#b2b2b2" }}>
                     <Button
                         onPress={this.stopDiscover}
                         raised={false}
@@ -418,7 +423,7 @@ export default class PreDiscover extends React.Component {
                 </View>)
         } else {
             return (
-                <View style={{width: DEVICE_WIDTH, backgroundColor: Constants.primaryColor}}>
+                <View style={{ width: DEVICE_WIDTH, backgroundColor: Constants.primaryColor }}>
                     <Button
                         onPress={this.ignoreFlagAndStartDiscover}
                         raised={false}

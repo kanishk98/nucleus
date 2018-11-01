@@ -6,7 +6,7 @@ import AWS from 'aws-sdk';
 import * as JsSearch from 'js-search';
 import Search from './Search';
 import { renderSearch, renderOnline, renderResults } from './renderIf';
-import {Auth, API, graphqlOperation} from 'aws-amplify';
+import { Auth, API, graphqlOperation } from 'aws-amplify';
 import * as GraphQL from '../graphql';
 import firebase from 'react-native-firebase';
 import LoginScreen from './LoginScreen';
@@ -28,7 +28,7 @@ export default class SpecificChatList extends Component {
             dynamoDbCrc32: false,
             accessKeyId: Constants.accessKey,
             secretAccessKey: Constants.secretAccessKey,
-            region:'ap-south-1'
+            region: 'ap-south-1'
         });
         /*const dynamoDB = new AWS.DynamoDB();
         const table = {TableName: "Nucleus.DiscoverUsers"};
@@ -47,10 +47,10 @@ export default class SpecificChatList extends Component {
     DEVICE_HEIGHT = Dimensions.get('window').height;
 
     showPeople = () => {
-        this.setState({showingPeople: true});
+        this.setState({ showingPeople: true });
     }
 
-    addChat = async(conversation) => {
+    addChat = async (conversation) => {
         try {
             this.state.conversations.push(conversation);
             this.forceUpdate();
@@ -65,12 +65,12 @@ export default class SpecificChatList extends Component {
         let s = '';
         const l1 = s1.length;
         const l2 = s2.length;
-        let l = l1<l2?l1:l2;
+        let l = l1 < l2 ? l1 : l2;
         for (let i = 0; i < l; ++i) {
             let ch1 = s1.charAt(i);
             let ch2 = s2.charAt(i);
-            s = s + (ch1<ch2?ch1:ch2);
-            s = s + (ch1<ch2?ch2:ch1); 
+            s = s + (ch1 < ch2 ? ch1 : ch2);
+            s = s + (ch1 < ch2 ? ch2 : ch1);
         }
         if (l < l1) {
             s = s + s1.substring(l + 1);
@@ -82,27 +82,27 @@ export default class SpecificChatList extends Component {
     }
 
     // item here is a user
-    newChat (item) {
+    newChat(item) {
         if (!this.user) {
             this.user = this.state.user;
         }
         if (!!item) {
             let chat = null;
             let newChat = true;
-            let {conversations, talkingTo} = this.state;
+            let { conversations, talkingTo } = this.state;
             if (!talkingTo.includes(item.firebaseId)) {
                 talkingTo.push(item.firebaseId);
                 AsyncStorage.setItem(Constants.TalkingTo, JSON.stringify(talkingTo))
-                .then(res => {
-                    console.log('Saved userID in talkingTo');
-                })
-                .catch(err => {
-                    console.log(err);
-                });
+                    .then(res => {
+                        console.log('Saved userID in talkingTo');
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    });
                 let chatId = SpecificChatList.generateConversationId(this.user.firebaseId, item.firebaseId);
                 // add chat to local storage
                 chat = {
-                    conversationId: chatId, 
+                    conversationId: chatId,
                     user1: this.user,
                     user2: item,
                 }
@@ -112,14 +112,14 @@ export default class SpecificChatList extends Component {
                 }
                 conversations.push(chat);
                 AsyncStorage.setItem(Constants.SpecificChatConversations, JSON.stringify(conversations))
-                .then(res => {
-                    console.log('Saved successfully: ' + JSON.stringify(res));
-                })
-                .catch(err => {
-                    console.log(err);
-                });
+                    .then(res => {
+                        console.log('Saved successfully: ' + JSON.stringify(res));
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    });
                 // new chat, performing mutation
-                
+
             } else {
                 if (!conversations) {
                     conversations = [];
@@ -133,14 +133,14 @@ export default class SpecificChatList extends Component {
                     // happens when user re-clicks on new chat in Search view
                     let chatId = SpecificChatList.generateConversationId(this.user.firebaseId, item.firebaseId);
                     chat = {
-                        conversationId: chatId, 
+                        conversationId: chatId,
                         user1: this.user,
                         user2: item,
                     }
                 }
                 newChat = false;
             }
-            this.props.navigation.navigate('SpecificTextScreen', {chat: chat, newChat: newChat});
+            this.props.navigation.navigate('SpecificTextScreen', { chat: chat, newChat: newChat });
         }
     }
 
@@ -148,34 +148,34 @@ export default class SpecificChatList extends Component {
         console.log(item);
         const chat = {
             conversationId: item.conversationId,
-            user1: this.user, 
+            user1: this.user,
             user2: item.user2,
         }
-        this.props.navigation.navigate('SpecificTextScreen', {chat: chat, newChat: false});
+        this.props.navigation.navigate('SpecificTextScreen', { chat: chat, newChat: false });
     }
 
     // item here is a conversation
-    openChat = async(item) => {
+    openChat = async (item) => {
         console.log('Item: ' + JSON.stringify(item));
         let chat = {
             conversationId: item.conversationId,
-            user1: this.user, 
+            user1: this.user,
             user2: item.user2,
         }
         // get conversations here, move selected conversation to top of FlatList
-        const {conversations} = this.state;
+        const { conversations } = this.state;
         console.log('Conversations: ' + JSON.stringify(conversations));
-        conversations.sort(function(x,y){ return x == item ? -1 : y == item ? 1 : 0; });
+        conversations.sort(function (x, y) { return x == item ? -1 : y == item ? 1 : 0; });
         // save newly sorted list
         console.log('Sorted conversations: ' + JSON.stringify(conversations));
-        this.setState({conversations: conversations});
+        this.setState({ conversations: conversations });
         await AsyncStorage.setItem('CHATS', JSON.stringify(conversations));
-        this.props.navigation.navigate('SpecificTextScreen', {chat: chat, newChat: false});
+        this.props.navigation.navigate('SpecificTextScreen', { chat: chat, newChat: false });
         this.retrieveChats();
         console.log('retrieved chats');
     }
 
-    deleteAllChats = async() => {
+    deleteAllChats = async () => {
         try {
             await AsyncStorage.removeItem('CHATS');
         } catch (error) {
@@ -183,8 +183,8 @@ export default class SpecificChatList extends Component {
         }
     }
 
-    retrieveChats = async() => {
-        this.setState({conversations: JSON.parse(await(AsyncStorage.getItem(Constants.SpecificChatConversations)))});
+    retrieveChats = async () => {
+        this.setState({ conversations: JSON.parse(await (AsyncStorage.getItem(Constants.SpecificChatConversations))) });
     }
 
     chatKeyExtractor = (item, index) => item.user2.firebaseId;
@@ -193,14 +193,14 @@ export default class SpecificChatList extends Component {
 
     componentWillMount() {
         this.user = this.props.navigation.getParam('user');
-        this.setState({user: this.user});
+        this.setState({ user: this.user });
         this.retrieveChats();
     }
-    
+
     async componentDidMount() {
         this.noFilter = {
-            firebaseId: {ne: JSON.parse(await AsyncStorage.getItem(Constants.UserObject)).firebaseId},
-            geohash: {ne: 'random_user_geohash'},
+            firebaseId: { ne: JSON.parse(await AsyncStorage.getItem(Constants.UserObject)).firebaseId },
+            geohash: { ne: 'random_user_geohash' },
         }
         // checking for notification permissions
         if (!this.user) {
@@ -208,7 +208,7 @@ export default class SpecificChatList extends Component {
         }
         let enabled = false;
         enabled = await firebase.messaging().hasPermission();
-        if(!enabled) {
+        if (!enabled) {
             try {
                 console.log('Awaiting Firebase request for permission');
                 await firebase.messaging().requestPermission();
@@ -218,56 +218,62 @@ export default class SpecificChatList extends Component {
         }
         if (enabled) {
             this.fcmToken = firebase.messaging().getToken()
-            .then(res => {
-                console.log('User message ' + res);
-                // storing token as user attribute
-                this.user.fcmToken = res;
-                API.graphql(graphqlOperation(GraphQL.UpdateDiscoverUser, {input: this.user}))
-                .then(updated => {
-                    console.log(updated);
+                .then(res => {
+                    console.log('User message ' + res);
+                    // storing token as user attribute
+                    this.user.fcmToken = res;
+                    API.graphql(graphqlOperation(GraphQL.UpdateDiscoverUser, { input: this.user }))
+                        .then(updated => {
+                            console.log(updated);
+                        })
+                        .catch(fcmErr => {
+                            console.log(fcmErr);
+                        });
+                    console.log('FCM token: ' + res);
                 })
-                .catch(fcmErr => {
-                    console.log(fcmErr);
+                .catch(err => {
+                    console.log('FCM error: ' + err);
+                    // handle error appropriately
                 });
-                console.log('FCM token: ' + res);
-            })
-            .catch(err => {
-                console.log('FCM error: ' + err);
-                // handle error appropriately
-            });
             // setting up notification listeners
-            this.notificationListener = firebase.notifications().onNotification(async(notification) => {
+            this.notificationListener = firebase.notifications().onNotification(async (notification) => {
                 // Process your notification as required
                 console.log(notification);
                 const displayNotification = new firebase.notifications.Notification()
-                .setNotificationId(notification.notificationId)
-                .setTitle(notification.title)
-                .setBody(notification.body)
-                .setData({
-                    chat: notification.data.chat,
-                });
+                    .setNotificationId(notification.notificationId)
+                    .setTitle(notification.title)
+                    .setBody(notification.body)
+                    .setData({
+                        chat: notification.data.chat,
+                    });
                 if (Platform.OS == 'ios') {
                     displayNotification.ios.setBadge(notification.ios.badge);
                 } else {
                     // android
                     displayNotification.android.setChannelId('channelId');
                 }
-                if (displayNotification.data.chat.user1.firebaseId !== this.user.firebaseId) {
-                    firebase.notifications().displayNotification(displayNotification);
+                console.log(displayNotification);
+                if (notification._title !== 'Unknown') {
+                    const chat = JSON.parse(displayNotification._data.chat);
+                    if (chat.user1.firebaseId !== this.user.firebaseId) {
+                        firebase.notifications().displayNotification(displayNotification);
+                    }
                 }
             });
-            this.notificationOpenedListener = firebase.notifications().onNotificationOpened(async(notificationOpen) => {
+            this.notificationOpenedListener = firebase.notifications().onNotificationOpened(async (notificationOpen) => {
                 if (enabled) {
                     // Get the action triggered by the notification being opened
                     const action = notificationOpen.action;
                     console.log(action);
                     // Get information about the notification that was opened
                     const notification = notificationOpen.notification;
-                    console.log(notification);
-                    const chat = notification.data.chat;
-                    if (!!chat) {
-                        const chat = notification.data.chat;
-                        this.openNotificationChat(chat);
+                    if (notification._title !== 'Unknown') {
+                        console.log(notification);
+                        const chat = JSON.parse(notification._data.chat);
+                        if (!!chat) {
+                            const chat = JSON.parse(notification._data.chat);
+                            this.openNotificationChat(chat);
+                        }
                     }
                 }
             });
@@ -280,10 +286,12 @@ export default class SpecificChatList extends Component {
                 // Get information about the notification that was opened
                 const notification = notificationOpen.notification;
                 console.log(notification);
-                const chat = notification.data.chat;
-                if (!!chat && chat != 'null') {
-                    const chat = notification.data.chat;
-                    this.openNotificationChat(chat);
+                if (notification._title !== 'Unknown') {
+                    const chat = JSON.parse(notification._data.chat);
+                    if (!!chat && chat != 'null') {
+                        const chat = JSON.parse(notification._data.chat);
+                        this.openNotificationChat(chat);
+                    }
                 }
             }
         }
@@ -294,26 +302,26 @@ export default class SpecificChatList extends Component {
         this.notificationListener();
     }
 
-    renderConversation = ({item}) => {
+    renderConversation = ({ item }) => {
         console.log(item);
         if (!this.user) {
             this.user = this.state.user;
         }
         if (item.user2.firebaseId != this.user.firebaseId) {
             return (
-            <ListItem 
-                onPress={this.openChat.bind(this, item)}
-                roundAvatar
-                avatar={{uri: item.user2.profilePic}}
-                title={item.user2.username}
-                titleStyle={{fontWeight: 'bold'}}
-            />);
+                <ListItem
+                    onPress={this.openChat.bind(this, item)}
+                    roundAvatar
+                    avatar={{ uri: item.user2.profilePic }}
+                    title={item.user2.username}
+                    titleStyle={{ fontWeight: 'bold' }}
+                />);
         } else {
             return null;
         }
     };
 
-    renderUser = ({item}) => {
+    renderUser = ({ item }) => {
         if (!this.user) {
             this.user = this.state.user;
         }
@@ -321,18 +329,18 @@ export default class SpecificChatList extends Component {
             <ListItem
                 onPress={this.newChat.bind(this, item)}
                 roundAvatar
-                avatar={{uri: item.profilePic}}
+                avatar={{ uri: item.profilePic }}
                 title={item.username}
-                titleStyle={{fontWeight: 'bold'}}
+                titleStyle={{ fontWeight: 'bold' }}
             />
         );
     };
 
-    searchConversations = ({text}) => {
+    searchConversations = ({ text }) => {
         // text contains user names
         if (text == '') {
             // empty string, reset search
-            this.setState({searching: false});
+            this.setState({ searching: false });
             return;
         }
         const chatSearch = new JsSearch.Search('firebaseId');
@@ -340,77 +348,77 @@ export default class SpecificChatList extends Component {
         chatSearch.addDocuments(this.state.people);
         let searchResults = chatSearch.search(text);
         console.log(searchResults);
-        this.setState({searchResults: searchResults, searching: true})
+        this.setState({ searchResults: searchResults, searching: true })
     }
 
-    getStoredUsers () {
+    getStoredUsers() {
         AsyncStorage.getItem(Constants.UserList)
-        .then(res => {
-            console.log('Stored users ' + JSON.stringify(res));
-            if (res != null) {
-                this.setState({people: JSON.parse(res)});
-            } else {
-                this.fetchUsers();
-                this.getStoredUsers();
-            }
-        })
-        .catch(err => {
-            console.log(err);
-        });
-    }
-
-    fetchUsers () {
-        API.graphql(graphqlOperation(GraphQL.GetAllDiscoverUsers, {filter: this.noFilter}))
-        .then(res => {
-            // removing signed-in user from UserList
-            const users = res.data.listNucleusDiscoverUsers.items;
-            AsyncStorage.setItem(Constants.UserList, JSON.stringify(users))
-                .then(asyncStorageResult => {
-                    console.log(asyncStorageResult);
-                })
-                .catch(asyncStorageError => {
-                    console.log(asyncStorageError);
-            });
-            if (res.data.listNucleusDiscoverUsers.nextToken != null) {
-                // start background operation to fetch more data
-                this.getPaginatedUsers(res.data.listNucleusDiscoverUsers.nextToken);
-            }
-        })
-        .catch(err => {
-            console.log(err);
-        });
-    }
-
-    getPaginatedUsers = (nextToken) => {
-        API.graphql(graphqlOperation(GraphQL.GetAllDiscoverUsers, {filter: this.noFilter, nextToken: nextToken}))
-        .then(res => {
-            const users = res.data.listNucleusDiscoverUsers.items;
-            AsyncStorage.getItem(Constants.UserList)
             .then(res => {
-                savedUsers = JSON.parse(res);
-                savedUsers.push(users);
+                console.log('Stored users ' + JSON.stringify(res));
+                if (res != null) {
+                    this.setState({ people: JSON.parse(res) });
+                } else {
+                    this.fetchUsers();
+                    this.getStoredUsers();
+                }
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }
+
+    fetchUsers() {
+        API.graphql(graphqlOperation(GraphQL.GetAllDiscoverUsers, { filter: this.noFilter }))
+            .then(res => {
+                // removing signed-in user from UserList
+                const users = res.data.listNucleusDiscoverUsers.items;
                 AsyncStorage.setItem(Constants.UserList, JSON.stringify(users))
                     .then(asyncStorageResult => {
                         console.log(asyncStorageResult);
                     })
                     .catch(asyncStorageError => {
                         console.log(asyncStorageError);
-                });
+                    });
                 if (res.data.listNucleusDiscoverUsers.nextToken != null) {
                     // start background operation to fetch more data
                     this.getPaginatedUsers(res.data.listNucleusDiscoverUsers.nextToken);
                 }
             })
-            .catch(err => console.log(err));
-        })
-        .catch(err => {
-            console.log(err);
-        });
+            .catch(err => {
+                console.log(err);
+            });
+    }
+
+    getPaginatedUsers = (nextToken) => {
+        API.graphql(graphqlOperation(GraphQL.GetAllDiscoverUsers, { filter: this.noFilter, nextToken: nextToken }))
+            .then(res => {
+                const users = res.data.listNucleusDiscoverUsers.items;
+                AsyncStorage.getItem(Constants.UserList)
+                    .then(res => {
+                        savedUsers = JSON.parse(res);
+                        savedUsers.push(users);
+                        AsyncStorage.setItem(Constants.UserList, JSON.stringify(users))
+                            .then(asyncStorageResult => {
+                                console.log(asyncStorageResult);
+                            })
+                            .catch(asyncStorageError => {
+                                console.log(asyncStorageError);
+                            });
+                        if (res.data.listNucleusDiscoverUsers.nextToken != null) {
+                            // start background operation to fetch more data
+                            this.getPaginatedUsers(res.data.listNucleusDiscoverUsers.nextToken);
+                        }
+                    })
+                    .catch(err => console.log(err));
+            })
+            .catch(err => {
+                console.log(err);
+            });
     }
 
     async getUser() {
         let user = JSON.parse(await AsyncStorage.getItem(Constants.UserObject));
-        this.setState({user: user});
+        this.setState({ user: user });
         this.user = this.state.user;
     }
 
@@ -440,21 +448,21 @@ export default class SpecificChatList extends Component {
                             <List containerStyle={{ borderColor: Constants.primaryColor }}>
                                 {renderSearch(
                                     (this.state.searching),
-                                    <View style={{flex: 1}} >
-                                    {renderResults((this.state.searchResults.length > 0), 
-                                        <FlatList
-                                            data={this.state.searchResults}
-                                            keyExtractor={(data) => this.peopleKeyExtractor(data)}
-                                            renderItem={this.renderUser} />,
-                                        <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
-                                            <Image style={{width: this.DEVICE_WIDTH/2, height: this.DEVICE_HEIGHT/2}} source={require('../../assets/not_found.png')}/>
-                                        </View>
-                                    )}
+                                    <View style={{ flex: 1 }} >
+                                        {renderResults((this.state.searchResults.length > 0),
+                                            <FlatList
+                                                data={this.state.searchResults}
+                                                keyExtractor={(data) => this.peopleKeyExtractor(data)}
+                                                renderItem={this.renderUser} />,
+                                            <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+                                                <Image style={{ width: this.DEVICE_WIDTH / 2, height: this.DEVICE_HEIGHT / 2 }} source={require('../../assets/not_found.png')} />
+                                            </View>
+                                        )}
                                     </View>,
                                     <FlatList
-                                    data={this.state.people}
-                                    keyExtractor={(data) => this.peopleKeyExtractor(data)}
-                                    renderItem={this.renderUser} />
+                                        data={this.state.people}
+                                        keyExtractor={(data) => this.peopleKeyExtractor(data)}
+                                        renderItem={this.renderUser} />
                                 )}
                             </List>
                         </ScrollView>
@@ -475,8 +483,8 @@ export default class SpecificChatList extends Component {
                                                 data={this.state.searchResults}
                                                 keyExtractor={(data) => this.peopleKeyExtractor(data)}
                                                 renderItem={this.renderUser} />,
-                                            <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
-                                                <Image style={{width: this.DEVICE_WIDTH/2, height: this.DEVICE_HEIGHT/2}} source={require('../../assets/not_found.png')}/>
+                                            <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+                                                <Image style={{ width: this.DEVICE_WIDTH / 2, height: this.DEVICE_HEIGHT / 2 }} source={require('../../assets/not_found.png')} />
                                             </View>
                                         )}
                                     </View>,
@@ -500,16 +508,16 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         flex: 1,
         justifyContent: 'flex-start',
-    }, 
+    },
     initialLayout: {
         flex: 1,
         justifyContent: 'center',
-    }, 
+    },
     container: {
-      backgroundColor: 'white',
+        backgroundColor: 'white',
     },
     textContainer: {
-        flex: 1, 
+        flex: 1,
         alignItems: 'center',
         justifyContent: 'center'
     },
@@ -532,18 +540,18 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     chatContainer: {
-      flex: 1,
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: 'white',
-      borderBottomColor: '#eee',
-      borderBottomWidth: 1,
-      paddingHorizontal: 12,
-      paddingVertical: 8,
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'white',
+        borderBottomColor: '#eee',
+        borderBottomWidth: 1,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
     },
     chatName: {
-      fontWeight: 'bold',
-      flex: 0.7,
-      color: 'black',
+        fontWeight: 'bold',
+        flex: 0.7,
+        color: 'black',
     },
-  });
+});
