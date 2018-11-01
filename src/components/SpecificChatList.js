@@ -149,7 +149,7 @@ export default class SpecificChatList extends Component {
         const chat = {
             conversationId: item.conversationId,
             user1: this.user,
-            user2: item.user2,
+            user2: item.user1,
         }
         this.props.navigation.navigate('SpecificTextScreen', { chat: chat, newChat: false });
     }
@@ -251,6 +251,7 @@ export default class SpecificChatList extends Component {
                 } else {
                     // android
                     displayNotification.android.setChannelId('channelId');
+                    displayNotification.android.setAutoCancel(true);
                 }
                 console.log(displayNotification);
                 if (notification._title !== 'Unknown') {

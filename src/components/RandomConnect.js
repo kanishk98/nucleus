@@ -58,7 +58,8 @@ export default class RandomConnect extends React.Component {
     return false;
   }
 
-  sendNotification() {
+  sendNotification(message) {
+    console.log(message);
     fetch(Constants.discoverNotificationsUrl, {
       method: 'POST',
       headers: {
@@ -66,9 +67,9 @@ export default class RandomConnect extends React.Component {
           'key': Constants.googleAuthKey,
       },
       body: JSON.stringify({
-          content: message[0].text,
-          author: this.chat.user1.username,
-          token: this.chat.user2.fcmToken,
+          content: message.content,
+          author: message.author.username,
+          token: message.recipient.fcmToken,
           chat: this.chat,
       })
   })
@@ -144,6 +145,7 @@ export default class RandomConnect extends React.Component {
       timestamp: message[0].createdAt,
     }
     console.log(newMessage);
+    // this.sendNotification(newMessage);
     API.graphql(graphqlOperation(GraphQL.CreateDiscoverMessage, { input: newMessage }))
       .then(res => {
         // optimistic UI, updates message regardless of network status
