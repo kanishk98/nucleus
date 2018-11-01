@@ -22,29 +22,26 @@ export default class LoginForm extends Component {
     }
 
     async fetchUsers(firebaseId) {
-        const noFilter = {
-            firebaseId: { ne: firebaseId },
-            geohash: { ne: 'random_user_geohash' },
-        }
-        const oldNoUsers = Number(await AsyncStorage.getItem(Constants.NoUsers));
-        // querying table to get ItemCount
+        // updating AWS config while user is not using anything
         AWS.config.update({
             dynamoDbCrc32: false,
             accessKeyId: Constants.accessKey,
             secretAccessKey: Constants.secretAccessKey,
             region: 'ap-south-1'
         });
-        const dynamoDB = new AWS.DynamoDB();
-        const table = { TableName: "Nucleus.DiscoverUsers" };
-        dynamoDB.describeTable(table, function (err, data) {
-            if (err) {
-                console.log(err, err.stack);
-            } else {
-                console.log(data);
-                this.itemCount = data.ItemCount;
-            }
+        const noFilter = {
+            firebaseId: { ne: firebaseId },
+            geohash: { ne: 'random_user_geohash' },
+        }
+        const oldNoUsers = Number(await AsyncStorage.getItem(Constants.NoUsers));
+        let userCount = -1; // indicates inability to fetch
+        const fetchResult = await fetch("http://" + Constants.postsIp + "/get-usercount", {
+            method: 'GET', 
         });
-        if (this.itemCount > oldNoUsers) {
+        userCount = Number(JSON.parse(fetchResult._bodyText).data);
+        console.log(userCount);
+        // TODO: replace this with more efficient reverse query sorted on geohash
+        if (userCount > oldNoUsers) {
             API.graphql(graphqlOperation(GraphQL.GetAllDiscoverUsers, { filter: noFilter }))
                 .then(async (res) => {
                     const users = res.data.listNucleusDiscoverUsers.items;
@@ -75,7 +72,7 @@ export default class LoginForm extends Component {
                         AsyncStorage.getItem(Constants.UserObject)
                             .then(savedUser => {
                                 console.log(savedUser);
-                                this.fetchUsers();
+                                this.fetchUsers(savedUser.firebaseId);
                                 if (!!savedUser) {
                                     this.props.navigation.dispatch(StackActions.reset({
                                         index: 0,
@@ -171,6 +168,14 @@ export default class LoginForm extends Component {
         return false;
     }
 
+    updateUserCount = () => {
+        fetch("http://" + Constants.postsIp + "/add-user", {
+            method: 'GET', 
+        })
+        .then(res => console.log(res))
+        .catch(err => console.log(err));
+    }
+
     signIn = async () => {
         try {
             this.setState({ progress: true });
@@ -213,6 +218,7 @@ export default class LoginForm extends Component {
                         API.graphql(graphqlOperation(GraphQL.CreateDiscoverUser, { input: newUser }))
                             .then(res => {
                                 this.resolveUser(newUser);
+                                this.updateUserCount();
                             })
                             .catch(err => {
                                 console.log(err);
