@@ -118,9 +118,11 @@ export default class SpecificChatList extends Component {
                     .catch(err => {
                         console.log(err);
                     });
+                this.setState({conversations});
                 // new chat, performing mutation
 
             } else {
+                conversations = this.state.conversations;
                 if (!conversations) {
                     conversations = [];
                 }

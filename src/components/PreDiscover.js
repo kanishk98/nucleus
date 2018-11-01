@@ -352,10 +352,7 @@ export default class PreDiscover extends React.Component {
                         _id: new Date().getTime(),
                         text: 'Someone got connected to you! Long-press this text to accept their request.',
                         createdAt: new Date(),
-                        user: {
-                            _id: newChat.author.firebaseId,
-                            name: newChat.author.username,
-                        },
+                        user: {}
                     };
                     this.setState(previousState => {
                         console.log(previousState);
@@ -380,7 +377,7 @@ export default class PreDiscover extends React.Component {
         this.setupNotificationListeners();
         let message = {
             _id: new Date().getTime(),
-            text: 'Long-press this bubble to discover new people!',
+            text: 'Long-press this message to discover new people!',
             createdAt: new Date(),
             user: {},
         };
@@ -416,6 +413,8 @@ export default class PreDiscover extends React.Component {
                 <View style={{ width: DEVICE_WIDTH, backgroundColor: "#b2b2b2" }}>
                     <Button
                         onPress={this.stopDiscover}
+                        borderRadius={10}
+                        buttonStyle={{marginBottom: 20}}
                         raised={false}
                         backgroundColor={'#b2b2b2'}
                         title='Stop Discovering people'
@@ -427,6 +426,7 @@ export default class PreDiscover extends React.Component {
                     <Button
                         onPress={this.ignoreFlagAndStartDiscover}
                         raised={false}
+                        buttonStyle={{marginBottom: 20}}
                         backgroundColor={Constants.primaryColor}
                         title='Start Discovering people'
                     />
