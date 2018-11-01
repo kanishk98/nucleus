@@ -16,7 +16,6 @@ export default class PreDiscover extends React.Component {
             text: 'Tap to talk',
             looking: false,
             connected: true,
-            onlineUsers: [],
             requestId: null,
             notificationsAllowed: false,
             progress: false,
@@ -144,6 +143,59 @@ export default class PreDiscover extends React.Component {
         this.startDiscover();
     }
 
+    getOnlineUsers = (nextToken) => {
+        let onlineUsers = [];
+        let receivedToken = null;
+        let options = null;
+        if (!nextToken) {
+            options = {
+                filter: {
+                    online: {
+                        eq: 1
+                    }
+                },
+                limit: 20,
+            };
+        } else {
+            options = {
+                filter: {
+                    online: {
+                        eq: 1
+                    }
+                },
+                limit: 20,
+                nextToken: nextToken,
+            };
+        }
+        API.graphql(graphqlOperation(GraphQL.ListOnlineDiscoverUsers), options)
+            .then(res => {
+                console.log(res);
+                let temp = res.data.listOnlineUsers;
+                receivedToken = res.data.nextToken;
+                onlineUsers = temp;
+                return { onlineUsers, receivedToken };
+            })
+            .catch(err => {
+                console.log(err);
+                let errorMessage = {
+                    _id: new Date().getTime(),
+                    text: 'You may have issues connecting. Check your network connection.',
+                    createdAt: new Date(),
+                    user: {
+                        _id: this.user.firebaseId,
+                        name: this.user.username,
+                        avatar: this.user.profilePic,
+                    },
+                };
+                this.setState(previousState => {
+                    console.log(previousState);
+                    return {
+                        messages: GiftedChat.append(previousState.messages, errorMessage)
+                    };
+                });
+            });
+    }
+
     startDiscover() {
         console.log('starting discover');
         if (!this.state.discoverStopped || this.forced) {
@@ -164,7 +216,16 @@ export default class PreDiscover extends React.Component {
                     messages: GiftedChat.append(previousState.messages, message)
                 };
             });
-            let { onlineUsers } = this.state;
+            let { onlineUsers, nextToken } = this.getOnlineUsers(null);
+            console.log(onlineUsers);
+            console.log(nextToken);
+            if (!onlineUsers || onlineUsers.length === 0) {
+                if (!!nextToken) {
+                    let result = this.getOnlineUsers(nextToken);
+                    /*onlineUsers = this.getOnlineUsers(nextToken).onlineUsers;
+                    nextToken = this.getOnlineUsers(nextToken).nextToken;*/
+                }
+            }
             let user = this.user;
             console.log(this.state);
             if (onlineUsers && onlineUsers.length > 1) {
@@ -310,32 +371,6 @@ export default class PreDiscover extends React.Component {
         this.user = JSON.parse(await AsyncStorage.getItem(Constants.UserObject));
         console.log(this.user);
         // querying online users
-        API.graphql(graphqlOperation(GraphQL.GetOnlineDiscoverUsers), {
-            online: 1
-        })
-            .then(res => {
-                let temp = res.data.getOnlineNucleusDiscoverUsers;
-                this.setState({ onlineUsers: temp });
-            })
-            .catch(err => {
-                console.log(err);
-                let errorMessage = {
-                    _id: new Date().getTime(),
-                    text: 'You may have issues connecting. Check your network connection.',
-                    createdAt: new Date(),
-                    user: {
-                        _id: this.user.firebaseId,
-                        name: this.user.username,
-                        avatar: this.user.profilePic,
-                    },
-                };
-                this.setState(previousState => {
-                    console.log(previousState);
-                    return {
-                        messages: GiftedChat.append(previousState.messages, errorMessage)
-                    };
-                });
-            });
         let user = this.user;
         // subscribing to requested conversations
         this.chatSubscription = API.graphql(
@@ -414,7 +449,7 @@ export default class PreDiscover extends React.Component {
                     <Button
                         onPress={this.stopDiscover}
                         borderRadius={10}
-                        buttonStyle={{marginBottom: 20}}
+                        buttonStyle={{ marginBottom: 20 }}
                         raised={false}
                         backgroundColor={'#b2b2b2'}
                         title='Stop Discovering people'
@@ -426,7 +461,7 @@ export default class PreDiscover extends React.Component {
                     <Button
                         onPress={this.ignoreFlagAndStartDiscover}
                         raised={false}
-                        buttonStyle={{marginBottom: 20}}
+                        buttonStyle={{ marginBottom: 20 }}
                         backgroundColor={Constants.primaryColor}
                         title='Start Discovering people'
                     />

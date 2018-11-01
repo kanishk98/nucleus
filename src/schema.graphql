@@ -139,6 +139,7 @@ type Query {
   listNucleusDiscoverConversations(filter: TableNucleusDiscoverConversationsFilterInput, limit: Int, nextToken: String): NucleusDiscoverConversationsConnection
   listNucleusDiscoverMessages(filter: TableNucleusDiscoverMessagesFilterInput, limit: Int, nextToken: String): NucleusDiscoverMessagesConnection
   listNucleusDiscoverUsers(filter: TableNucleusDiscoverUsersFilterInput, limit: Int, nextToken: String): NucleusDiscoverUsersConnection
+  listOnlineUsers(filter: OnlineUsersFilterInput, limit: Int, nextToken: String): NucleusDiscoverUsersConnection
 }
 
 type Schema {
@@ -281,6 +282,10 @@ input DeleteNucleusDiscoverMessagesInput {
 input DeleteNucleusDiscoverUsersInput {
   firebaseId: String!
   geohash: String!
+}
+
+input OnlineUsersFilterInput {
+  online: TableIntFilterInput!
 }
 
 input TableBooleanFilterInput {
