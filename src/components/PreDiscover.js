@@ -118,13 +118,13 @@ export default class PreDiscover extends React.Component {
         console.log('stopping discover');
         let temp = this.user;
         temp.online = 0;
-            API.graphql(graphqlOperation(GraphQL.UpdateDiscoverUser, {input: temp}))
-            .then (res => {
+        API.graphql(graphqlOperation(GraphQL.UpdateDiscoverUser, { input: temp }))
+            .then(res => {
                 console.log(res);
             })
             .catch(err => {
                 console.log(err);
-        });
+            });
         this.setState({ discoverStopped: true });
         let stoppedMessage = {
             _id: new Date().getTime(),
@@ -152,13 +152,13 @@ export default class PreDiscover extends React.Component {
         if (temp.online === 0) {
             // mark user as online
             temp.online = 1;
-            API.graphql(graphqlOperation(GraphQL.UpdateDiscoverUser, {input: temp}))
-            .then (res => {
-                console.log(res);
-            })
-            .catch(err => {
-                console.log(err);
-            });
+            API.graphql(graphqlOperation(GraphQL.UpdateDiscoverUser, { input: temp }))
+                .then(res => {
+                    console.log(res);
+                })
+                .catch(err => {
+                    console.log(err);
+                });
         }
         this.setState({ discoverStopped: false });
         this.forced = true;
@@ -279,7 +279,7 @@ export default class PreDiscover extends React.Component {
                     if (onlineUsers.includes(this.user)) {
                         onlineUsers.splice(onlineUsers.indexOf(this.user), 1);
                     }
-                    this.setState({onlineUsers: onlineUsers, nextToken: receivedToken});
+                    this.setState({ onlineUsers: onlineUsers, nextToken: receivedToken });
                     nextToken = receivedToken;
                     if (!onlineUsers || onlineUsers.length === 0) {
                         console.log('no online users found');
@@ -298,7 +298,7 @@ export default class PreDiscover extends React.Component {
                         onlineUsers = onlineUsers[0];
                         let randUser = Math.floor(Math.random() * onlineUsers.length);
                         console.log(randUser);
-                        if (onlineUsers[randUser].firebaseId === user.firebaseId) {
+                        if (onlineUsers[randUser].firebaseId == user.firebaseId) {
                             randUser = randUser + 1;
                             try {
                                 if (onlineUsers[randUser] == null) {
@@ -341,8 +341,12 @@ export default class PreDiscover extends React.Component {
                                 };
                                 this.setState(previousState => {
                                     console.log(previousState);
+                                    let messages = previousState.messages;
+                                    if (previousState.messages.length > 2) {
+                                        messages.splice(messages.length - 3, 2);
+                                    }
                                     return {
-                                        messages: GiftedChat.append(previousState.messages, message)
+                                        messages: GiftedChat.append(messages, message)
                                     };
                                 });
                                 API.graphql(graphqlOperation(GraphQL.SubscribeToUpdatedChats, { conversationId: chatId }))
@@ -467,22 +471,24 @@ export default class PreDiscover extends React.Component {
                 console.log('Subscription for chat received: ' + JSON.stringify(res));
                 const newChat = res.value.data.onCreateNucleusDiscoverChats;
                 console.log(newChat);
-                // notifies sender of request of conversation ignore after 5 seconds of subscription receipt
-                if (!this.componentUnmounted) {
-                    setTimeout((newChat) => this.cancelRequest, 10000);
-                    let message = {
-                        _id: new Date().getTime(),
-                        text: 'Someone got connected to you! Long-press this text to accept their request.',
-                        createdAt: new Date(),
-                        user: {}
-                    };
-                    this.setState(previousState => {
-                        console.log(previousState);
-                        return {
-                            messages: GiftedChat.append(previousState.messages, message)
+                if (newChat.author.firebaseId != newChat.recipient) {
+                    // notifies sender of request of conversation ignore after 5 seconds of subscription receipt
+                    if (!this.componentUnmounted) {
+                        setTimeout((newChat) => this.cancelRequest, 10000);
+                        let message = {
+                            _id: new Date().getTime(),
+                            text: 'Someone got connected to you! Long-press this text to accept their request.',
+                            createdAt: new Date(),
+                            user: {}
                         };
-                    });
-                    this.setState({ requestId: newChat.conversationId, requestChat: newChat, progress: false });
+                        this.setState(previousState => {
+                            console.log(previousState);
+                            return {
+                                messages: GiftedChat.append(previousState.messages, message)
+                            };
+                        });
+                        this.setState({ requestId: newChat.conversationId, requestChat: newChat, progress: false });
+                    }
                 }
             }
         });
