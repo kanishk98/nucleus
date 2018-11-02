@@ -23,6 +23,21 @@ export const GetOnlineDiscoverUsers = `query GetOnlineNucleusDiscoverUsers($onli
     }
 }`;
 
+export const GetUserById = `query GetUserById($filter: OnlineUsersFilterInput, $limit: Int, $nextToken: String) {
+    listOnlineUsers(filter: $filter, limit: $limit, nextToken: $nextToken) {
+        items {
+            firebaseId
+            geohash
+            online
+            paid
+            profilePic
+            username
+            fcmToken
+        }
+        nextToken
+    }
+}`
+
 export const ListOnlineDiscoverUsers = `query ListOnlineDiscoverUsers($filter: OnlineUsersFilterInput, $limit: Int, $nextToken: String) {
     listOnlineUsers(filter: $filter, limit: $limit, nextToken: $nextToken) {
         items {
