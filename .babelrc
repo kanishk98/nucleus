@@ -3,7 +3,8 @@
   "env": {
     "production": {
       "plugins": [
-        "transform-remove-console"
+        "transform-remove-console",
+        "transform-es2015-unicode-regex"
       ]
     }
   }

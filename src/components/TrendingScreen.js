@@ -151,7 +151,7 @@ export default class Trending extends React.PureComponent {
                 />
             );
         }
-        catch {
+        catch (err) {
             return null;
         }
     }
