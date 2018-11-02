@@ -47,6 +47,7 @@ export default class LoginForm extends Component {
             const params = {
                 TableName: "Nucleus.DiscoverUsers",
                 ScanIndexForward: false,
+                Limit: (userCount - oldNoUsers),
             };
             params.ExclusiveStartKey = lastEvaluatedKey;
             let users = null;
