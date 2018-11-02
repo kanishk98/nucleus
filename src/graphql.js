@@ -23,8 +23,8 @@ export const GetOnlineDiscoverUsers = `query GetOnlineNucleusDiscoverUsers($onli
     }
 }`;
 
-export const GetUserById = `query GetUserById($filter: OnlineUsersFilterInput, $limit: Int, $nextToken: String) {
-    listOnlineUsers(filter: $filter, limit: $limit, nextToken: $nextToken) {
+export const GetUserById = `query GetUserById($filter: UsersByIdFilterInput, $limit: Int, $nextToken: String) {
+    listUsersById(filter: $filter, limit: $limit, nextToken: $nextToken) {
         items {
             firebaseId
             geohash

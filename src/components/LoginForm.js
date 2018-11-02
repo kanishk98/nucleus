@@ -51,7 +51,7 @@ export default class LoginForm extends Component {
             };
             params.ExclusiveStartKey = lastEvaluatedKey;
             let users = null;
-            dynamoDB.query(params, async function(err, data) {
+            dynamoDB.query(params, async function (err, data) {
                 if (err) {
                     console.log(err);
                 } else {
@@ -62,9 +62,9 @@ export default class LoginForm extends Component {
                     await AsyncStorage.setItem(Constants.UserList, JSON.stringify(oldUsers));
                     if (data.LastEvaluatedKey) {
                         // only triggered when more than 1 MB worth of users is retrieved
-                        this.setState({lastEvaluatedKey: data.LastEvaluatedKey});
+                        this.setState({ lastEvaluatedKey: data.LastEvaluatedKey });
                     } else {
-                        this.setState({lastEvaluatedKey: null});
+                        this.setState({ lastEvaluatedKey: null });
                     }
                 }
             });
@@ -223,22 +223,35 @@ export default class LoginForm extends Component {
                             username: firebaseUser.user.displayName,
                             fcmToken: 'null',
                         };
-                        API.graphql(graphqlOperation(GraphQL.CreateDiscoverUser, { input: newUser }))
+                        let items = null;
+                        API.graphql(graphqlOperation(GraphQL.GetUserById, { filter: { firebaseId: { eq: firebaseUser.user.uid } } }))
                             .then(res => {
-                                this.resolveUser(newUser);
-                                this.updateUserCount();
+                                items = res.data.listUsersById.items;
+                                if (!!items && items.length > 0) {
+                                    this.resolveUser(newUser);
+                                }
                             })
                             .catch(err => {
                                 console.log(err);
-                                if (JSON.stringify(err).indexOf('Dynamo') != -1) {
-                                    this.resolveUser(newUser);
-                                } else {
-                                    Alert.alert(
-                                        'Student data over?',
-                                        'We were unable to log you in. This mostly happens because of a slow network connection.'
-                                    );
-                                }
                             });
+                        if (!items || items.length == 0) {
+                            API.graphql(graphqlOperation(GraphQL.CreateDiscoverUser, { input: newUser }))
+                                .then(res => {
+                                    this.resolveUser(newUser);
+                                    this.updateUserCount();
+                                })
+                                .catch(err => {
+                                    console.log(err);
+                                    if (JSON.stringify(err).indexOf('Dynamo') != -1) {
+                                        this.resolveUser(newUser);
+                                    } else {
+                                        Alert.alert(
+                                            'Student data over?',
+                                            'We were unable to log you in. This mostly happens because of a slow network connection.'
+                                        );
+                                    }
+                                });
+                        }
                     })
                     .catch(error => {
                         console.log(error);
@@ -281,6 +294,7 @@ export default class LoginForm extends Component {
         // popping LoginScreen from navigation stack
         this.props.navigation.dispatch(StackActions.reset({
             index: 0,
+            key: 'Chat',
             actions: [
                 NavigationActions.navigate({ routeName: 'Chat', params: { user: newUser } })]
         }));
