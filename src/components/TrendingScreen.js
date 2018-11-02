@@ -135,20 +135,25 @@ export default class Trending extends React.PureComponent {
     postKeyExtractor = (item, index) => item._id;
 
     renderPost = ({ item }) => {
-        return (
-            <PollCard
-                _id={item._id}
-                title={item.title || 'Anonymous'}
-                image={item.image}
-                caption={item.caption}
-                button1Title={item.button1Title}
-                button2Title={item.button2Title}
-                button1Value={item.button1Value || 0}
-                button2Value={item.button2Value || 0}
-                userList={item.userList || {}}
-                firebaseId={this.user.firebaseId}
-            />
-        );
+        try {
+            return (
+                <PollCard
+                    _id={item._id}
+                    title={item.title || 'Anonymous'}
+                    image={item.image}
+                    caption={item.caption}
+                    button1Title={item.button1Title}
+                    button2Title={item.button2Title}
+                    button1Value={item.button1Value || 0}
+                    button2Value={item.button2Value || 0}
+                    userList={item.userList || {}}
+                    firebaseId={this.user.firebaseId}
+                />
+            );
+        }
+        catch {
+            return null;
+        }
     }
 
     _onrefresh = () => {
