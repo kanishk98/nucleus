@@ -167,7 +167,12 @@ export default class PreDiscover extends React.Component {
                 nextToken: nextToken,
             };
         }
-        API.graphql(graphqlOperation(GraphQL.ListOnlineDiscoverUsers), options)
+        const listResult = await JSON.parse(API.graphql(graphqlOperation(GraphQL.ListOnlineDiscoverUsers, options)));
+        console.log(listResult);
+        onlineUsers = listResult.data.listOnlineUsers.items;
+        receivedToken = listResult.data.nextToken;
+        return { onlineUsers, nextToken };
+        /*API.graphql(graphqlOperation(GraphQL.ListOnlineDiscoverUsers), options)
             .then(res => {
                 console.log(res);
                 let temp = res.data.listOnlineUsers;
@@ -193,10 +198,10 @@ export default class PreDiscover extends React.Component {
                         messages: GiftedChat.append(previousState.messages, errorMessage)
                     };
                 });
-            });
+            });*/
     }
 
-    startDiscover() {
+    async startDiscover() {
         console.log('starting discover');
         if (!this.state.discoverStopped || this.forced) {
             this.forced = false;
@@ -216,12 +221,12 @@ export default class PreDiscover extends React.Component {
                     messages: GiftedChat.append(previousState.messages, message)
                 };
             });
-            let { onlineUsers, nextToken } = this.getOnlineUsers(null);
+            let { onlineUsers, nextToken } = await this.getOnlineUsers(null);
             console.log(onlineUsers);
             console.log(nextToken);
             if (!onlineUsers || onlineUsers.length === 0) {
                 if (!!nextToken) {
-                    let result = this.getOnlineUsers(nextToken);
+                    let result = await this.getOnlineUsers(nextToken);
                     /*onlineUsers = this.getOnlineUsers(nextToken).onlineUsers;
                     nextToken = this.getOnlineUsers(nextToken).nextToken;*/
                 }
