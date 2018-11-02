@@ -193,6 +193,9 @@ export default class PreDiscover extends React.Component {
             .then(res => {
                 console.log(res);
                 onlineUsers.push(res.data.listOnlineUsers.items);
+                if (onlineUsers.includes(this.user)) {
+                    onlineUsers.splice(onlineUsers.indexOf(this.user), 1);
+                }
                 receivedToken = res.data.nextToken;
                 this.setState({ onlineUsers: onlineUsers, nextToken: receivedToken });
             })
@@ -273,6 +276,9 @@ export default class PreDiscover extends React.Component {
                         onlineUsers = [];
                     }
                     onlineUsers.push(temp);
+                    if (onlineUsers.includes(this.user)) {
+                        onlineUsers.splice(onlineUsers.indexOf(this.user), 1);
+                    }
                     this.setState({onlineUsers: onlineUsers, nextToken: receivedToken});
                     nextToken = receivedToken;
                     if (!onlineUsers || onlineUsers.length === 0) {
