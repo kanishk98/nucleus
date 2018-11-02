@@ -36,30 +36,37 @@ export default class LoginForm extends Component {
         const oldNoUsers = Number(await AsyncStorage.getItem(Constants.NoUsers));
         let userCount = -1; // indicates inability to fetch
         const fetchResult = await fetch("http://" + Constants.postsIp + "/get-usercount", {
-            method: 'GET', 
+            method: 'GET',
         });
         userCount = Number(JSON.parse(fetchResult._bodyText).data);
         console.log(userCount);
         // TODO: replace this with more efficient reverse query sorted on geohash
         if (userCount > oldNoUsers) {
-            API.graphql(graphqlOperation(GraphQL.GetAllDiscoverUsers, { filter: noFilter }))
-                .then(async (res) => {
-                    const users = res.data.listNucleusDiscoverUsers.items;
-                    AsyncStorage.setItem(Constants.UserList, JSON.stringify(users))
-                        .then(asyncStorageResult => {
-                            console.log(asyncStorageResult);
-                        })
-                        .catch(asyncStorageError => {
-                            console.log(asyncStorageError);
-                        });
-                    await AsyncStorage.setItem(Constants.NoUsers, users.length.toString());
-                    if (res.data.listNucleusDiscoverUsers.nextToken != null) {
-                        // start background operation to fetch more data
-                    }
-                })
-                .catch(err => {
+            let lastEvaluatedKey = null;
+            const dynamoDB = new AWS.DynamoDB();
+            const params = {
+                TableName: "Nucleus.DiscoverUsers",
+                ScanIndexForward: false,
+            };
+            params.ExclusiveStartKey = lastEvaluatedKey;
+            let users = null;
+            dynamoDB.query(params, async function(err, data) {
+                if (err) {
                     console.log(err);
-                });
+                } else {
+                    console.log(data);
+                    let users = data.Items;
+                    let oldUsers = JSON.parse(await AsyncStorage.getItem(Constants.UserList));
+                    oldUsers.push(users);
+                    await AsyncStorage.setItem(Constants.UserList, JSON.stringify(oldUsers));
+                    if (data.LastEvaluatedKey) {
+                        // only triggered when more than 1 MB worth of users is retrieved
+                        this.setState({lastEvaluatedKey: data.LastEvaluatedKey});
+                    } else {
+                        this.setState({lastEvaluatedKey: null});
+                    }
+                }
+            });
         }
     }
 
@@ -77,10 +84,10 @@ export default class LoginForm extends Component {
                                     this.props.navigation.dispatch(StackActions.reset({
                                         index: 0,
                                         actions: [
-                                            NavigationActions.navigate({ routeName: 'Chat', params: {user: JSON.parse(savedUser)}}),
+                                            NavigationActions.navigate({ routeName: 'Chat', params: { user: JSON.parse(savedUser) } }),
                                         ]
                                     }));
-                                    this.props.navigation.navigate('Chat', {user: JSON.parse(savedUser)});
+                                    this.props.navigation.navigate('Chat', { user: JSON.parse(savedUser) });
                                 } else {
                                     // setting user setting to logged out
                                     AsyncStorage.setItem(Constants.LoggedIn, 'F')
@@ -170,10 +177,10 @@ export default class LoginForm extends Component {
 
     updateUserCount = () => {
         fetch("http://" + Constants.postsIp + "/add-user", {
-            method: 'GET', 
+            method: 'GET',
         })
-        .then(res => console.log(res))
-        .catch(err => console.log(err));
+            .then(res => console.log(res))
+            .catch(err => console.log(err));
     }
 
     signIn = async () => {
@@ -207,7 +214,7 @@ export default class LoginForm extends Component {
                         this.setLoggedIn('LOGGED_IN', 'true');
                         let newUser = {
                             firebaseId: firebaseUser.user.uid,
-                            geohash: 'null',
+                            geohash: new Date().getTime(),
                             offenses: 0,
                             online: 1,
                             paid: false,
@@ -274,9 +281,9 @@ export default class LoginForm extends Component {
         this.props.navigation.dispatch(StackActions.reset({
             index: 0,
             actions: [
-                NavigationActions.navigate({ routeName: 'Chat', params: { user: newUser }})]
+                NavigationActions.navigate({ routeName: 'Chat', params: { user: newUser } })]
         }));
-        this.props.navigation.navigate('Chat', {user: newUser});
+        this.props.navigation.navigate('Chat', { user: newUser });
     }
 
     async signOut() {
