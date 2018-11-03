@@ -116,15 +116,15 @@ export default class PreDiscover extends React.Component {
 
     stopDiscover() {
         console.log('stopping discover');
-        let temp = this.user;
-        temp.online = 0;
-        API.graphql(graphqlOperation(GraphQL.UpdateDiscoverUser, { input: temp }))
-            .then(res => {
+        this.user.online = 0;
+            API.graphql(graphqlOperation(GraphQL.UpdateDiscoverUser, {input: this.user}))
+            .then (res => {
                 console.log(res);
             })
             .catch(err => {
                 console.log(err);
-            });
+        });
+        AsyncStorage.setItem(Constants.UserObject, this.user);
         this.setState({ discoverStopped: true });
         let stoppedMessage = {
             _id: new Date().getTime(),
@@ -148,17 +148,17 @@ export default class PreDiscover extends React.Component {
         if (this.state.navigating) {
             this.setState({ navigating: false });
         }
-        let temp = this.user;
-        if (temp.online === 0) {
+        if (this.user.online === 0) {
             // mark user as online
-            temp.online = 1;
-            API.graphql(graphqlOperation(GraphQL.UpdateDiscoverUser, { input: temp }))
-                .then(res => {
-                    console.log(res);
-                })
-                .catch(err => {
-                    console.log(err);
-                });
+            this.user.online = 1;
+            API.graphql(graphqlOperation(GraphQL.UpdateDiscoverUser, {input: this.user}))
+            .then (res => {
+                console.log(res);
+            })
+            .catch(err => {
+                console.log(err);
+            });
+        AsyncStorage.setItem(Constants.UserObject, this.user);
         }
         this.setState({ discoverStopped: false });
         this.forced = true;
