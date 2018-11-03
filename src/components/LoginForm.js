@@ -42,21 +42,30 @@ export default class LoginForm extends Component {
         console.log(userCount);
         // TODO: replace this with more efficient reverse query sorted on geohash
         if (userCount > oldNoUsers) {
-            API.graphql(graphqlOperation(GraphQL.GetAllDiscoverUsers, { filter: noFilter }))
-                .then(async (res) => {
-                    const users = res.data.listNucleusDiscoverUsers.items;
-                    AsyncStorage.setItem(Constants.UserList, JSON.stringify(users))
-                        .then(asyncStorageResult => {
-                            console.log(asyncStorageResult);
-                        })
-                        .catch(asyncStorageError => {
-                            console.log(asyncStorageError);
-                        });
-                    await AsyncStorage.setItem(Constants.NoUsers, users.length.toString());
-                    if (res.data.listNucleusDiscoverUsers.nextToken != null) {
-                        // start background operation to fetch more data
+            let lastEvaluatedKey = null;
+            const dynamoDB = new AWS.DynamoDB();
+            const params = {
+                TableName: "Nucleus.DiscoverUsers",
+                ScanIndexForward: false,
+            };
+            params.ExclusiveStartKey = lastEvaluatedKey;
+            let users = null;
+            dynamoDB.query(params, async function(err, data) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log(data);
+                    let users = data.Items;
+                    let oldUsers = JSON.parse(await AsyncStorage.getItem(Constants.UserList));
+                    oldUsers.push(users);
+                    await AsyncStorage.setItem(Constants.UserList, JSON.stringify(oldUsers));
+                    if (data.LastEvaluatedKey) {
+                        // only triggered when more than 1 MB worth of users is retrieved
+                        this.setState({lastEvaluatedKey: data.LastEvaluatedKey});
+                    } else {
+                        this.setState({lastEvaluatedKey: null});
                     }
-                })
+                }})
                 .catch(err => {
                     console.log(err);
                 });
