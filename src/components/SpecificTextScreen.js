@@ -1,24 +1,24 @@
 import React from 'react';
 import { Message } from './Message';
 import * as GraphQL from '../graphql';
-import { Dimensions, StyleSheet, Text} from 'react-native';
+import { Dimensions, StyleSheet, View } from 'react-native';
 import { API, graphqlOperation } from 'aws-amplify';
 import { connectClient } from '../../App';
-import { GiftedChat } from 'react-native-gifted-chat';
+import { GiftedChat, Send } from 'react-native-gifted-chat';
 import Constants from '../Constants';
 import AWS from 'aws-sdk';
-import { Button } from 'react-native-elements';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 export default class SpecificTextScreen extends React.Component {
 
-    static navigationOptions = ({navigation}) => {
+    static navigationOptions = ({ navigation }) => {
         return {
             title: navigation.state.params.title,
         }
     }
 
     static noFilter = {
-        conversationId: {ne: 'null'}
+        conversationId: { ne: 'null' }
     }
 
     convertUser(passedUser) {
@@ -45,7 +45,7 @@ export default class SpecificTextScreen extends React.Component {
         m.image = message.image;
         return m;
     }
-    
+
     constructor(props) {
         super(props);
         this.state = {
@@ -60,14 +60,14 @@ export default class SpecificTextScreen extends React.Component {
         let { lastEvaluatedKey } = this.state;
         if (!!lastEvaluatedKey) {
             const params = {
-                TableName : "Nucleus.ConnectTexts",
+                TableName: "Nucleus.ConnectTexts",
                 KeyConditionExpression: "#conversationId = :id",
-                ExpressionAttributeNames:{
+                ExpressionAttributeNames: {
                     "#conversationId": "conversationId"
                 },
                 ExpressionAttributeValues: {
                     ":id": this.chat.conversationId
-                }, 
+                },
                 Limit: 15,
             };
             params.ExclusiveStartKey = lastEvaluatedKey;
@@ -79,9 +79,9 @@ export default class SpecificTextScreen extends React.Component {
                     console.log(data);
                     let m = data.Items;
                     if (data.LastEvaluatedKey) {
-                        this.setState({lastEvaluatedKey: LastEvaluatedKey});
+                        this.setState({ lastEvaluatedKey: LastEvaluatedKey });
                     } else {
-                        this.setState({lastEvaluatedKey: null})
+                        this.setState({ lastEvaluatedKey: null })
                     }
                     messages = [];
                     console.log(m);
@@ -100,18 +100,18 @@ export default class SpecificTextScreen extends React.Component {
             }.bind(this));
         }
     }
-    
+
     fetchMessages = () => {
         const dynamoDB = new AWS.DynamoDB.DocumentClient();
         const params = {
-            TableName : "Nucleus.ConnectTexts",
+            TableName: "Nucleus.ConnectTexts",
             KeyConditionExpression: "#conversationId = :id",
-            ExpressionAttributeNames:{
+            ExpressionAttributeNames: {
                 "#conversationId": "conversationId"
             },
             ExpressionAttributeValues: {
                 ":id": this.chat.conversationId
-            }, 
+            },
             Limit: 15,
         };
         console.log('Querying data');
@@ -123,7 +123,7 @@ export default class SpecificTextScreen extends React.Component {
                 console.log(data);
                 let m = data.Items;
                 if (data.LastEvaluatedKey) {
-                    this.setState({lastEvaluatedKey: data.LastEvaluatedKey});
+                    this.setState({ lastEvaluatedKey: data.LastEvaluatedKey });
                 }
                 messages = [];
                 console.log(m);
@@ -143,25 +143,25 @@ export default class SpecificTextScreen extends React.Component {
         }.bind(this));
     }
 
-    onSendHandler = ({message}) => {
+    onSendHandler = ({ message }) => {
         console.log(message[0]);
         const newMessage = {
             conversationId: this.chat.conversationId,
             author: this.chat.user1,
             recipient: this.chat.user2,
             content: message[0].text,
-            messageId: String(Constants.MaxDate - Math.floor(new Date().getTime()/1000)),
+            messageId: String(Constants.MaxDate - Math.floor(new Date().getTime() / 1000)),
             timestamp: message[0].createdAt,
         }
         console.log(newMessage);
         // mutate Dynamo table
-        API.graphql(graphqlOperation(GraphQL.CreateConnectMessage, {input: newMessage}))
-        .then(res => {
-            console.log(res);
-        })
-        .catch(err => {
-            console.log(err);
-        });
+        API.graphql(graphqlOperation(GraphQL.CreateConnectMessage, { input: newMessage }))
+            .then(res => {
+                console.log(res);
+            })
+            .catch(err => {
+                console.log(err);
+            });
         this.setState(previousState => {
             console.log(previousState);
             return {
@@ -183,15 +183,15 @@ export default class SpecificTextScreen extends React.Component {
                 chat: this.chat,
             })
         })
-        .then(res => console.log(res))
-        .catch(err => console.log(err));
+            .then(res => console.log(res))
+            .catch(err => console.log(err));
     }
 
-    renderItem = ({item}) => (
+    renderItem = ({ item }) => (
         <Message id={item.messageId} sent={item.sender} />
     )
-    
-    renderReceivedText (message) {
+
+    renderReceivedText(message) {
         this.setState(previousState => {
             console.log(previousState);
             return {
@@ -202,27 +202,27 @@ export default class SpecificTextScreen extends React.Component {
 
     subscribeToConnectMessages() {
         console.log('Subscription function: ' + this.chat.conversationId);
-        API.graphql(graphqlOperation(GraphQL.SubscribeToConnectMessages, {conversationId: this.chat.conversationId}))
-        .subscribe({
-            next: (res) => {
-              console.log('Subscription received: ' + JSON.stringify(res));
-              const newMessage = this.convertMessage(res.value.data.onCreateNucleusConnectTexts);
-              if (newMessage.user._id == this.chat.user2.firebaseId) {
-                let tempArray = [];
-                console.log('Shit.');
-                tempArray.push(newMessage);
-                this.renderReceivedText(newMessage);
-              }
-            }
-        }); 
+        API.graphql(graphqlOperation(GraphQL.SubscribeToConnectMessages, { conversationId: this.chat.conversationId }))
+            .subscribe({
+                next: (res) => {
+                    console.log('Subscription received: ' + JSON.stringify(res));
+                    const newMessage = this.convertMessage(res.value.data.onCreateNucleusConnectTexts);
+                    if (newMessage.user._id == this.chat.user2.firebaseId) {
+                        let tempArray = [];
+                        console.log('Shit.');
+                        tempArray.push(newMessage);
+                        this.renderReceivedText(newMessage);
+                    }
+                }
+            });
     }
 
-    componentDidMount () {
+    componentDidMount() {
         this.chat = this.props.navigation.getParam("chat");
         console.log(this.chat);
         this.recipient = this.convertUser(this.chat.user2);
         this.user = this.chat.user1;
-        this.props.navigation.setParams({title: this.chat.user2.username});
+        this.props.navigation.setParams({ title: this.chat.user2.username });
         this.subscribeToConnectMessages();
         this.fetchMessages();
     }
@@ -233,7 +233,7 @@ export default class SpecificTextScreen extends React.Component {
             return (
                 <GiftedChat
                     messages={this.state.messages}
-                    onSend={(message)=>this.onSendHandler({message})}
+                    onSend={(message) => this.onSendHandler({ message })}
                     loadEarlier={true}
                     onLoadEarlier={this.fetchMoreMessages}
                 />
@@ -242,7 +242,7 @@ export default class SpecificTextScreen extends React.Component {
             return (
                 <GiftedChat
                     messages={this.state.messages}
-                    onSend={(message)=>this.onSendHandler({message})}
+                    onSend={(message) => this.onSendHandler({ message })}
                     loadEarlier={true}
                     isLoadingEarlier={true}
                 />
@@ -251,26 +251,26 @@ export default class SpecificTextScreen extends React.Component {
             return (
                 <GiftedChat
                     messages={this.state.messages}
-                    onSend={(message)=>this.onSendHandler({message})}
+                    onSend={(message) => this.onSendHandler({ message })}
                 />
             );
         }
     }
-} 
+}
 
 const DEVICE_WIDTH = Dimensions.get('window').width;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  }, 
-  input: {
-    borderRadius: 5,
-    height: 40,
-    width: DEVICE_WIDTH,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    color: 'black',
-    paddingHorizontal: 10,
-}
+    container: {
+        flex: 1,
+        backgroundColor: "#fff",
+    },
+    input: {
+        borderRadius: 5,
+        height: 40,
+        width: DEVICE_WIDTH,
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        color: 'black',
+        paddingHorizontal: 10,
+    }
 });

@@ -629,12 +629,14 @@ const styles = StyleSheet.create({
         color: '#8C9EFF',
         marginBottom: 16,
         fontSize: 16,
+        fontFamily: 'Roboto',
         alignItems: 'center',
         justifyContent: 'center'
     },
     title: {
         color: '#1a237e',
         marginBottom: 16,
+        fontFamily: 'Roboto',
         fontSize: 25,
         fontWeight: 'bold',
         justifyContent: 'center'

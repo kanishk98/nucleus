@@ -316,7 +316,6 @@ export default class LoginForm extends Component {
 
 const styles = StyleSheet.create({
     container: {
-        justifyContent: 'center',
         flex: 1,
         alignItems: 'center',
     },
@@ -325,6 +324,7 @@ const styles = StyleSheet.create({
         height: 48
     },
     instructions: {
+        fontFamily: 'Roboto',
         color: Constants.primaryColor,
         marginBottom: 16,
         fontSize: 18,

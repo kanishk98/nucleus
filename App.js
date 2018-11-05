@@ -20,22 +20,28 @@ import { Button } from 'react-native-elements';
 import NavigationService from './src/components/NavigationService';
 import RandomConnect from './src/components/RandomConnect';
 import firebase from 'react-native-firebase';
-import { AsyncStorage, Platform } from 'react-native';
 import { alertDelete } from './src/components/RandomConnect';
 import { HeaderBackButton } from 'react-navigation';
 
 const BottomNavigator = createBottomTabNavigator({
     Connect: {
-        screen: createStackNavigator({Connect: {screen: SpecificChatList, navigationOptions: {title: 'Connect'}}})
+        screen: createStackNavigator({Connect: {screen: SpecificChatList, navigationOptions: {title: 'Connect', headerTitleStyle: {
+            fontFamily: 'Roboto',
+        },}}})
     },
     Discover: {
-        screen: createStackNavigator({ Discover: { screen: PreDiscover, navigationOptions: { title: 'Discover' } } })
+        screen: createStackNavigator({ Discover: { screen: PreDiscover, navigationOptions: { title: 'Discover', headerTitleStyle: {
+            fontFamily: 'Roboto',
+        }, } } })
     }, 
     Trending: {
         screen: createStackNavigator({
             Trending: {
                 screen: TrendingScreen, navigationOptions: {
-                    title: 'Polls', headerRight: (
+                    title: 'Polls', 
+                    headerTitleStyle: {
+                        fontFamily: 'Roboto',
+                    }, headerRight: (
                         <Button
                             onPress={newTrendingPost}
                             title="New poll"
@@ -86,6 +92,9 @@ const StackNavigator = createStackNavigator(
       screen: RandomConnect,
       navigationOptions: {
         title: "Unknown",
+        headerTitleStyle: {
+            fontFamily: 'Roboto',
+        },
         gesturesEnabled: false,
         headerLeft: (
             <HeaderBackButton
@@ -100,7 +109,10 @@ const StackNavigator = createStackNavigator(
     NewTrendingScreen: {
       screen: NewTrendingScreen,
       navigationOptions: {
-        title: "New anonymous poll"
+        title: "New anonymous poll",
+        headerTitleStyle: {
+            fontFamily: 'Roboto',
+        },
       }
     }
   },
