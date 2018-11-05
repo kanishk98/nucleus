@@ -287,6 +287,7 @@ export default class LoginForm extends Component {
         // popping LoginScreen from navigation stack
         this.props.navigation.dispatch(StackActions.reset({
             index: 0,
+            key: null,
             actions: [
                 NavigationActions.navigate({ routeName: 'Chat', params: { user: newUser }})]
         }));

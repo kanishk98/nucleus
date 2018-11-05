@@ -14,6 +14,7 @@ export default class SpecificTextScreen extends React.Component {
     static navigationOptions = ({ navigation }) => {
         return {
             title: navigation.state.params.title,
+            headerTitleStyle: {fontFamily: 'Roboto'}
         }
     }
 
