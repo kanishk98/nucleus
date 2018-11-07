@@ -90,7 +90,7 @@ export default class SpecificTextScreen extends React.Component {
                     console.log(data);
                     let m = data.Items;
                     if (data.LastEvaluatedKey) {
-                        this.setState({ lastEvaluatedKey: LastEvaluatedKey });
+                        this.setState({ lastEvaluatedKey: data.LastEvaluatedKey });
                     } else {
                         this.setState({ lastEvaluatedKey: null })
                     }
