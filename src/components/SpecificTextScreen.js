@@ -55,7 +55,7 @@ export default class SpecificTextScreen extends React.Component {
             loading: true,
             online: true,
         }
-        NetInfo.isConnected.addEventListener('change', this.handleConnectivityChange);
+        NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectivityChange);
     }
 
     handleConnectivityChange = (isConnected) => {
