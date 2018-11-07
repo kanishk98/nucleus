@@ -116,6 +116,7 @@ const styles = StyleSheet.create({
     text: {
         backgroundColor: 'transparent',
         color: 'black',
+        fontFamily: 'Roboto',
         fontWeight: 'bold',
         fontSize: 14,
     },

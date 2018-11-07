@@ -45,6 +45,7 @@ const styles = StyleSheet.create({
     text: {
         backgroundColor: 'transparent',
         color: 'white',
+        fontFamily: 'Roboto',
         fontWeight: 'bold',
         fontSize: 16,
     },

@@ -205,7 +205,7 @@ export default class Trending extends React.PureComponent {
             return (
                 <ImageBackground source={require('../../assets/background.png')} style={styles.backgroundStyle}>
                     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} >
-                        <ActivityIndicator />
+                        <ActivityIndicator color={'white'} />
                     </View>
                 </ImageBackground>
             );
@@ -243,6 +243,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent'
     },
     resultText: {
+        fontFamily: 'Roboto',
         fontWeight: 'bold',
     },
     pollButton: {

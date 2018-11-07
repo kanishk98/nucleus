@@ -193,13 +193,13 @@ export default class SpecificChatList extends Component {
 
     peopleKeyExtractor = (item, index) => item.firebaseId;
 
-    componentWillMount() {
+    async componentDidMount() {
         this.user = this.props.navigation.getParam('user');
         this.setState({ user: this.user });
-        this.retrieveChats();
     }
 
-    async componentDidMount() {
+    async componentWillMount() {
+        this.retrieveChats();
         this.noFilter = {
             firebaseId: { ne: JSON.parse(await AsyncStorage.getItem(Constants.UserObject)).firebaseId },
             geohash: { ne: 'random_user_geohash' },
@@ -215,6 +215,7 @@ export default class SpecificChatList extends Component {
                 console.log('Awaiting Firebase request for permission');
                 await firebase.messaging().requestPermission();
             } catch (error) {
+                console.log(error);
                 enabled = false;
             }
         }
@@ -480,7 +481,7 @@ export default class SpecificChatList extends Component {
                             <List containerStyle={{ borderColor: Constants.primaryColor }}>
                                 {renderSearch(
                                     (this.state.searching),
-                                    <View style={{ flex: 1 }} >
+                                    <View>
                                         {renderResults((this.state.searchResults.length > 0),
                                             <FlatList
                                                 data={this.state.searchResults}
@@ -550,7 +551,6 @@ const styles = StyleSheet.create({
         borderBottomColor: '#eee',
         borderBottomWidth: 1,
         paddingHorizontal: 12,
-        paddingVertical: 8,
     },
     chatName: {
         fontWeight: 'bold',
