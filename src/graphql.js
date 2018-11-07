@@ -21,7 +21,16 @@ export const GetOnlineDiscoverUsers = `query GetOnlineNucleusDiscoverUsers($onli
         username
         fcmToken
     }
-}`;
+}`
+
+export const GetFCMToken = `query GetFCMToken($filter: UsersByIdFilterInput, $limit: Int, $nextToken: String) {
+    listUsersById(filter: $filter, limit: $limit, nextToken: $nextToken) {
+        items {
+            fcmToken
+        }
+        nextToken
+    }
+}`
 
 export const GetUserById = `query GetUserById($filter: UsersByIdFilterInput, $limit: Int, $nextToken: String) {
     listUsersById(filter: $filter, limit: $limit, nextToken: $nextToken) {

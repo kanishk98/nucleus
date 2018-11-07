@@ -171,21 +171,33 @@ export default class SpecificTextScreen extends React.Component {
         });
         console.log(JSON.stringify(this.chat));
         // send notification to other user
-        fetch(Constants.notificationsUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'key': Constants.googleAuthKey,
-            },
-            body: JSON.stringify({
-                content: message[0].text,
-                author: this.chat.user1.username,
-                token: this.chat.user2.fcmToken,
-                chat: this.chat,
+        const userFilter = {
+            firebaseId: {
+                eq: this.chat.user2.firebaseId,
+            }
+        }
+        API.graphql(graphqlOperation(GraphQL.GetFCMToken, {filter: userFilter}))
+        .then(res => {
+            console.log(res);
+            fetch(Constants.notificationsUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'key': Constants.googleAuthKey,
+                },
+                body: JSON.stringify({
+                    content: message[0].text,
+                    author: this.chat.user1.username,
+                    token: res.data.listUsersById.items[0].fcmToken,
+                    chat: this.chat,
+                })
             })
+                .then(res => console.log(res))
+                .catch(err => console.log(err));
         })
-            .then(res => console.log(res))
-            .catch(err => console.log(err));
+        .catch(err => {
+            console.log(err);
+        });
     }
 
     renderItem = ({ item }) => (
