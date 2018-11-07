@@ -56,7 +56,8 @@ export default class LoginForm extends Component {
                         });
                     await AsyncStorage.setItem(Constants.NoUsers, users.length.toString());
                     if (res.data.listNucleusDiscoverUsers.nextToken != null) {
-                        // start background operation to fetch more data
+                        // ideally, start background operation to fetch more data
+                        this.fetchUsers(firebaseId);
                     }})
                 .catch(err => {
                     console.log(err);
