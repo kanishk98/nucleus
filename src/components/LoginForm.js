@@ -36,7 +36,7 @@ export default class LoginForm extends Component {
         const oldNoUsers = Number(await AsyncStorage.getItem(Constants.NoUsers));
         let userCount = -1; // indicates inability to fetch
         const fetchResult = await fetch("http://" + Constants.postsIp + "/get-usercount", {
-            method: 'GET', 
+            method: 'GET',
         });
         userCount = Number(JSON.parse(fetchResult._bodyText).data);
         console.log(userCount);
@@ -58,7 +58,8 @@ export default class LoginForm extends Component {
                     if (res.data.listNucleusDiscoverUsers.nextToken != null) {
                         // ideally, start background operation to fetch more data
                         this.fetchUsers(firebaseId);
-                    }})
+                    }
+                })
                 .catch(err => {
                     console.log(err);
                 });
@@ -79,10 +80,10 @@ export default class LoginForm extends Component {
                                     this.props.navigation.dispatch(StackActions.reset({
                                         index: 0,
                                         actions: [
-                                            NavigationActions.navigate({ routeName: 'Chat', params: {user: JSON.parse(savedUser)}}),
+                                            NavigationActions.navigate({ routeName: 'Chat', params: { user: JSON.parse(savedUser) } }),
                                         ]
                                     }));
-                                    this.props.navigation.navigate('Chat', {user: JSON.parse(savedUser)});
+                                    this.props.navigation.navigate('Chat', { user: JSON.parse(savedUser) });
                                 } else {
                                     // setting user setting to logged out
                                     AsyncStorage.setItem(Constants.LoggedIn, 'F')
@@ -172,10 +173,10 @@ export default class LoginForm extends Component {
 
     updateUserCount = () => {
         fetch("http://" + Constants.postsIp + "/add-user", {
-            method: 'GET', 
+            method: 'GET',
         })
-        .then(res => console.log(res))
-        .catch(err => console.log(err));
+            .then(res => console.log(res))
+            .catch(err => console.log(err));
     }
 
     signIn = async () => {
@@ -194,6 +195,27 @@ export default class LoginForm extends Component {
                 const firebaseOIDCToken = await firebaseUser.user.getIdToken(true);
                 console.log(firebaseOIDCToken);
                 // syncing user details with Cognito User Pool
+                let enabled = false;
+                try {
+                    console.log('Awaiting Firebase request for permission');
+                    firebase.messaging().requestPermission()
+                    .then(res => console.log(res))
+                    .catch(err => console.log(err));
+                } catch (error) {
+                    console.log(error);
+                    enabled = false;
+                }
+                let fcmToken = 'null';
+                if (enabled) {
+                    this.fcmToken = firebase.messaging().getToken()
+                        .then(res => {
+                            console.log('fcm token ' + res);
+                            fcmToken = res;
+                        })
+                        .catch(err => {
+                            console.log(err);
+                        })
+                };
                 Auth.configure({
                     identityPoolId: 'ap-south-1:7bea4d8a-8ec9-425b-833d-2ac9ed73e27b',
                     region: 'ap-south-1'
@@ -215,7 +237,7 @@ export default class LoginForm extends Component {
                             paid: false,
                             profilePic: this.state.user.user.photo,
                             username: firebaseUser.user.displayName,
-                            fcmToken: 'null',
+                            fcmToken: fcmToken,
                         };
                         let items = null;
                         API.graphql(graphqlOperation(GraphQL.GetUserById, { filter: { firebaseId: { eq: firebaseUser.user.uid } } }))
@@ -290,9 +312,9 @@ export default class LoginForm extends Component {
             index: 0,
             key: null,
             actions: [
-                NavigationActions.navigate({ routeName: 'Chat', params: { user: newUser }})]
+                NavigationActions.navigate({ routeName: 'Chat', params: { user: newUser } })]
         }));
-        this.props.navigation.navigate('Chat', {user: newUser});
+        this.props.navigation.navigate('Chat', { user: newUser });
     }
 
     async signOut() {
