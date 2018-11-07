@@ -1,7 +1,7 @@
 import React from 'react';
 import { Message } from './Message';
 import * as GraphQL from '../graphql';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { Dimensions, StyleSheet, View , NetInfo} from 'react-native';
 import { API, graphqlOperation } from 'aws-amplify';
 import { connectClient } from '../../App';
 import { GiftedChat, Send } from 'react-native-gifted-chat';
@@ -53,6 +53,16 @@ export default class SpecificTextScreen extends React.Component {
             messages: [],
             lastEvaluatedKey: null,
             loading: true,
+            online: true,
+        }
+        NetInfo.isConnected.addEventListener('change', this.handleConnectivityChange);
+    }
+
+    handleConnectivityChange = (isConnected) => {
+        if (!isConnected) {
+            this.setState({online: false});
+        } else {
+            this.setState({online: true});
         }
     }
 
@@ -242,6 +252,16 @@ export default class SpecificTextScreen extends React.Component {
 
     render() {
         console.log(this.state.messages);
+        if (!this.state.online) {
+            return (
+                <GiftedChat
+                messages={this.state.messages}
+                renderSend={()=>{return null;}}
+                placeholder={'No internet connection'}
+                loadEarlier={true}
+                isLoadingEarlier={true}
+            />)
+        }
         if (this.state.lastEvaluatedKey) {
             return (
                 <GiftedChat
