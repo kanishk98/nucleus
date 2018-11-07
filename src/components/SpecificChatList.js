@@ -206,7 +206,7 @@ export default class SpecificChatList extends Component {
         }
         // checking for notification permissions
         if (!this.user) {
-            this.user = this.state.user;
+            this.user = !!this.state.user?this.state.user:JSON.parse(await AsyncStorage.getItem(Constants.UserObject));
         }
         let enabled = false;
         enabled = await firebase.messaging().hasPermission();

@@ -328,10 +328,11 @@ export default class PreDiscover extends React.Component {
                                 console.log('Resolved chat: ' + JSON.stringify(res));
                                 // waiting for acceptance from another user for 5 seconds
                                 setTimeout(this.startDiscover, 10000);
-                                const initials = this.getInitials(connectedUser.username);
+                                console.log(Constants.animalsList[7]);
+                                const animal = Constants.animalsList[Math.floor(Math.random() * Constants.animalsList.length)];
                                 message = {
                                     _id: new Date().getTime(),
-                                    text: 'Waiting for ' + initials + ' to accept request',
+                                    text: 'Waiting for ' + animal + ' to accept request',
                                     createdAt: new Date(),
                                     user: {
                                         _id: this.user.firebaseId,
