@@ -8,6 +8,7 @@ import { GiftedChat, Send } from 'react-native-gifted-chat';
 import Constants from '../Constants';
 import AWS from 'aws-sdk';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { Button } from 'react-native-elements';
 
 export default class SpecificTextScreen extends React.Component {
 
