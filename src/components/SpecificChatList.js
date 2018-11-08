@@ -118,7 +118,7 @@ export default class SpecificChatList extends Component {
                     .catch(err => {
                         console.log(err);
                     });
-                this.setState({conversations});
+                this.setState({ conversations });
                 // new chat, performing mutation
 
             } else {
@@ -193,114 +193,129 @@ export default class SpecificChatList extends Component {
 
     peopleKeyExtractor = (item, index) => item.firebaseId;
 
+    async componentWillMount() {
+        this.retrieveChats();
+    }
+
+    async setupNotifications() {
+        // checking for notification permissions
+        if (!this.user) {
+            this.user = !!this.state.user ? this.state.user : JSON.parse(await AsyncStorage.getItem(Constants.UserObject));
+        }
+        let enabled = false;
+        enabled = await firebase.messaging().hasPermission();
+        firebase.messaging().hasPermission()
+            .then(async (res) => {
+                console.log(res);
+                enabled = res;
+                if (!enabled) {
+                    try {
+                        console.log('Awaiting Firebase request for permission');
+                        await firebase.messaging().requestPermission();
+                    } catch (error) {
+                        console.log(error);
+                        enabled = false;
+                    }
+                }
+                if (enabled) {
+                    this.fcmToken = firebase.messaging().getToken()
+                        .then(async (res) => {
+                            console.log('User message ' + res);
+                            // storing token as user attribute
+                            this.user.online = 1;
+                            this.user.fcmToken = res;
+                            API.graphql(graphqlOperation(GraphQL.UpdateDiscoverUser, { input: this.user }))
+                                .then(async (updated) => {
+                                    console.log(updated);
+                                    // updated user
+                                    await AsyncStorage.setItem(Constants.UserObject, JSON.stringify(this.user));
+                                })
+                                .catch(fcmErr => {
+                                    console.log(fcmErr);
+                                });
+                            console.log('FCM token: ' + res);
+                        })
+                        .catch(err => {
+                            console.log('FCM error: ' + err);
+                            // handle error appropriately
+                        });
+                    // setting up notification listeners
+                    this.notificationListener = firebase.notifications().onNotification(async (notification) => {
+                        // Process your notification as required
+                        console.log(notification);
+                        const displayNotification = new firebase.notifications.Notification()
+                            .setNotificationId(notification.notificationId)
+                            .setTitle(notification.title)
+                            .setBody(notification.body)
+                            .setData({
+                                chat: notification.data.chat,
+                            });
+                        if (Platform.OS == 'ios') {
+                            displayNotification.ios.setBadge(notification.ios.badge);
+                        } else {
+                            // android
+                            displayNotification.android.setChannelId('channelId');
+                            displayNotification.android.setAutoCancel(true);
+                        }
+                        console.log(displayNotification);
+                        if (notification._title !== 'Unknown') {
+                            const chat = JSON.parse(displayNotification._data.chat);
+                            if (chat.user1.firebaseId !== this.user.firebaseId) {
+                                firebase.notifications().displayNotification(displayNotification);
+                            }
+                        }
+                    });
+                    this.notificationOpenedListener = firebase.notifications().onNotificationOpened(async (notificationOpen) => {
+                        if (enabled) {
+                            // Get the action triggered by the notification being opened
+                            const action = notificationOpen.action;
+                            console.log(action);
+                            // Get information about the notification that was opened
+                            const notification = notificationOpen.notification;
+                            if (notification._title !== 'Unknown') {
+                                console.log(notification);
+                                const chat = JSON.parse(notification._data.chat);
+                                if (!!chat) {
+                                    const chat = JSON.parse(notification._data.chat);
+                                    this.openNotificationChat(chat);
+                                }
+                            }
+                        }
+                    });
+                    const notificationOpen = await firebase.notifications().getInitialNotification();
+                    if (notificationOpen && enabled) {
+                        // App was opened by a notification when closed
+                        // Get the action triggered by the notification being opened
+                        const action = notificationOpen.action;
+                        console.log(action);
+                        // Get information about the notification that was opened
+                        const notification = notificationOpen.notification;
+                        console.log(notification);
+                        if (notification._title !== 'Unknown') {
+                            const chat = JSON.parse(notification._data.chat);
+                            if (!!chat && chat != 'null') {
+                                const chat = JSON.parse(notification._data.chat);
+                                this.openNotificationChat(chat);
+                            }
+                        }
+                    }
+                }
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }
+
     async componentDidMount() {
         this.user = this.props.navigation.getParam('user');
         this.setState({ user: this.user });
-    }
-
-    async componentWillMount() {
-        this.retrieveChats();
         this.noFilter = {
             firebaseId: { ne: JSON.parse(await AsyncStorage.getItem(Constants.UserObject)).firebaseId },
             geohash: { ne: 'random_user_geohash' },
         }
-        // checking for notification permissions
-        if (!this.user) {
-            this.user = !!this.state.user?this.state.user:JSON.parse(await AsyncStorage.getItem(Constants.UserObject));
-        }
-        let enabled = false;
-        enabled = await firebase.messaging().hasPermission();
-        if (!enabled) {
-            try {
-                console.log('Awaiting Firebase request for permission');
-                await firebase.messaging().requestPermission();
-            } catch (error) {
-                console.log(error);
-                enabled = false;
-            }
-        }
-        if (enabled) {
-            this.fcmToken = firebase.messaging().getToken()
-                .then(res => {
-                    console.log('User message ' + res);
-                    // storing token as user attribute
-                    this.user.fcmToken = res;
-                    API.graphql(graphqlOperation(GraphQL.UpdateDiscoverUser, { input: this.user }))
-                        .then(async (updated) => {
-                            console.log(updated);
-                            // updated user
-                            await AsyncStorage.setItem(Constants.UserObject, this.user);
-                        })
-                        .catch(fcmErr => {
-                            console.log(fcmErr);
-                        });
-                    console.log('FCM token: ' + res);
-                })
-                .catch(err => {
-                    console.log('FCM error: ' + err);
-                    // handle error appropriately
-                });
-            // setting up notification listeners
-            this.notificationListener = firebase.notifications().onNotification(async (notification) => {
-                // Process your notification as required
-                console.log(notification);
-                const displayNotification = new firebase.notifications.Notification()
-                    .setNotificationId(notification.notificationId)
-                    .setTitle(notification.title)
-                    .setBody(notification.body)
-                    .setData({
-                        chat: notification.data.chat,
-                    });
-                if (Platform.OS == 'ios') {
-                    displayNotification.ios.setBadge(notification.ios.badge);
-                } else {
-                    // android
-                    displayNotification.android.setChannelId('channelId');
-                    displayNotification.android.setAutoCancel(true);
-                }
-                console.log(displayNotification);
-                if (notification._title !== 'Unknown') {
-                    const chat = JSON.parse(displayNotification._data.chat);
-                    if (chat.user1.firebaseId !== this.user.firebaseId) {
-                        firebase.notifications().displayNotification(displayNotification);
-                    }
-                }
-            });
-            this.notificationOpenedListener = firebase.notifications().onNotificationOpened(async (notificationOpen) => {
-                if (enabled) {
-                    // Get the action triggered by the notification being opened
-                    const action = notificationOpen.action;
-                    console.log(action);
-                    // Get information about the notification that was opened
-                    const notification = notificationOpen.notification;
-                    if (notification._title !== 'Unknown') {
-                        console.log(notification);
-                        const chat = JSON.parse(notification._data.chat);
-                        if (!!chat) {
-                            const chat = JSON.parse(notification._data.chat);
-                            this.openNotificationChat(chat);
-                        }
-                    }
-                }
-            });
-            const notificationOpen = await firebase.notifications().getInitialNotification();
-            if (notificationOpen && enabled) {
-                // App was opened by a notification when closed
-                // Get the action triggered by the notification being opened
-                const action = notificationOpen.action;
-                console.log(action);
-                // Get information about the notification that was opened
-                const notification = notificationOpen.notification;
-                console.log(notification);
-                if (notification._title !== 'Unknown') {
-                    const chat = JSON.parse(notification._data.chat);
-                    if (!!chat && chat != 'null') {
-                        const chat = JSON.parse(notification._data.chat);
-                        this.openNotificationChat(chat);
-                    }
-                }
-            }
-        }
+        /*if (!this.user.fcmToken || this.user.fcmToken === "null") {
+            this.setupNotifications();
+        }*/
     }
 
     componentWillUnmount() {
@@ -432,7 +447,12 @@ export default class SpecificChatList extends Component {
         console.log(this.state);
         if (!this.state.user) {
             this.getUser();
-            return <ActivityIndicator />
+            return <View style={{ alignItems: 'center' }}>
+                <ActivityIndicator />
+            </View>
+        }
+        if (!this.state.user.fcmToken || this.state.user.fcmToken === "null") {
+            this.setupNotifications();
         }
         if (!this.state.people || this.state.people.length == 0) {
             // no users in memory
