@@ -149,6 +149,7 @@ export default class LoginForm extends Component {
                     <Text style={styles.instructions}>
                         {user.user.email}
                     </Text>
+                    <ProgressBar />
                 </View>
             );
         }
