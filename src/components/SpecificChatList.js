@@ -22,7 +22,6 @@ export default class SpecificChatList extends Component {
             people: [],
             searchResults: [],
             searching: false,
-            inChat: null,
         };
         itemCount = 0;
         AWS.config.update({
@@ -143,7 +142,6 @@ export default class SpecificChatList extends Component {
                 }
                 newChat = false;
             }
-            this.setState({inChat: chat.user2.firebaseId});
             this.props.navigation.navigate('SpecificTextScreen', { chat: chat, newChat: newChat });
         }
     }
@@ -155,7 +153,6 @@ export default class SpecificChatList extends Component {
             user1: this.user,
             user2: item.user1,
         }
-        this.setState({inChat: chat.user2.firebaseId});
         this.props.navigation.navigate('SpecificTextScreen', { chat: chat, newChat: false });
     }
 
@@ -175,7 +172,6 @@ export default class SpecificChatList extends Component {
         console.log('Sorted conversations: ' + JSON.stringify(conversations));
         this.setState({ conversations: conversations });
         await AsyncStorage.setItem('CHATS', JSON.stringify(conversations));
-        this.setState({inChat: chat.user2.firebaseId});
         this.props.navigation.navigate('SpecificTextScreen', { chat: chat, newChat: false });
         this.retrieveChats();
         console.log('retrieved chats');
@@ -264,7 +260,7 @@ export default class SpecificChatList extends Component {
                         console.log(displayNotification);
                         if (notification._title !== 'Unknown') {
                             const chat = JSON.parse(displayNotification._data.chat);
-                            if (chat.user1.firebaseId !== this.user.firebaseId && chat.user1.firebaseId !== this.state.inChat) {
+                            if (chat.user1.firebaseId !== this.user.firebaseId) {
                                 firebase.notifications().displayNotification(displayNotification);
                             }
                         }
