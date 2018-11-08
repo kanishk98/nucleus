@@ -217,7 +217,8 @@ export default class SpecificTextScreen extends React.Component {
     renderReceivedText(message) {
         let messages = this.state.messages;
         console.log(messages);
-        if (messages[messages.length - 1] === message) {
+        if (messages.indexOf(message) != -1) {
+            console.log('caught duplication');
             return;
         }
         this.setState(previousState => {
