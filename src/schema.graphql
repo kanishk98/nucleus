@@ -20,6 +20,7 @@
   updateNucleusDiscoverConversations(input: UpdateNucleusDiscoverConversationsInput!): NucleusDiscoverConversations
   updateNucleusDiscoverMessages(input: UpdateNucleusDiscoverMessagesInput!): NucleusDiscoverMessages
   updateNucleusDiscoverUsers(input: UpdateNucleusDiscoverUsersInput!): NucleusDiscoverUsers
+  updateUserOnlineStatus(input: UpdateOnlineStatusInput!): NucleusDiscoverUsers
 }
 
 type NucleusConnectConversations {
@@ -423,4 +424,10 @@ input UpdateNucleusDiscoverUsersInput {
   profilePic: String
   username: String
   fcmToken: String
+}
+
+input UpdateOnlineStatusInput {
+  firebaseId: String!
+  geohash: String!
+  online: Int
 }

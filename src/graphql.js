@@ -223,6 +223,13 @@ export const UpdateDiscoverUser = `mutation UpdateDiscoverUsers($input: UpdateNu
     }
 }`
 
+export const UpdateOnlineStatus = `mutation UpdateOnlineStatus($input: UpdateOnlineStatusInput!) {
+    updateUserOnlineStatus(input: $input) {
+        online
+        fcmToken
+    }
+}`
+
 export const UpdateDiscoverChat = `mutation UpdateNucleusDiscoverChats($input: UpdateNucleusDiscoverChatsInput!) {
     updateNucleusDiscoverChats(input: $input) {
         conversationId

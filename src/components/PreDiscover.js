@@ -116,9 +116,12 @@ export default class PreDiscover extends React.Component {
 
     async stopDiscover() {
         console.log('stopping discover');
-        let temp = this.user;
+        let temp = {};
+        temp.firebaseId = this.user.firebaseId;
+        temp.geohash = this.user.geohash;
+        temp.online = 1;
         temp.online = 0;
-        API.graphql(graphqlOperation(GraphQL.UpdateDiscoverUser, { input: temp }))
+        API.graphql(graphqlOperation(GraphQL.UpdateOnlineStatus, { input: temp }))
             .then(res => {
                 console.log(res);
             })
@@ -149,10 +152,13 @@ export default class PreDiscover extends React.Component {
         if (this.state.navigating) {
             this.setState({ navigating: false });
         }
-        // mark user as online
-        let temp = this.user;
+        let temp = {};
+        temp.firebaseId = this.user.firebaseId;
+        temp.geohash = this.user.geohash;
         temp.online = 1;
-        API.graphql(graphqlOperation(GraphQL.UpdateDiscoverUser, { input: temp }))
+        console.log(this.user);
+        console.log(temp);
+        API.graphql(graphqlOperation(GraphQL.UpdateOnlineStatus, { input: temp }))
             .then(res => {
                 console.log(res);
             })

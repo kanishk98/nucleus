@@ -226,8 +226,10 @@ export default class SpecificChatList extends Component {
                     // storing token as user attribute
                     this.user.fcmToken = res;
                     API.graphql(graphqlOperation(GraphQL.UpdateDiscoverUser, { input: this.user }))
-                        .then(updated => {
+                        .then(async (updated) => {
                             console.log(updated);
+                            // updated user
+                            await AsyncStorage.setItem(Constants.UserObject, this.user);
                         })
                         .catch(fcmErr => {
                             console.log(fcmErr);
