@@ -338,7 +338,7 @@ export default class PreDiscover extends React.Component {
                                 const animal = Constants.animalsList[Math.floor(Math.random() * Constants.animalsList.length)];
                                 message = {
                                     _id: new Date().getTime(),
-                                    text: 'Waiting for Anonymous' + animal + ' to accept request',
+                                    text: 'Waiting for Anonymous ' + animal + ' to accept request',
                                     createdAt: new Date(),
                                     user: {
                                         _id: this.user.firebaseId,
@@ -349,8 +349,13 @@ export default class PreDiscover extends React.Component {
                                 this.setState(previousState => {
                                     console.log(previousState);
                                     let messages = previousState.messages;
-                                    if (previousState.messages.length > 2) {
-                                        messages.splice(messages.length - 3, 2);
+                                    console.log(messages);
+                                    for (let i = 0; i < messages.length; ++i) {
+                                        console.log(messages[i]);
+                                        if (messages[i].text.indexOf("Waiting") != -1 || messages[i].text.indexOf("Finding") != -1) {
+                                            // remove temp from array
+                                            messages.splice(i, 1);
+                                        }
                                     }
                                     return {
                                         messages: GiftedChat.append(messages, message)
