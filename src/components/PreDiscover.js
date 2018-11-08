@@ -352,7 +352,7 @@ export default class PreDiscover extends React.Component {
                                     console.log(messages);
                                     for (let i = 0; i < messages.length; ++i) {
                                         console.log(messages[i]);
-                                        if (messages[i].text.indexOf("Waiting") != -1 || messages[i].text.indexOf("Finding") != -1) {
+                                        if (messages[i].text.indexOf("Waiting") != -1 || messages[i].text.indexOf("Finding") != -1 || (i < messages.length - 1 && messages[i].text.indexOf("Someone") != -1)) {
                                             // remove temp from array
                                             messages.splice(i, 1);
                                         }

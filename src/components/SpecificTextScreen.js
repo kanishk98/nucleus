@@ -215,6 +215,11 @@ export default class SpecificTextScreen extends React.Component {
     )
 
     renderReceivedText(message) {
+        let messages = this.state.messages;
+        console.log(messages);
+        if (messages[messages.length - 1] === message) {
+            return;
+        }
         this.setState(previousState => {
             console.log(previousState);
             return {
@@ -232,7 +237,6 @@ export default class SpecificTextScreen extends React.Component {
                     const newMessage = this.convertMessage(res.value.data.onCreateNucleusConnectTexts);
                     if (newMessage.user._id == this.chat.user2.firebaseId) {
                         let tempArray = [];
-                        console.log('Shit.');
                         tempArray.push(newMessage);
                         this.renderReceivedText(newMessage);
                     }
