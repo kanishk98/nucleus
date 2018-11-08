@@ -338,7 +338,7 @@ export default class PreDiscover extends React.Component {
                                 const animal = Constants.animalsList[Math.floor(Math.random() * Constants.animalsList.length)];
                                 message = {
                                     _id: new Date().getTime(),
-                                    text: 'Waiting for ' + animal + ' to accept request',
+                                    text: 'Waiting for Anonymous' + animal + ' to accept request',
                                     createdAt: new Date(),
                                     user: {
                                         _id: this.user.firebaseId,
