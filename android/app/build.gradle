@@ -104,8 +104,8 @@ android {
         applicationId "com.nucleus"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 3
-        versionName "1.2"
+        versionCode 5
+        versionName "1.3"
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }

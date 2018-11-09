@@ -1,5 +1,5 @@
 import React, { PureComponent } from "react";
-import { Image, TextInput, View, TouchableHighlight, StyleSheet } from "react-native";
+import { Image, TextInput, View, TouchableHighlight, StyleSheet, Dimensions } from "react-native";
 import TouchHighlight from "./TouchHighlight";
 import Constants from "../Constants";
 
@@ -56,12 +56,14 @@ export default class Search extends PureComponent {
     }
 }
 
+const height = Dimensions.get('window').height;
+
 const styles = StyleSheet.create({
     search: {
+        height: this.DEVICE_HEIGHT/10,
         marginTop: 16,
         marginHorizontal: 8,
         borderRadius: 15,
-        flex: 1,
         borderWidth: 4, 
         alignSelf: 'center',
         borderColor: Constants.primaryColor,

@@ -313,9 +313,7 @@ export default class SpecificChatList extends Component {
             firebaseId: { ne: JSON.parse(await AsyncStorage.getItem(Constants.UserObject)).firebaseId },
             geohash: { ne: 'random_user_geohash' },
         }
-        /*if (!this.user.fcmToken || this.user.fcmToken === "null") {
-            this.setupNotifications();
-        }*/
+        this.setupNotifications();
     }
 
     componentWillUnmount() {
@@ -469,58 +467,58 @@ export default class SpecificChatList extends Component {
                 console.log('no conversations in memory, show user list with search bar');
                 return (
                     <View style={styles.layout}>
-                        <ScrollView scrollEnabled={false}>
-                            <Search onChange={(text) => this.searchConversations({ text })} placeholder={'Find Nucleus users'} />
-                            <List containerStyle={{ borderColor: Constants.primaryColor }}>
-                                {renderSearch(
-                                    (this.state.searching),
-                                    <View style={{ flex: 1 }} >
-                                        {renderResults((this.state.searchResults.length > 0),
-                                            <FlatList
-                                                data={this.state.searchResults}
-                                                keyExtractor={(data) => this.peopleKeyExtractor(data)}
-                                                renderItem={this.renderUser} />,
-                                            <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-                                                <Image style={{ width: this.DEVICE_WIDTH / 2, height: this.DEVICE_HEIGHT / 2 }} source={require('../../assets/not_found.png')} />
-                                            </View>
-                                        )}
-                                    </View>,
-                                    <FlatList
-                                        data={this.state.people}
-                                        keyExtractor={(data) => this.peopleKeyExtractor(data)}
-                                        renderItem={this.renderUser} />
-                                )}
-                            </List>
+                    <ScrollView scrollEnabled={false} style={{height: 20}}>
+                        <Search onChange={(text) => this.searchConversations({ text })} placeholder={'Find Nucleus users'} />
                         </ScrollView>
+                        <List containerStyle={{ borderColor: Constants.primaryColor }}>
+                            {renderSearch(
+                                (this.state.searching),
+                                <View style={{ flex: 1 }} >
+                                    {renderResults((this.state.searchResults.length > 0),
+                                        <FlatList
+                                            data={this.state.searchResults}
+                                            keyExtractor={(data) => this.peopleKeyExtractor(data)}
+                                            renderItem={this.renderUser} />,
+                                        <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+                                            <Image style={{ width: this.DEVICE_WIDTH / 2, height: this.DEVICE_HEIGHT / 2 }} source={require('../../assets/not_found.png')} />
+                                        </View>
+                                    )}
+                                </View>,
+                                <FlatList
+                                    data={this.state.people}
+                                    keyExtractor={(data) => this.peopleKeyExtractor(data)}
+                                    renderItem={this.renderUser} />
+                            )}
+                        </List>
                     </View>
                 );
             } else if (!!this.state.conversations && this.state.conversations.length > 0) {
                 // conversations in memory, show that List with Search bar
                 return (
                     <View style={styles.layout}>
-                        <ScrollView scrollEnabled={false}>
-                            <Search onChange={(text) => this.searchConversations({ text })} placeholder={'Find Nucleus users'} />
-                            <List containerStyle={{ borderColor: Constants.primaryColor }}>
-                                {renderSearch(
-                                    (this.state.searching),
-                                    <View>
-                                        {renderResults((this.state.searchResults.length > 0),
-                                            <FlatList
-                                                data={this.state.searchResults}
-                                                keyExtractor={(data) => this.peopleKeyExtractor(data)}
-                                                renderItem={this.renderUser} />,
-                                            <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-                                                <Image style={{ width: this.DEVICE_WIDTH / 2, height: this.DEVICE_HEIGHT / 2 }} source={require('../../assets/not_found.png')} />
-                                            </View>
-                                        )}
-                                    </View>,
-                                    <FlatList
-                                        data={this.state.conversations}
-                                        keyExtractor={(data) => this.chatKeyExtractor(data)}
-                                        renderItem={this.renderConversation} />
-                                )}
-                            </List>
-                        </ScrollView>
+                    <View style={{height: this.DEVICE_HEIGHT/10}}>
+                        <Search onChange={(text) => this.searchConversations({ text })} placeholder={'Find Nucleus users'} />
+                        </View>
+                        <List containerStyle={{ borderColor: Constants.primaryColor }}>
+                            {renderSearch(
+                                (this.state.searching),
+                                <View>
+                                    {renderResults((this.state.searchResults.length > 0),
+                                        <FlatList
+                                            data={this.state.searchResults}
+                                            keyExtractor={(data) => this.peopleKeyExtractor(data)}
+                                            renderItem={this.renderUser} />,
+                                        <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+                                            <Image style={{ width: this.DEVICE_WIDTH / 2, height: this.DEVICE_HEIGHT / 2 }} source={require('../../assets/not_found.png')} />
+                                        </View>
+                                    )}
+                                </View>,
+                                <FlatList
+                                    data={this.state.conversations}
+                                    keyExtractor={(data) => this.chatKeyExtractor(data)}
+                                    renderItem={this.renderConversation} />
+                            )}
+                        </List>
                     </View>
                 );
             }

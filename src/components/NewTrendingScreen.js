@@ -80,9 +80,9 @@ export default class NewTrendingScreen extends React.Component {
                 <FormLabel>Caption</FormLabel>
                 <FormInput inputStyle={{color: 'black', fontWeight: 'bold'}} onChangeText={(text)=>this._onSubmitEditingCaption({text})} underlineColorAndroid={Constants.secondaryColor} placeholder='What are you thinking about?'/>
                 <FormLabel>First response</FormLabel>
-                <FormInput inputStyle={{ color: 'black', fontWeight: 'bold'}} onChangeText={(text)=>this._onSubmitEditingOption1({text})} underlineColorAndroid={Constants.secondaryColor} placeholder='Yes/yeah/yay/Shanjana'/>
+                <FormInput inputStyle={{ color: 'black', fontWeight: 'bold'}} onChangeText={(text)=>this._onSubmitEditingOption1({text})} underlineColorAndroid={Constants.secondaryColor} placeholder="Any opinion you think is valid" />
                 <FormLabel>Second response</FormLabel>
-                <FormInput inputStyle={{ color: 'black', fontWeight: 'bold'}} onChangeText={(text)=>this._onSubmitEditingOption2({text})} underlineColorAndroid={Constants.secondaryColor} placeholder='No/nah/nay/Sneha'/>
+                <FormInput inputStyle={{ color: 'black', fontWeight: 'bold'}} onChangeText={(text)=>this._onSubmitEditingOption2({text})} underlineColorAndroid={Constants.secondaryColor} placeholder='Any opposing opinion you think is valid'/>
                 {renderSearch((!!this.state.option1 && this.state.option1.length > 0 && !!this.state.option2 && this.state.option2.length > 0 && !!this.state.caption && this.state.caption.length > 0), 
                     <Button
                         borderRadius={15}
