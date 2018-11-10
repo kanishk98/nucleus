@@ -154,6 +154,10 @@ export default class SpecificChatList extends Component {
             user2: item.user1,
         }
         this.props.navigation.navigate('SpecificTextScreen', { chat: chat, newChat: false });
+        // moves chat to top of screen
+        const { conversations } = this.state;
+        console.log('Conversations: ' + JSON.stringify(conversations));
+        conversations.sort(function (x, y) { return x == item ? -1 : y == item ? 1 : 0; });
     }
 
     // item here is a conversation
@@ -197,7 +201,13 @@ export default class SpecificChatList extends Component {
         this.retrieveChats();
     }
 
-    async setupNotifications() {
+    async componentDidMount() {
+        this.user = this.props.navigation.getParam('user');
+        this.setState({ user: this.user });
+        this.noFilter = {
+            firebaseId: { ne: JSON.parse(await AsyncStorage.getItem(Constants.UserObject)).firebaseId },
+            geohash: { ne: 'random_user_geohash' },
+        }
         // checking for notification permissions
         if (!this.user) {
             this.user = !!this.state.user ? this.state.user : JSON.parse(await AsyncStorage.getItem(Constants.UserObject));
@@ -304,16 +314,6 @@ export default class SpecificChatList extends Component {
             .catch(err => {
                 console.log(err);
             });
-    }
-
-    async componentDidMount() {
-        this.user = this.props.navigation.getParam('user');
-        this.setState({ user: this.user });
-        this.noFilter = {
-            firebaseId: { ne: JSON.parse(await AsyncStorage.getItem(Constants.UserObject)).firebaseId },
-            geohash: { ne: 'random_user_geohash' },
-        }
-        this.setupNotifications();
     }
 
     componentWillUnmount() {
@@ -449,9 +449,6 @@ export default class SpecificChatList extends Component {
                 <ActivityIndicator />
             </View>
         }
-        if (!this.state.user.fcmToken || this.state.user.fcmToken === "null") {
-            this.setupNotifications();
-        }
         if (!this.state.people || this.state.people.length == 0) {
             // no users in memory
             // this.fetchUsers();
@@ -467,8 +464,8 @@ export default class SpecificChatList extends Component {
                 console.log('no conversations in memory, show user list with search bar');
                 return (
                     <View style={styles.layout}>
-                    <ScrollView scrollEnabled={false} style={{height: 20}}>
-                        <Search onChange={(text) => this.searchConversations({ text })} placeholder={'Find Nucleus users'} />
+                        <ScrollView scrollEnabled={false} style={{ height: 20 }}>
+                            <Search onChange={(text) => this.searchConversations({ text })} placeholder={'Find Nucleus users'} />
                         </ScrollView>
                         <List containerStyle={{ borderColor: Constants.primaryColor }}>
                             {renderSearch(
@@ -496,8 +493,8 @@ export default class SpecificChatList extends Component {
                 // conversations in memory, show that List with Search bar
                 return (
                     <View style={styles.layout}>
-                    <View style={{height: this.DEVICE_HEIGHT/10}}>
-                        <Search onChange={(text) => this.searchConversations({ text })} placeholder={'Find Nucleus users'} />
+                        <View style={{ height: this.DEVICE_HEIGHT / 10 }}>
+                            <Search onChange={(text) => this.searchConversations({ text })} placeholder={'Find Nucleus users'} />
                         </View>
                         <List containerStyle={{ borderColor: Constants.primaryColor }}>
                             {renderSearch(
