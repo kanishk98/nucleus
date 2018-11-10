@@ -7,7 +7,7 @@ import { renderSearch } from './renderIf';
 import PollButton from './PollButton';
 import PollGraph from './PollGraph';
 
-class PollCard extends React.PureComponent {
+class PollCard extends React.Component {
 
     constructor(props) {
         super(props);
@@ -55,6 +55,7 @@ class PollCard extends React.PureComponent {
 
     render() {
         const { title, caption, image, button1Title, button2Title, button1Value, button2Value, userList, firebaseId } = this.state;
+        console.log(button1Value);
         return (
             <Card containerStyle={{ borderRadius: 15 }}
                 title={caption}>
@@ -121,7 +122,7 @@ export default class Trending extends React.PureComponent {
     }
 
     getPosts = () => {
-        fetch('http://' + Constants.postsIp + '/get-posts?perPage=5')
+        fetch('http://' + Constants.postsIp + '/get-posts?perPage=20')
             .then(res => {
                 console.log(res);
                 const postList = JSON.parse(res._bodyInit);
@@ -152,6 +153,7 @@ export default class Trending extends React.PureComponent {
             );
         }
         catch (err) {
+            console.log(err);
             return null;
         }
     }
@@ -199,8 +201,8 @@ export default class Trending extends React.PureComponent {
             this.getPosts();
             this.newTrendingSet = false;
         }
-        const { postList, networkStatus } = this.state;
-        console.log()
+        let { postList, networkStatus } = this.state;
+        console.log(postList);
         if (!postList || postList.length == 0) {
             return (
                 <ImageBackground source={require('../../assets/background.png')} style={styles.backgroundStyle}>

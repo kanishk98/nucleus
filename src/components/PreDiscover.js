@@ -117,7 +117,7 @@ export default class PreDiscover extends React.Component {
 
     async stopDiscover() {
         console.log('stopping discover');
-        let temp = {};
+        /*let temp = {};
         temp.firebaseId = this.user.firebaseId;
         temp.geohash = this.user.geohash;
         temp.online = 1;
@@ -129,7 +129,7 @@ export default class PreDiscover extends React.Component {
             .catch(err => {
                 console.log(err);
             });
-        await AsyncStorage.setItem(Constants.UserObject, JSON.stringify(temp));
+        await AsyncStorage.setItem(Constants.UserObject, JSON.stringify(temp));*/
         this.setState({ discoverStopped: true });
         let stoppedMessage = {
             _id: new Date().getTime(),
@@ -603,11 +603,12 @@ export default class PreDiscover extends React.Component {
         this.notificationOpenedListener();
     }
 
-    _handleAppStateChange = (nextState) => {
-        if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
+    _handleAppStateChange = (nextAppState) => {
+        console.log(nextAppState);
+        if (nextAppState === 'active') {
             console.log('App has come to the foreground!')
             this.changeOnlineStatus(true);
-        } else if (this.state.appState.match(/active/) && (nextAppState === 'inactive' || nextAppState === 'background')) {
+        } else if (this.state.appState === 'active' && (nextAppState === 'inactive' || nextAppState === 'background')) {
             console.log('App is going to the background');
             this.changeOnlineStatus(false);
         }      
