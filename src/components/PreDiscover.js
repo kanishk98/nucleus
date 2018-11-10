@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Dimensions, StyleSheet, AsyncStorage, Platform, ScrollView, Animated, Easing } from 'react-native';
+import { AppState, View, Text, Dimensions, StyleSheet, AsyncStorage, Platform, ScrollView, Animated, Easing } from 'react-native';
 import * as GraphQL from '../graphql';
 import { API, graphqlOperation } from 'aws-amplify';
 import firebase from 'react-native-firebase';
@@ -13,6 +13,7 @@ export default class PreDiscover extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            appState: AppState.currentState,
             text: 'Tap to talk',
             onlineUsers: [],
             looking: false,
@@ -148,14 +149,11 @@ export default class PreDiscover extends React.Component {
         });
     }
 
-    async ignoreFlagAndStartDiscover() {
-        if (this.state.navigating) {
-            this.setState({ navigating: false });
-        }
+    changeOnlineStatus = async(online) => {
         let temp = {};
         temp.firebaseId = this.user.firebaseId;
         temp.geohash = this.user.geohash;
-        temp.online = 1;
+        temp.online = online ? 1 : 0;
         console.log(this.user);
         console.log(temp);
         API.graphql(graphqlOperation(GraphQL.UpdateOnlineStatus, { input: temp }))
@@ -166,6 +164,12 @@ export default class PreDiscover extends React.Component {
                 console.log(err);
             });
         await AsyncStorage.setItem(Constants.UserObject, JSON.stringify(temp));
+    }
+
+    async ignoreFlagAndStartDiscover() {
+        if (this.state.navigating) {
+            this.setState({ navigating: false });
+        }
         this.setState({ discoverStopped: false });
         this.forced = true;
         this.startDiscover();
@@ -471,6 +475,7 @@ export default class PreDiscover extends React.Component {
     }
 
     async componentDidMount() {
+        AppState.addEventListener('change', this._handleAppStateChange);
         this.user = JSON.parse(await AsyncStorage.getItem(Constants.UserObject));
         console.log(this.user);
         // querying online users
@@ -527,24 +532,6 @@ export default class PreDiscover extends React.Component {
                 messages: GiftedChat.append(previousState.messages, message)
             };
         });
-    }
-
-    changeOnlineStatus = () => {
-        if (this.user.online) {
-            this.user.online = 0;
-        } else {
-            this.user.online = 1;
-        }
-        console.log(JSON.stringify(this.user));
-        API.graphql(graphqlOperation(GraphQL.UpdateDiscoverUser, { input: this.user }))
-            .then(res => {
-                console.log(res);
-                console.log(this.user.online)
-                this.forceUpdate();
-            })
-            .catch(err => {
-                console.log(err);
-            });
     }
 
     _renderInputToolbar = () => {
@@ -612,7 +599,18 @@ export default class PreDiscover extends React.Component {
     }
 
     componentWillUnmount() {
+        AppState.removeEventListener('change', this._handleAppStateChange);
         this.notificationOpenedListener();
+    }
+
+    _handleAppStateChange = (nextState) => {
+        if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
+            console.log('App has come to the foreground!')
+            this.changeOnlineStatus(true);
+        } else if (this.state.appState.match(/active/) && (nextAppState === 'inactive' || nextAppState === 'background')) {
+            console.log('App is going to the background');
+            this.changeOnlineStatus(false);
+        }      
     }
 }
 
