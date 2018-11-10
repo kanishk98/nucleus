@@ -30,16 +30,6 @@ export default class SpecificChatList extends Component {
             secretAccessKey: Constants.secretAccessKey,
             region: 'ap-south-1'
         });
-        /*const dynamoDB = new AWS.DynamoDB();
-        const table = {TableName: "Nucleus.DiscoverUsers"};
-        dynamoDB.describeTable(table, function(err, data) {
-            if (err) {
-                console.log(err, err.stack);
-            } else {
-                console.log(data);
-                this.itemCount = data.ItemCount;
-            }
-        });*/
         this.search = React.createRef();
     }
 
@@ -389,8 +379,10 @@ export default class SpecificChatList extends Component {
     fetchUsers() {
         API.graphql(graphqlOperation(GraphQL.GetAllDiscoverUsers, { filter: this.noFilter }))
             .then(res => {
+                console.log(res);
                 // removing signed-in user from UserList
                 const users = res.data.listNucleusDiscoverUsers.items;
+                console.log(users);
                 AsyncStorage.setItem(Constants.UserList, JSON.stringify(users))
                     .then(asyncStorageResult => {
                         console.log(asyncStorageResult);
@@ -400,7 +392,7 @@ export default class SpecificChatList extends Component {
                     });
                 if (res.data.listNucleusDiscoverUsers.nextToken != null) {
                     // start background operation to fetch more data
-                    this.getPaginatedUsers(res.data.listNucleusDiscoverUsers.nextToken);
+                    SpecificChatList.getPaginatedUsers(res.data.listNucleusDiscoverUsers.nextToken);
                 }
             })
             .catch(err => {
@@ -408,37 +400,31 @@ export default class SpecificChatList extends Component {
             });
     }
 
-    getPaginatedUsers = (nextToken) => {
+    static getPaginatedUsers = async(nextToken) => {
         API.graphql(graphqlOperation(GraphQL.GetAllDiscoverUsers, { filter: this.noFilter, nextToken: nextToken }))
-            .then(res => {
+            .then(async(res) => {
+                console.log(res);
                 const users = res.data.listNucleusDiscoverUsers.items;
-                AsyncStorage.getItem(Constants.UserList)
-                    .then(res => {
-                        savedUsers = JSON.parse(res);
-                        savedUsers.push(users);
-                        AsyncStorage.setItem(Constants.UserList, JSON.stringify(users))
-                            .then(asyncStorageResult => {
-                                console.log(asyncStorageResult);
-                            })
-                            .catch(asyncStorageError => {
-                                console.log(asyncStorageError);
-                            });
-                        if (res.data.listNucleusDiscoverUsers.nextToken != null) {
-                            // start background operation to fetch more data
-                            this.getPaginatedUsers(res.data.listNucleusDiscoverUsers.nextToken);
-                        }
-                    })
-                    .catch(err => console.log(err));
+                console.log(users);
+                await AsyncStorage.setItem(Constants.UserList, JSON.stringify(users));
+                if (res.data.listNucleusDiscoverUsers.nextToken != null) {
+                    // start background operation to fetch more data
+                    console.log(res.data.listNucleusDiscoverUsers.nextToken);
+                    this.getPaginatedUsers(res.data.listNucleusDiscoverUsers.nextToken);
+                }
             })
-            .catch(err => {
-                console.log(err);
-            });
+            .catch(err => console.log(err));
     }
 
     async getUser() {
         let user = JSON.parse(await AsyncStorage.getItem(Constants.UserObject));
         this.setState({ user: user });
         this.user = this.state.user;
+    }
+
+    removeDuplicates = (arr) => {
+        let unique = [...new Set(arr)];
+        return unique;
     }
 
     render() {
@@ -482,7 +468,9 @@ export default class SpecificChatList extends Component {
                                     )}
                                 </View>,
                                 <FlatList
-                                    data={this.state.people}
+                                    refreshing={true}
+                                    onRefresh={this.fetchUsers}
+                                    data={this.removeDuplicates(this.state.people)}
                                     keyExtractor={(data) => this.peopleKeyExtractor(data)}
                                     renderItem={this.renderUser} />
                             )}
@@ -511,7 +499,9 @@ export default class SpecificChatList extends Component {
                                     )}
                                 </View>,
                                 <FlatList
-                                    data={this.state.conversations}
+                                    onRefresh={this.fetchUsers}
+                                    refreshing={false}
+                                    data={this.removeDuplicates(this.state.conversations)}
                                     keyExtractor={(data) => this.chatKeyExtractor(data)}
                                     renderItem={this.renderConversation} />
                             )}
