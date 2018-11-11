@@ -136,7 +136,7 @@ export default class SpecificChatList extends Component {
         }
     }
 
-    openNotificationChat = (item) => {
+    openNotificationChat = async (item) => {
         console.log(item);
         const chat = {
             conversationId: item.conversationId,
@@ -147,7 +147,16 @@ export default class SpecificChatList extends Component {
         // moves chat to top of screen
         const { conversations } = this.state;
         console.log('Conversations: ' + JSON.stringify(conversations));
-        conversations.sort(function (x, y) { return x == item ? -1 : y == item ? 1 : 0; });
+        if (conversations.indexOf(item) != -1) {
+            conversations.splice(conversations.indexOf(item), 1);
+        }
+        conversations.unshift(item);
+        console.log('Sorted conversations: ' + JSON.stringify(conversations));
+        this.setState({ conversations: conversations });
+        await AsyncStorage.setItem('CHATS', JSON.stringify(conversations));
+        this.props.navigation.navigate('SpecificTextScreen', { chat: chat, newChat: false });
+        // this.retrieveChats();
+        console.log('retrieved chats');
     }
 
     // item here is a conversation
@@ -161,13 +170,16 @@ export default class SpecificChatList extends Component {
         // get conversations here, move selected conversation to top of FlatList
         const { conversations } = this.state;
         console.log('Conversations: ' + JSON.stringify(conversations));
-        conversations.sort(function (x, y) { return x == item ? -1 : y == item ? 1 : 0; });
+        if (conversations.indexOf(item) != -1) {
+            conversations.splice(conversations.indexOf(item), 1);
+        }
+        conversations.unshift(item);
         // save newly sorted list
         console.log('Sorted conversations: ' + JSON.stringify(conversations));
         this.setState({ conversations: conversations });
         await AsyncStorage.setItem('CHATS', JSON.stringify(conversations));
         this.props.navigation.navigate('SpecificTextScreen', { chat: chat, newChat: false });
-        this.retrieveChats();
+        // this.retrieveChats();
         console.log('retrieved chats');
     }
 
