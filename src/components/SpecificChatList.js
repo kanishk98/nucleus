@@ -72,15 +72,21 @@ export default class SpecificChatList extends Component {
     }
 
     // item here is a user
-    newChat(item) {
+    async newChat(item) {
         if (!this.user) {
             this.user = this.state.user;
         }
         if (!!item) {
             let chat = null;
             let newChat = true;
-            let { conversations, talkingTo } = this.state;
-            if (!talkingTo.includes(item.firebaseId)) {
+            let { conversations } = this.state;
+            let talkingTo = JSON.parse(await AsyncStorage.getItem(Constants.TalkingTo));
+            console.log('talkingTo: ' + JSON.stringify(talkingTo));
+            if (!talkingTo) {
+                talkingTo = [];
+            }
+            console.log('talkingTo: ' + JSON.stringify(talkingTo));
+            if (talkingTo.length === 0 || talkingTo.indexOf(item.firebaseId) == -1) {
                 talkingTo.push(item.firebaseId);
                 AsyncStorage.setItem(Constants.TalkingTo, JSON.stringify(talkingTo))
                     .then(res => {
@@ -135,8 +141,21 @@ export default class SpecificChatList extends Component {
                 }
                 newChat = false;
             }
-            this.props.navigation.navigate('SpecificTextScreen', { chat: chat, newChat: newChat });
+            this.openChat(chat);
         }
+    }
+
+    putChatAtTop = async (item) => {
+        // moves chat to top of screen
+        const { conversations } = this.state;
+        console.log('Conversations: ' + JSON.stringify(conversations));
+        if (conversations.indexOf(item) != -1) {
+            conversations.splice(conversations.indexOf(item), 1);
+        }
+        conversations.unshift(item);
+        console.log('Sorted conversations: ' + JSON.stringify(conversations));
+        this.setState({ conversations: conversations });
+        await AsyncStorage.setItem('CHATS', JSON.stringify(conversations));
     }
 
     openNotificationChat = async (item) => {
@@ -260,7 +279,6 @@ export default class SpecificChatList extends Component {
                         chat: notification.data.chat,
                     });
                 if (Platform.OS == 'ios') {
-                    displayNotification.ios.setBadge(notification.ios.badge);
                 } else {
                     // android
                     displayNotification.android.setChannelId('channelId');
@@ -271,6 +289,7 @@ export default class SpecificChatList extends Component {
                     const chat = JSON.parse(displayNotification._data.chat);
                     if (chat.user1.firebaseId !== this.user.firebaseId) {
                         firebase.notifications().displayNotification(displayNotification);
+                        this.putChatAtTop(JSON.parse(notification._data.chat));
                     }
                 }
             });
@@ -455,7 +474,7 @@ export default class SpecificChatList extends Component {
                 console.log('no conversations in memory, show user list with search bar');
                 return (
                     <View style={styles.layout}>
-                        <View style={{height: this.DEVICE_HEIGHT/10}}>
+                        <View style={{ height: this.DEVICE_HEIGHT / 10 }}>
                             <Search onChange={(text) => this.searchConversations({ text })} placeholder={'Find Nucleus users'} />
                         </View>
                         <List containerStyle={{ borderColor: Constants.primaryColor }}>
