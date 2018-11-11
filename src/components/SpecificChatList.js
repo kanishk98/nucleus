@@ -100,7 +100,10 @@ export default class SpecificChatList extends Component {
                     // conversations is null, happens on Android
                     conversations = [];
                 }
-                conversations.push(chat);
+                if (conversations.indexOf(chat) != -1) {
+                    conversations.splice(conversations.indexOf(chat), 1);
+                }
+                conversations.unshift(chat);
                 AsyncStorage.setItem(Constants.SpecificChatConversations, JSON.stringify(conversations))
                     .then(res => {
                         console.log('Saved successfully: ' + JSON.stringify(res));
@@ -143,7 +146,6 @@ export default class SpecificChatList extends Component {
             user1: this.user,
             user2: item.user1,
         }
-        this.props.navigation.navigate('SpecificTextScreen', { chat: chat, newChat: false });
         // moves chat to top of screen
         const { conversations } = this.state;
         console.log('Conversations: ' + JSON.stringify(conversations));
@@ -155,8 +157,7 @@ export default class SpecificChatList extends Component {
         this.setState({ conversations: conversations });
         await AsyncStorage.setItem('CHATS', JSON.stringify(conversations));
         this.props.navigation.navigate('SpecificTextScreen', { chat: chat, newChat: false });
-        // this.retrieveChats();
-        console.log('retrieved chats');
+        this.retrieveChats();
     }
 
     // item here is a conversation
@@ -454,9 +455,9 @@ export default class SpecificChatList extends Component {
                 console.log('no conversations in memory, show user list with search bar');
                 return (
                     <View style={styles.layout}>
-                        <ScrollView scrollEnabled={false} style={{ height: 20 }}>
+                        <View style={{height: this.DEVICE_HEIGHT/10}}>
                             <Search onChange={(text) => this.searchConversations({ text })} placeholder={'Find Nucleus users'} />
-                        </ScrollView>
+                        </View>
                         <List containerStyle={{ borderColor: Constants.primaryColor }}>
                             {renderSearch(
                                 (this.state.searching),
@@ -472,7 +473,7 @@ export default class SpecificChatList extends Component {
                                     )}
                                 </View>,
                                 <FlatList
-                                    refreshing={true}
+                                    refreshing={false}
                                     onRefresh={this.fetchUsers}
                                     data={this.removeDuplicates(this.state.people)}
                                     keyExtractor={(data) => this.peopleKeyExtractor(data)}

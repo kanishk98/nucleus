@@ -476,6 +476,8 @@ export default class PreDiscover extends React.Component {
 
     async componentDidMount() {
         AppState.addEventListener('change', this._handleAppStateChange);
+        console.log('App has come to the foreground!')
+        this.changeOnlineStatus(true);
         this.user = JSON.parse(await AsyncStorage.getItem(Constants.UserObject));
         console.log(this.user);
         // querying online users
