@@ -147,6 +147,7 @@ export default class SpecificChatList extends Component {
 
     putChatAtTop = async (item) => {
         // moves chat to top of screen
+        console.log('notification putting chat on top');
         const { conversations } = this.state;
         console.log('Conversations: ' + JSON.stringify(conversations));
         if (conversations.indexOf(item) != -1) {
@@ -173,10 +174,10 @@ export default class SpecificChatList extends Component {
         }
         conversations.unshift(item);
         console.log('Sorted conversations: ' + JSON.stringify(conversations));
+        console.log('Notification username: ' + chat.user2.username);
         this.setState({ conversations: conversations });
         await AsyncStorage.setItem('CHATS', JSON.stringify(conversations));
         this.props.navigation.navigate('SpecificTextScreen', { chat: chat, newChat: false });
-        this.retrieveChats();
     }
 
     // item here is a conversation
