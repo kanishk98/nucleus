@@ -1,0 +1,433 @@
+﻿type Mutation {
+  createNucleusConnectConversations(input: CreateNucleusConnectConversationsInput!): NucleusConnectConversations
+  createNucleusConnectMessages(input: CreateNucleusConnectMessagesInput!): NucleusConnectMessages
+  createNucleusConnectTexts(input: CreateNucleusConnectTextsInput!): NucleusConnectTexts
+  createNucleusDiscoverChats(input: CreateNucleusDiscoverChatsInput!): NucleusDiscoverChats
+  createNucleusDiscoverConversations(input: CreateNucleusDiscoverConversationsInput!): NucleusDiscoverConversations
+  createNucleusDiscoverMessages(input: CreateNucleusDiscoverMessagesInput!): NucleusDiscoverMessages
+  createNucleusDiscoverUsers(input: CreateNucleusDiscoverUsersInput!): NucleusDiscoverUsers
+  deleteNucleusConnectConversations(input: DeleteNucleusConnectConversationsInput!): NucleusConnectConversations
+  deleteNucleusConnectMessages(input: DeleteNucleusConnectMessagesInput!): NucleusConnectMessages
+  deleteNucleusConnectTexts(input: DeleteNucleusConnectTextsInput!): NucleusConnectTexts
+  deleteNucleusDiscoverChats(input: DeleteNucleusDiscoverChatsInput!): NucleusDiscoverChats
+  deleteNucleusDiscoverConversations(input: DeleteNucleusDiscoverConversationsInput!): NucleusDiscoverConversations
+  deleteNucleusDiscoverMessages(input: DeleteNucleusDiscoverMessagesInput!): NucleusDiscoverMessages
+  deleteNucleusDiscoverUsers(input: DeleteNucleusDiscoverUsersInput!): NucleusDiscoverUsers
+  updateNucleusConnectConversations(input: UpdateNucleusConnectConversationsInput!): NucleusConnectConversations
+  updateNucleusConnectMessages(input: UpdateNucleusConnectMessagesInput!): NucleusConnectMessages
+  updateNucleusConnectTexts(input: UpdateNucleusConnectTextsInput!): NucleusConnectTexts
+  updateNucleusDiscoverChats(input: UpdateNucleusDiscoverChatsInput!): NucleusDiscoverChats
+  updateNucleusDiscoverConversations(input: UpdateNucleusDiscoverConversationsInput!): NucleusDiscoverConversations
+  updateNucleusDiscoverMessages(input: UpdateNucleusDiscoverMessagesInput!): NucleusDiscoverMessages
+  updateNucleusDiscoverUsers(input: UpdateNucleusDiscoverUsersInput!): NucleusDiscoverUsers
+  updateUserOnlineStatus(input: UpdateOnlineStatusInput!): NucleusDiscoverUsers
+}
+
+type NucleusConnectConversations {
+  conversationId: String!
+}
+
+type NucleusConnectConversationsConnection {
+  items: [NucleusConnectConversations]
+  nextToken: String
+}
+
+type NucleusConnectMessages {
+  author: NucleusDiscoverUsers
+  content: String
+  conversationId: String!
+  messageId: String
+  recipient: NucleusDiscoverUsers
+  timestamp: String
+}
+
+type NucleusConnectMessagesConnection {
+  items: [NucleusConnectMessages]
+  nextToken: String
+}
+
+type NucleusConnectTexts {
+  conversationId: String!
+  messageId: String!
+  recipient: NucleusDiscoverUsers
+  author: NucleusDiscoverUsers
+  content: String
+  timestamp: String
+}
+
+type NucleusConnectTextsConnection {
+  items: [NucleusConnectTexts]
+  nextToken: String
+}
+
+type NucleusDiscoverChats {
+  author: NucleusDiscoverUsers
+  content: String
+  conversationId: String!
+  createdAt: String
+  isRead: Boolean
+  isReceived: Boolean
+  isSent: Boolean
+  messageId: [String]
+  recipient: String
+}
+
+type NucleusDiscoverChatsConnection {
+  items: [NucleusDiscoverChats]
+  nextToken: String
+}
+
+type NucleusDiscoverConversations {
+  author: NucleusDiscoverUsers
+  content: String
+  conversationId: String!
+  createdAt: String
+  isRead: Boolean
+  isReceived: Boolean
+  isSent: Boolean
+  messageId: [String]!
+  recipient: NucleusDiscoverUsers
+}
+
+type NucleusDiscoverConversationsConnection {
+  items: [NucleusDiscoverConversations]
+  nextToken: String
+}
+
+type NucleusDiscoverMessages {
+  conversationId: String!
+  messageId: String!
+  recipient: NucleusDiscoverUsers
+  author: NucleusDiscoverUsers
+  content: String
+  timestamp: String
+}
+
+type NucleusDiscoverMessagesConnection {
+  items: [NucleusDiscoverMessages]
+  nextToken: String
+}
+
+type NucleusDiscoverUsers {
+  firebaseId: String!
+  geohash: String!
+  offenses: Int
+  online: Int
+  paid: Boolean
+  profilePic: String
+  username: String
+  fcmToken: String
+}
+
+type NucleusDiscoverUsersConnection {
+  items: [NucleusDiscoverUsers]
+  nextToken: String
+}
+
+type Query {
+  getNucleusConnectConversations(conversationId: String!): NucleusConnectConversations
+  getNucleusConnectMessages(conversationId: String!): NucleusConnectMessages
+  getNucleusConnectTexts(conversationId: String!, messageId: String!): NucleusConnectTexts
+  getNucleusDiscoverChats(conversationId: String!): NucleusDiscoverChats
+  getNucleusDiscoverConversations(conversationId: String!, messageId: [String]!): NucleusDiscoverConversations
+  getNucleusDiscoverMessages(conversationId: String!, messageId: String!): NucleusDiscoverMessages
+  getNucleusDiscoverUsers(firebaseId: String!, geohash: String!): NucleusDiscoverUsers
+  getOnlineNucleusDiscoverUsers(online: Int): [NucleusDiscoverUsers]
+  listNucleusConnectConversations(filter: TableNucleusConnectConversationsFilterInput, limit: Int, nextToken: String): NucleusConnectConversationsConnection
+  listNucleusConnectMessages(filter: TableNucleusConnectMessagesFilterInput, limit: Int, nextToken: String): NucleusConnectMessagesConnection
+  listNucleusConnectTexts(filter: TableNucleusConnectTextsFilterInput, limit: Int, nextToken: String): NucleusConnectTextsConnection
+  listNucleusDiscoverChats(filter: TableNucleusDiscoverChatsFilterInput, limit: Int, nextToken: String): NucleusDiscoverChatsConnection
+  listNucleusDiscoverConversations(filter: TableNucleusDiscoverConversationsFilterInput, limit: Int, nextToken: String): NucleusDiscoverConversationsConnection
+  listNucleusDiscoverMessages(filter: TableNucleusDiscoverMessagesFilterInput, limit: Int, nextToken: String): NucleusDiscoverMessagesConnection
+  listNucleusDiscoverUsers(filter: TableNucleusDiscoverUsersFilterInput, limit: Int, nextToken: String): NucleusDiscoverUsersConnection
+  listOnlineUsers(filter: OnlineUsersFilterInput, limit: Int, nextToken: String): NucleusDiscoverUsersConnection
+  listUsersById(filter: UsersByIdFilterInput, limit: Int, nextToken: String): NucleusDiscoverUsersConnection
+}
+
+type Schema {
+  mutation: Mutation
+  query: Query
+  subscription: Subscription
+}
+
+type Subscription {
+  onCreateNucleusConnectConversations(conversationId: String): NucleusConnectConversations
+    @aws_subscribe(mutations:["createNucleusConnectConversations"])
+  onCreateNucleusConnectMessages(conversationId: String): NucleusConnectMessages
+    @aws_subscribe(mutations:["createNucleusConnectMessages"])
+  onCreateNucleusConnectTexts(conversationId: String): NucleusConnectTexts
+    @aws_subscribe(mutations:["createNucleusConnectTexts"])
+  onCreateNucleusDiscoverChats(recipient: String): NucleusDiscoverChats
+    @aws_subscribe(mutations:["createNucleusDiscoverChats"])
+  onCreateNucleusDiscoverConversations(conversationId: String, messageId: [String]): NucleusDiscoverConversations
+    @aws_subscribe(mutations:["createNucleusDiscoverConversations"])
+  onCreateNucleusDiscoverMessages(conversationId: String): NucleusDiscoverMessages
+    @aws_subscribe(mutations:["createNucleusDiscoverMessages"])
+  onCreateNucleusDiscoverUsers(firebaseId: String, geohash: String): NucleusDiscoverUsers
+    @aws_subscribe(mutations:["createNucleusDiscoverUsers"])
+  onDeleteNucleusConnectConversations(conversationId: String): NucleusConnectConversations
+    @aws_subscribe(mutations:["deleteNucleusConnectConversations"])
+  onDeleteNucleusConnectMessages(conversationId: String): NucleusConnectMessages
+    @aws_subscribe(mutations:["deleteNucleusConnectMessages"])
+  onDeleteNucleusConnectTexts(conversationId: String, messageId: String): NucleusConnectTexts
+    @aws_subscribe(mutations:["deleteNucleusConnectTexts"])
+  onDeleteNucleusDiscoverChats(conversationId: String): NucleusDiscoverChats
+    @aws_subscribe(mutations:["deleteNucleusDiscoverChats"])
+  onDeleteNucleusDiscoverConversations(conversationId: String, messageId: [String]): NucleusDiscoverConversations
+    @aws_subscribe(mutations:["deleteNucleusDiscoverConversations"])
+  onDeleteNucleusDiscoverMessages(conversationId: String, messageId: String): NucleusDiscoverMessages
+    @aws_subscribe(mutations:["deleteNucleusDiscoverMessages"])
+  onDeleteNucleusDiscoverUsers(firebaseId: String, geohash: String): NucleusDiscoverUsers
+    @aws_subscribe(mutations:["deleteNucleusDiscoverUsers"])
+  onUpdateNucleusConnectConversations(conversationId: String): NucleusConnectConversations
+    @aws_subscribe(mutations:["updateNucleusConnectConversations"])
+  onUpdateNucleusConnectMessages(conversationId: String): NucleusConnectMessages
+    @aws_subscribe(mutations:["updateNucleusConnectMessages"])
+  onUpdateNucleusConnectTexts(conversationId: String, messageId: String): NucleusConnectTexts
+    @aws_subscribe(mutations:["updateNucleusConnectTexts"])
+  onUpdateNucleusDiscoverChats(conversationId: String): NucleusDiscoverChats
+    @aws_subscribe(mutations:["updateNucleusDiscoverChats"])
+  onUpdateNucleusDiscoverConversations(conversationId: String, messageId: [String]): NucleusDiscoverConversations
+    @aws_subscribe(mutations:["updateNucleusDiscoverConversations"])
+  onUpdateNucleusDiscoverMessages(conversationId: String, messageId: String): NucleusDiscoverMessages
+    @aws_subscribe(mutations:["updateNucleusDiscoverMessages"])
+  onUpdateNucleusDiscoverUsers(firebaseId: String, geohash: String): NucleusDiscoverUsers
+    @aws_subscribe(mutations:["updateNucleusDiscoverUsers"])
+}
+
+input CreateNucleusConnectConversationsInput {
+  conversationId: String!
+}
+
+input CreateNucleusConnectMessagesInput {
+  author: CreateNucleusDiscoverUsersInput
+  content: String
+  conversationId: String!
+  messageId: String
+  recipient: CreateNucleusDiscoverUsersInput
+  timestamp: String
+}
+
+input CreateNucleusConnectTextsInput {
+  conversationId: String!
+  messageId: String!
+  author: CreateNucleusDiscoverUsersInput
+  recipient: CreateNucleusDiscoverUsersInput
+  content: String
+  timestamp: String
+}
+
+input CreateNucleusDiscoverChatsInput {
+  author: CreateNucleusDiscoverUsersInput
+  content: String
+  conversationId: String!
+  createdAt: String
+  isRead: Boolean
+  isReceived: Boolean
+  isSent: Boolean
+  messageId: [String]
+  recipient: String
+}
+
+input CreateNucleusDiscoverConversationsInput {
+  conversationId: String!
+  messageId: [String]
+}
+
+input CreateNucleusDiscoverMessagesInput {
+  conversationId: String!
+  messageId: String!
+  author: CreateNucleusDiscoverUsersInput,
+  recipient: CreateNucleusDiscoverUsersInput
+  content: String
+  timestamp: String
+}
+
+input CreateNucleusDiscoverUsersInput {
+  firebaseId: String!
+  geohash: String!
+  offenses: Int
+  online: Int
+  paid: Boolean
+  profilePic: String
+  username: String
+  fcmToken: String
+}
+
+input DeleteNucleusConnectConversationsInput {
+  conversationId: String!
+}
+
+input DeleteNucleusConnectMessagesInput {
+  conversationId: String!
+}
+
+input DeleteNucleusConnectTextsInput {
+  conversationId: String!
+  messageId: String!
+}
+
+input DeleteNucleusDiscoverChatsInput {
+  conversationId: String!
+}
+
+input DeleteNucleusDiscoverConversationsInput {
+  conversationId: String!
+  messageId: [String]!
+}
+
+input DeleteNucleusDiscoverMessagesInput {
+  conversationId: String!
+  messageId: String!
+}
+
+input DeleteNucleusDiscoverUsersInput {
+  firebaseId: String!
+  geohash: String!
+}
+
+input UsersByIdFilterInput {
+  firebaseId: TableStringFilterInput!
+}
+
+input OnlineUsersFilterInput {
+  online: TableIntFilterInput!
+}
+
+input TableBooleanFilterInput {
+  eq: Boolean
+  ne: Boolean
+}
+
+input TableFloatFilterInput {
+  between: [Float]
+  contains: Float
+  eq: Float
+  ge: Float
+  gt: Float
+  le: Float
+  lt: Float
+  ne: Float
+  notContains: Float
+}
+
+input TableIDFilterInput {
+  beginsWith: ID
+  between: [ID]
+  contains: ID
+  eq: ID
+  ge: ID
+  gt: ID
+  le: ID
+  lt: ID
+  ne: ID
+  notContains: ID
+}
+
+input TableIntFilterInput {
+  between: [Int]
+  contains: Int
+  eq: Int
+  ge: Int
+  gt: Int
+  le: Int
+  lt: Int
+  ne: Int
+  notContains: Int
+}
+
+input TableNucleusConnectConversationsFilterInput {
+  conversationId: TableStringFilterInput
+}
+
+input TableNucleusConnectMessagesFilterInput {
+  conversationId: TableStringFilterInput
+}
+
+input TableNucleusConnectTextsFilterInput {
+  conversationId: TableStringFilterInput
+}
+
+input TableNucleusDiscoverChatsFilterInput {
+  conversationId: TableStringFilterInput
+}
+
+input TableNucleusDiscoverConversationsFilterInput {
+  conversationId: TableStringFilterInput
+  messageId: TableStringFilterInput
+}
+
+input TableNucleusDiscoverMessagesFilterInput {
+  conversationId: TableStringFilterInput
+  messageId: TableStringFilterInput
+}
+
+input TableNucleusDiscoverUsersFilterInput {
+  firebaseId: TableStringFilterInput
+  geohash: TableStringFilterInput
+}
+
+input TableStringFilterInput {
+  beginsWith: String
+  between: [String]
+  contains: String
+  eq: String
+  ge: String
+  gt: String
+  le: String
+  lt: String
+  ne: String
+  notContains: String
+}
+
+input UpdateNucleusConnectConversationsInput {
+  conversationId: String!
+}
+
+input UpdateNucleusConnectMessagesInput {
+  conversationId: String!
+}
+
+input UpdateNucleusConnectTextsInput {
+  conversationId: String!
+  messageId: String!
+}
+
+input UpdateNucleusDiscoverChatsInput {
+  author: CreateNucleusDiscoverUsersInput
+  content: String
+  conversationId: String!
+  createdAt: String
+  isRead: Boolean
+  isReceived: Boolean
+  isSent: Boolean
+  messageId: [String]
+  recipient: String
+}
+
+input UpdateNucleusDiscoverConversationsInput {
+  conversationId: String!
+  messageId: [String]!
+}
+
+input UpdateNucleusDiscoverMessagesInput {
+  conversationId: String!
+  messageId: String!
+}
+
+input UpdateNucleusDiscoverUsersInput {
+  firebaseId: String!
+  geohash: String!
+  offenses: Int
+  online: Int
+  paid: Boolean
+  profilePic: String
+  username: String
+  fcmToken: String
+}
+
+input UpdateOnlineStatusInput {
+  firebaseId: String!
+  geohash: String!
+  online: Int
+}
