@@ -1,3 +1,8 @@
+# Access key files
+google-services.json
+Info.plist
+GoogleService-Info.plist
+
 # apk files
 *.apk
 
